@@ -1,7 +1,7 @@
 /**
  * stay build 21.06.2015
  *
- * Copyright 2015 Raoul van Rüschen
+ * Copyright 2015 Raoul van Rueschen
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -161,17 +161,21 @@ function Stay(options)
 
  EventDispatcher.call(this);
 
+ this.responseFields = ["contents", "navigation"];
+ this.infix = "/json";
+ this.timeoutPost = 60000;
+ this.timeoutGet = 5000;
+
  if(options !== undefined)
  {
-  this.contents = (options.contents !== undefined) ? options.contents : null;
-  this.navigation = (options.navigation !== undefined) ? options.navigation : null;
-  this.infix = (options.infix !== undefined) ? options.infix : "/json";
-  this.timeoutPost = (options.timeoutPost !== undefined) ? options.timeoutPost : 60000;
-  this.timeoutGet = (options.timeoutGet !== undefined) ? options.timeoutGet : 5000;
-  this.responseFields = (options.responseFields !== undefined) ? options.responseFields : ["contents", "navigation"];
+  if(options.responseFields !== undefined) { this.responseFields = options.responseFields; }
+  if(options.infix !== undefined) { this.infix = options.infix; }
+  if(options.timeoutPost !== undefined) { this.timeoutPost = options.timeoutPost; }
+  if(options.timeoutGet !== undefined) { this.timeoutGet = options.timeoutGet; }
  }
 
  this.locked = false;
+ this.backForward = false;
  this.absolutePath = null;
  this.containers = [];
  this.intermediateContainer = null;
@@ -179,19 +183,59 @@ function Stay(options)
  this.eventNavigate = {type: "navigate"};
  this.eventLoad = {type: "load"};
 
- if(XMLHttpRequest !== undefined)
+ this.xhr = new XMLHttpRequest();
+ this.xhr.addEventListener("readystatechange", function(event) { self.handleResponse(this, event); });
+ this.xhr.addEventListener("timeout", function()
  {
-  this.xhr = new XMLHttpRequest();
-  this.xhr.addEventListener("readystatechange", function(event) { self.handleResponse(this, event); });
-  this.xhr.addEventListener("timeout", function(event) { self.handleTimeout(event); });
- }
- else
- {
-  throw new Error("XHR not supported.");
- }
+  self.locked = true;
+  self.update({
+   title: "Timeout Error",
+   contents: Stay.Error.TIMEOUT
+  });
+ });
 
- window.addEventListener("popstate", function() { self.handleBackForward(); });
- this.clickhandler = function(event) { self.switchPage(this, event); };
+ /**
+  * Support browser functionality "back" and "forward".
+  * Depends on the boolean variable "locked" in order to
+  * determine whether this navigation should be executed.
+  * The "backForward" flag tells the system that the next
+  * state mustn't be pushed.
+  *
+  * @param {Event} event - The event, dispatched by window.
+  */
+
+ window.addEventListener("popstate", function(event)
+ {
+  if(!self.locked && event.state !== null)
+  {
+   self.backForward = true;
+   self.navigate({href: event.state.url});
+  }
+ });
+
+ /**
+  * This function is bound to all links and forms
+  * and executes the desired page navigation on left clicks.
+  *
+  * @param {HTMLElement} element - The element that dispatched the event.
+  * @param {Event} event - The event.
+  */
+
+ this.switchPage = function(event)
+ {
+  var isRightClick = false;
+
+  if(event.which) { isRightClick = (event.which === 3); }
+  else if(event.button) { isRightClick = (event.button === 2); }
+
+  if(!isRightClick)
+  {
+   event.preventDefault();
+   if(!self.locked) { self.navigate(this); }
+  }
+ };
+
+ this.updateListeners();
 }
 
 Stay.prototype = Object.create(EventDispatcher.prototype);
@@ -297,38 +341,6 @@ Stay.prototype.updateView = function(response)
 };
 
 /**
- * This function is bound to all links and forms
- * and executes the desired page navigation on left clicks.
- *
- * @param {HTMLElement} element - The element that dispatched the event.
- * @param {Event} event - The event.
- */
-
-Stay.prototype.switchPage = function(element, event)
-{
- var isRightClick = false;
-
- if(event.which)
- {
-  isRightClick = (event.which === 3);
- }
- else if(event.button)
- {
-  isRightClick = (event.button === 2);
- }
-
- if(!isRightClick)
- {
-  event.preventDefault();
-
-  if(!this.locked)
-  {
-   this.navigate(element);
-  }
- }
-};
-
-/**
  * Binds event listeners to all links and forms.
  * This method is combined with the cleanup and 
  * basically refreshes the navigation listeners.
@@ -336,25 +348,24 @@ Stay.prototype.switchPage = function(element, event)
 
 Stay.prototype.updateListeners = function()
 {
- var self = this,
+ var self = this, i, l,
   links = document.getElementsByTagName("a"),
-  forms = document.getElementsByTagName("form"),
-  i, l;
+  forms = document.getElementsByTagName("form");
 
  for(i = 0, l = this.navigationListeners.length; i < l; ++i)
  {
-  this.navigationListeners[i][0].removeEventListener(this.navigationListeners[i][1], self.clickHandler);
+  this.navigationListeners[i][0].removeEventListener(this.navigationListeners[i][1], self.switchPage);
  }
 
  for(i = 0, l = links.length; i < l; ++i)
  {
-  links[i].addEventListener("click", self.clickHandler);
+  links[i].addEventListener("click", self.switchPage);
   this.navigationListeners.push([links[i], "click"]);
  }
 
  for(i = 0, l = forms.length; i < l; ++i)
  {
-  forms[i].addEventListener("submit", self.clickHandler);
+  forms[i].addEventListener("submit", self.switchPage);
   this.navigationListeners.push([forms[i], "submit"]);
  }
 };
@@ -370,9 +381,24 @@ Stay.prototype.update = function(response)
 {
  this.updateView(response);
  this.updateListeners();
- if(response.url) { this.absolutePath = response.url.replace(this.infix, ""); }
- if(History) { History.pushState(null, response.title, this.absolutePath); }
- this.dispatchEvent(this.loadEvent);
+
+ document.title = response.title;
+
+ if(response.url)
+ {
+  this.absolutePath = response.url.replace(this.infix, "");
+ }
+
+ if(!this.backForward)
+ {
+  history.pushState({url: this.absolutePath}, response.title, this.absolutePath);
+ }
+ else
+ {
+  this.backForward = false;
+ }
+
+ this.dispatchEvent(this.eventLoad);
  this.locked = false;
 };
 
@@ -429,34 +455,6 @@ Stay.prototype.handleResponse = function(xhr)
   response.url = xhr.responseURL;
   this.update(response);
  }
-};
-
-/**
- * Support browser functionality "back" and "forward".
- * Depends on the boolean variable "locked" in order to
- * determine whether this navigation should be executed.
- *
- * @param {Event} event - The event, dispatched by window.
- */
-
-Stay.prototype.handleBackForward = function()
-{
- if(History && !this.locked) { this.navigate({href: History.getState().url}); }
-};
-
-/**
- * Acts when an xhr timeout occurs.
- */
-
-Stay.prototype.handleTimeout = function()
-{
- var response = {
-  title: "Timeout Error",
-  contents: Stay.Error.TIMEOUT
- };
-
- this.locked = true;
- this.update(response);
 };
 
 /**
