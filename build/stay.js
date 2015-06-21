@@ -119,7 +119,6 @@ EventDispatcher.prototype.dispatchEvent = function(event)
  }
 };
 
-// Expose module members.
 module.exports = EventDispatcher;
 
 },{}],2:[function(require,module,exports){

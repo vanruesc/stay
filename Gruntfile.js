@@ -31,6 +31,7 @@ module.exports = function(grunt)
         }
       }
     },
+
     uglify: {
       build: {
         options: {
