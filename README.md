@@ -13,6 +13,22 @@ Download the [minified library](http://vanruesc.github.io/stay/build/stay.min.js
 Then use the library as follows:
 
 ```javascript
+var stay = new Stay({
+ responseFields: ["myContent", "myNavigation", "myFooter"], /* Default is ["contents", "navigation"] */
+ infix: "/urlPatternForAsyncRequests", /* Default is "/json" */
+ timeoutPost: 0, /* Default is 60000ms, 0 means no timeout */
+ timeoutGet: 0 /* Default is 5000ms */
+});
+
+stay.addEventListener("navigate", function()
+{
+ alert("Page navigation has started.");
+});
+
+stay.addEventListener("load", function()
+{
+ alert("The requested page has been loaded.");
+});
 ```
 
 ## Contributing
