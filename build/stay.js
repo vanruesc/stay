@@ -1,5 +1,5 @@
 /**
- * stay build 21.06.2015
+ * stay build 26.06.2015
  *
  * Copyright 2015 Raoul van Rueschen
  *
@@ -222,12 +222,22 @@ function Stay(options)
 
  this.switchPage = function(event)
  {
-  var isRightClick = false;
+  var isLeftClick = false;
 
-  if(event.which) { isRightClick = (event.which === 3); }
-  else if(event.button) { isRightClick = (event.button === 2); }
+  if(event.buttons !== undefined)
+  {
+   isLeftClick = event.buttons === 1;
+  }
+  else if(event.which !== undefined)
+  {
+   isLeftClick = event.which === 1;
+  }
+  else if(event.button !== undefined)
+  {
+   isLeftClick = event.button === 1;
+  }
 
-  if(!isRightClick)
+  if(isLeftClick)
   {
    event.preventDefault();
    if(!self.locked) { self.navigate(this); }
