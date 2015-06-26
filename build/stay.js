@@ -160,7 +160,7 @@ function Stay(options)
 
  EventDispatcher.call(this);
 
- this.responseFields = ["contents", "navigation"];
+ this.responseFields = ["content", "navigation"];
  this.infix = "/json";
  this.timeoutPost = 60000;
  this.timeoutGet = 5000;

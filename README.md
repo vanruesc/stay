@@ -14,10 +14,14 @@ Then use the library as follows:
 
 ```javascript
 var stay = new Stay({
- responseFields: ["myContent", "myNavigation", "myFooter"], /* Default is ["contents", "navigation"] */
- infix: "/urlPatternForAsyncRequests", /* Default is "/json" */
- timeoutPost: 0, /* Default is 60000ms, 0 means no timeout */
- timeoutGet: 0 /* Default is 5000ms */
+ /* Default is ["content", "navigation"] */
+ responseFields: ["myContent", "myNavigation", "myFooter"],
+ /* Default is "/json" */
+ infix: "/urlPatternForAsyncRequests",
+ /* Default is 60000ms, 0 means no timeout */
+ timeoutPost: 0,
+ /* Default is 5000ms */
+ timeoutGet: 0
 });
 
 stay.addEventListener("navigate", function()
