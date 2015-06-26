@@ -99,36 +99,40 @@ function Stay(options)
  this.switchPage = function(event)
  {
   var preventable = (event.preventDefault !== undefined),
-   isLeftClick = false;
+   proceed = false;
 
-  if(!event.metaKey && !event.shiftKey && !event.altKey && !event.ctrlKey)
+  if(event.type === "submit")
+  {
+   proceed = true;
+  }
+  else if(!event.metaKey && !event.shiftKey && !event.altKey && !event.ctrlKey)
   {
    if(event.buttons !== undefined)
    {
-    isLeftClick = event.buttons === 0;
+    proceed = event.buttons === 0;
    }
    else if(event.which !== undefined)
    {
-    isLeftClick = event.which === 1;
+    proceed = event.which === 1;
    }
    else if(event.button !== undefined)
    {
-    isLeftClick = event.button === 0;
+    proceed = event.button === 0;
    }
    else if(event.keyCode !== undefined)
    {
-    isLeftClick = event.keyCode === 0;
+    proceed = event.keyCode === 0;
    }
   }
 
-  if(isLeftClick)
+  if(proceed)
   {
    if(preventable) { event.preventDefault(); }
    if(!self.locked) { self.navigate(this); }
   }
 
   // Only return false if it was a left click, but the default behaviour couldn't be prevented.
-  return !(isLeftClick && !preventable);
+  return !(proceed && !preventable);
  };
 
  this.updateListeners();
