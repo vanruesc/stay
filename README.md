@@ -55,7 +55,7 @@ Maintain the existing coding style. Add unit tests for any new or changed functi
 
 ## Release History
 _Version: 0.0.0 (28.06.2015)_
-> 
+> The module realizes a robust xhr-driven page navigation.
 
 ## License
 Copyright (c) 2015 Raoul van Rüschen  
