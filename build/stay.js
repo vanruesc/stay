@@ -1,5 +1,5 @@
 /**
- * stay build 26.06.2015
+ * stay build 28.06.2015
  *
  * Copyright 2015 Raoul van Rueschen
  *
@@ -21,8 +21,9 @@
 
 /**
  * Event Dispatcher.
- *
  * A base class for adding and removing event listeners and dispatching events.
+ *
+ * @constructor
  */
 
 function EventDispatcher()
@@ -124,7 +125,7 @@ module.exports = EventDispatcher;
 },{}],2:[function(require,module,exports){
 "use strict";
 
-var EventDispatcher = require("./eventdispatcher"),
+var EventDispatcher = require("@vanruesc/eventdispatcher"),
  index = "/";
 
 /**
@@ -151,6 +152,7 @@ function getUrlParts(url)
  * Each request can have a hard timeout to avoid endless
  * loading times that are often deemed to fail anyways.
  *
+ * @constructor
  * @param {Object} options - The options.
  */
 
@@ -497,5 +499,5 @@ Stay.Error = Object.freeze({
 // Reveal public members.
 module.exports = Stay;
 
-},{"./eventdispatcher":1}]},{},[2])(2)
+},{"@vanruesc/eventdispatcher":1}]},{},[2])(2)
 });

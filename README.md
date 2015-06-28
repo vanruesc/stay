@@ -1,6 +1,10 @@
-# Stay  [![Build Status](https://travis-ci.org/vanruesc/stay.svg?branch=master)](https://travis-ci.org/vanruesc/stay) [![GitHub version](https://badge.fury.io/gh/vanruesc%2Fstay.svg)](http://badge.fury.io/gh/vanruesc%2Fstay) [![Dependencies](https://david-dm.org/vanruesc/stay.svg?branch=master)](https://david-dm.org/vanruesc/stay)
+# Stay 
+[![Build Status](https://travis-ci.org/vanruesc/stay.svg?branch=master)](https://travis-ci.org/vanruesc/stay) 
+[![GitHub version](https://badge.fury.io/gh/vanruesc%2Fstay.svg)](http://badge.fury.io/gh/vanruesc%2Fstay) 
+[![npm version](https://badge.fury.io/js/%40vanruesc%2Fstay.svg)](http://badge.fury.io/js/%40vanruesc%2Fstay) 
+[![Dependencies](https://david-dm.org/vanruesc/stay.svg?branch=master)](https://david-dm.org/vanruesc/stay)
 
-Stay is a small but effective library for the creation of dynamic xhr-driven web applications.
+Stay is a small but effective JavaScript library for the creation of dynamic xhr-driven web applications.
 
 ## Usage
 
@@ -8,6 +12,17 @@ Download the [minified library](http://vanruesc.github.io/stay/build/stay.min.js
 
 ```html
 <script src="/js/stay.min.js"></script>
+```
+
+You can also install this module as a dependency of your project with [npm](https://www.npmjs.com).
+
+```sh
+$ npm install @vanruesc/stay
+``` 
+
+```javascript
+// Optional way of using it.
+var Stay = require("@vanruesc/stay");
 ```
 
 Then use the library as follows:
@@ -39,7 +54,8 @@ stay.addEventListener("load", function()
 Maintain the existing coding style. Add unit tests for any new or changed functionality. Lint and test your code.
 
 ## Release History
-No release yet.
+_Version: 0.0.0 (28.06.2015)_
+> 
 
 ## License
 Copyright (c) 2015 Raoul van Rüschen  

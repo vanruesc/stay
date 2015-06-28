@@ -6,6 +6,7 @@ module.exports = function(grunt)
   grunt.initConfig({
     license: require("fs").readFileSync("LICENSE").toString(),
     pkg: grunt.file.readJSON("package.json"),
+    name: "stay",
 
     jshint: {
       options: {
@@ -21,10 +22,10 @@ module.exports = function(grunt)
 
     browserify: {
       build: {
-        src: ["src/<%= pkg.name %>.js"],
-        dest: "build/<%= pkg.name %>.js",
+        src: ["src/<%= name %>.js"],
+        dest: "build/<%= name %>.js",
         options: {
-          banner: "/**\n * <%= pkg.name %> build <%= grunt.template.today(\"dd.mm.yyyy\") %>\n *\n<%= license %>\n */\n",
+          banner: "/**\n * <%= name %> build <%= grunt.template.today(\"dd.mm.yyyy\") %>\n *\n<%= license %>\n */\n",
           browserifyOptions: {
             standalone: "Stay"
           }
@@ -41,7 +42,7 @@ module.exports = function(grunt)
           }
         },
         files: {
-          "build/<%= pkg.name %>.min.js": ["<%= browserify.build.dest %>"]
+          "build/<%= name %>.min.js": ["<%= browserify.build.dest %>"]
         }
       }
     },

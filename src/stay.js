@@ -1,6 +1,6 @@
 "use strict";
 
-var EventDispatcher = require("./eventdispatcher"),
+var EventDispatcher = require("@vanruesc/eventdispatcher"),
  index = "/";
 
 /**
@@ -27,6 +27,7 @@ function getUrlParts(url)
  * Each request can have a hard timeout to avoid endless
  * loading times that are often deemed to fail anyways.
  *
+ * @constructor
  * @param {Object} options - The options.
  */
 
