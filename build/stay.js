@@ -1,5 +1,5 @@
 /**
- * stay build 28.06.2015
+ * stay build 30.06.2015
  *
  * Copyright 2015 Raoul van Rueschen
  *
@@ -125,7 +125,7 @@ module.exports = EventDispatcher;
 },{}],2:[function(require,module,exports){
 "use strict";
 
-var EventDispatcher = require("@vanruesc/eventdispatcher"),
+var EventDispatcher = require("@zayesh/eventdispatcher"),
  index = "/";
 
 /**
@@ -188,11 +188,15 @@ function Stay(options)
  this.xhr.addEventListener("readystatechange", function(event) { self.handleResponse(this, event); });
  this.xhr.addEventListener("timeout", function()
  {
-  self.locked = true;
-  self.update({
-   title: "Timeout Error",
-   contents: Stay.Error.TIMEOUT
-  });
+  var response = {};
+
+  if(self.responseFields.length)
+  {
+   response.title = "Timeout Error";
+   response[self.responseFields[0]] = Stay.Error.UNPARSABLE;
+   self.locked = true;
+   self.update(response);
+  }
  });
 
  /**
@@ -448,34 +452,15 @@ Stay.prototype.handleResponse = function(xhr)
  }
  else if(xhr.readyState === 4)
  {
-  if(xhr.status === 404)
+  try
   {
-   response.title = "Error " + xhr.status;
-   response[this.responseFields[0]] = Stay.Error.NOT_FOUND;
+   response = JSON.parse(xhr.responseText);
   }
-  else if(xhr.status === 0)
+  catch(e)
   {
-   response.title = "Error";
-   response[this.responseFields[0]] = Stay.Error.REFUSED;
-  }
-  else if(xhr.status !== 200)
-  {
-   response.title = "Error " + xhr.status;
-   response[this.responseFields[0]] = Stay.Error.FAILED;
-  }
-  else
-  {
-   try
-   {
-    // It will be assumed that the responseText contains the fields specified in responseFields.
-    response = JSON.parse(xhr.responseText);
-   }
-   catch(e)
-   {
-    response.title = "Parse Error";
-    response[this.responseFields[0]] = Stay.Error.UNPARSABLE;
-    console.log(e);
-   }
+   response.title = "Parse Error";
+   response[this.responseFields[0]] = Stay.Error.UNPARSABLE;
+   console.log(e);
   }
 
   response.url = xhr.responseURL;
@@ -488,16 +473,13 @@ Stay.prototype.handleResponse = function(xhr)
  */
 
 Stay.Error = Object.freeze({
- NOT_FOUND: "<h1>Error 404</h1><p>Not found.</p>",
- REFUSED: "<h1>Error</h1><p>The server doesn't respond.</p>",
- TIMEOUT: "<h1>Error</h1><p>The server didn't respond in time. Please try again later!</p>",
- FAILED: "<h1>Error</h1><p>The request failed.</p>",
- UNPARSABLE: "<h1>Parse Error</h1><p>The received content could not be parsed.</p>",
- NO_RESPONSE_FIELDS: "<h1>Internal Setup Error</h1><p>No response fields have been specified.</p>"
+ TIMEOUT: "<p>The server didn't respond in time. Please try again later!</p>",
+ UNPARSABLE: "<p>The received content could not be parsed.</p>",
+ NO_RESPONSE_FIELDS: "<p>No response fields have been specified.</p>"
 });
 
 // Reveal public members.
 module.exports = Stay;
 
-},{"@vanruesc/eventdispatcher":1}]},{},[2])(2)
+},{"@zayesh/eventdispatcher":1}]},{},[2])(2)
 });

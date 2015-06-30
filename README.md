@@ -1,12 +1,12 @@
 # Stay 
 [![Build Status](https://travis-ci.org/vanruesc/stay.svg?branch=master)](https://travis-ci.org/vanruesc/stay) 
 [![GitHub version](https://badge.fury.io/gh/vanruesc%2Fstay.svg)](http://badge.fury.io/gh/vanruesc%2Fstay) 
-[![npm version](https://badge.fury.io/js/%40vanruesc%2Fstay.svg)](http://badge.fury.io/js/%40vanruesc%2Fstay) 
+[![npm version](https://badge.fury.io/js/%40zayesh%2Fstay.svg)](http://badge.fury.io/js/%40zayesh%2Fstay) 
 [![Dependencies](https://david-dm.org/vanruesc/stay.svg?branch=master)](https://david-dm.org/vanruesc/stay)
 
 Stay is a small but effective JavaScript library for the creation of dynamic xhr-driven web applications.
 
-## Usage
+## Installation
 
 Download the [minified library](http://vanruesc.github.io/stay/build/stay.min.js) and include it in your project:
 
@@ -14,20 +14,18 @@ Download the [minified library](http://vanruesc.github.io/stay/build/stay.min.js
 <script src="/js/stay.min.js"></script>
 ```
 
-You can also install this module as a dependency of your project with [npm](https://www.npmjs.com).
+You can also install this module with [npm](https://www.npmjs.com).
 
 ```sh
-$ npm install @vanruesc/stay
+$ npm install @zayesh/stay
 ``` 
 
-```javascript
-// Optional way of using it.
-var Stay = require("@vanruesc/stay");
-```
-
-Then use the library as follows:
+## Usage
 
 ```javascript
+// Note: using require is not necessary with the browser bundle.
+var Stay = require("@zayesh/stay");
+
 var stay = new Stay({
  /* Default is ["content", "navigation"] */
  responseFields: ["myContent", "myNavigation", "myFooter"],

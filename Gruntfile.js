@@ -17,10 +17,31 @@ module.exports = function(grunt)
       },
       lib: {
         src: ["src/**/*.js"]
+      },
+      test: {
+        src: ["test/**/*.js"]
       }
     },
 
+    jasmine: {
+     src: [],
+     options: {
+      outfile: "test/_specrunner.html",
+      specs: "<%= browserify.test.dest %>"
+     }
+    },
+
     browserify: {
+      test: {
+        src: ["<%= jshint.test.src %>"],
+        dest: "test/specs.js",
+        options: {
+          browserifyOptions: {
+            debug: true,
+            paths: ["./node_modules", "./src"]
+          }
+        }
+      },
       build: {
         src: ["src/<%= name %>.js"],
         dest: "build/<%= name %>.js",
@@ -47,6 +68,10 @@ module.exports = function(grunt)
       }
     },
 
+    clean: {
+      test: ["<%= browserify.test.dest %>"]
+    },
+
     watch: {
       gruntfile: {
         files: "<%= jshint.gruntfile.src %>",
@@ -54,18 +79,25 @@ module.exports = function(grunt)
       },
       lib: {
         files: "<%= jshint.lib.src %>",
-        tasks: ["jshint:lib"]
+        tasks: ["jshint:lib", "browserify:test", "jasmine"]
+      },
+      test: {
+        files: "<%= jshint.test.src %>",
+        tasks: ["jshint:test", "browserify:test", "jasmine"]
       }
     }
   });
 
-  // These plugins provide necessary tasks.
+  // Plugins.
   grunt.loadNpmTasks("grunt-browserify");
+  grunt.loadNpmTasks("grunt-contrib-clean");
+  grunt.loadNpmTasks("grunt-contrib-jasmine");
   grunt.loadNpmTasks("grunt-contrib-jshint");
   grunt.loadNpmTasks("grunt-contrib-uglify");
   grunt.loadNpmTasks("grunt-contrib-watch");
 
-  // Default task.
-  grunt.registerTask("default", ["jshint", "browserify", "uglify"]);
-  grunt.registerTask("build", ["browserify", "uglify"]);
+  // Task definitions.
+  grunt.registerTask("default", ["clean:test", "jshint", "browserify:test", "jasmine", "browserify:build", "uglify", "clean:test"]);
+  grunt.registerTask("test", ["clean:test", "jshint", "browserify:test", "jasmine", "clean:test"]);
+  grunt.registerTask("build", ["browserify:build", "uglify"]);
 };
