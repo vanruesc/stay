@@ -6,6 +6,7 @@ module.exports = function(grunt)
   grunt.initConfig({
     license: require("fs").readFileSync("LICENSE").toString(),
     pkg: grunt.file.readJSON("package.json"),
+    name: "stay",
 
     jshint: {
       options: {
@@ -16,21 +17,43 @@ module.exports = function(grunt)
       },
       lib: {
         src: ["src/**/*.js"]
+      },
+      test: {
+        src: ["test/**/*.js"]
       }
     },
 
+    jasmine: {
+     src: [],
+     options: {
+      outfile: "test/_specrunner.html",
+      specs: "<%= browserify.test.dest %>"
+     }
+    },
+
     browserify: {
-      build: {
-        src: ["src/<%= pkg.name %>.js"],
-        dest: "build/<%= pkg.name %>.js",
+      test: {
+        src: ["<%= jshint.test.src %>"],
+        dest: "test/specs.js",
         options: {
-          banner: "/**\n * <%= pkg.name %> build <%= grunt.template.today(\"dd.mm.yyyy\") %>\n *\n<%= license %>\n */\n",
+          browserifyOptions: {
+            debug: true,
+            paths: ["./node_modules", "./src"]
+          }
+        }
+      },
+      build: {
+        src: ["src/<%= name %>.js"],
+        dest: "build/<%= name %>.js",
+        options: {
+          banner: "/**\n * <%= name %> build <%= grunt.template.today(\"dd.mm.yyyy\") %>\n *\n<%= license %>\n */\n",
           browserifyOptions: {
             standalone: "Stay"
           }
         }
       }
     },
+
     uglify: {
       build: {
         options: {
@@ -40,9 +63,13 @@ module.exports = function(grunt)
           }
         },
         files: {
-          "build/<%= pkg.name %>.min.js": ["<%= browserify.build.dest %>"]
+          "build/<%= name %>.min.js": ["<%= browserify.build.dest %>"]
         }
       }
+    },
+
+    clean: {
+      test: ["<%= browserify.test.dest %>"]
     },
 
     watch: {
@@ -52,18 +79,25 @@ module.exports = function(grunt)
       },
       lib: {
         files: "<%= jshint.lib.src %>",
-        tasks: ["jshint:lib"]
+        tasks: ["jshint:lib", "browserify:test", "jasmine"]
+      },
+      test: {
+        files: "<%= jshint.test.src %>",
+        tasks: ["jshint:test", "browserify:test", "jasmine"]
       }
     }
   });
 
-  // These plugins provide necessary tasks.
+  // Plugins.
   grunt.loadNpmTasks("grunt-browserify");
+  grunt.loadNpmTasks("grunt-contrib-clean");
+  grunt.loadNpmTasks("grunt-contrib-jasmine");
   grunt.loadNpmTasks("grunt-contrib-jshint");
   grunt.loadNpmTasks("grunt-contrib-uglify");
   grunt.loadNpmTasks("grunt-contrib-watch");
 
-  // Default task.
-  grunt.registerTask("default", ["jshint", "browserify", "uglify"]);
-  grunt.registerTask("build", ["browserify", "uglify"]);
+  // Task definitions.
+  grunt.registerTask("default", ["clean:test", "jshint", "browserify:test", "jasmine", "browserify:build", "uglify", "clean:test"]);
+  grunt.registerTask("test", ["clean:test", "jshint", "browserify:test", "jasmine", "clean:test"]);
+  grunt.registerTask("build", ["browserify:build", "uglify"]);
 };
