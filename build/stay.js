@@ -1,5 +1,5 @@
 /**
- * stay build 01.07.2015
+ * stay build 07.07.2015
  *
  * Copyright 2015 Raoul van Rueschen
  *
@@ -26,7 +26,7 @@
  * @constructor
  */
 
-function EventDispatcher()
+function EventTarget()
 {
  this._listeners = {};
 }
@@ -38,7 +38,7 @@ function EventDispatcher()
  * @param {function} listener - The event listener.
  */
 
-EventDispatcher.prototype.addEventListener = function(type, listener)
+EventTarget.prototype.addEventListener = function(type, listener)
 {
  var listeners = this._listeners;
 
@@ -60,7 +60,7 @@ EventDispatcher.prototype.addEventListener = function(type, listener)
  * @param {function} listener - The event listener.
  */
 
-EventDispatcher.prototype.hasEventListener = function(type, listener)
+EventTarget.prototype.hasEventListener = function(type, listener)
 {
  var listeners = this._listeners;
  return(listeners[type] !== undefined && listeners[type].indexOf(listener) !== -1);
@@ -73,7 +73,7 @@ EventDispatcher.prototype.hasEventListener = function(type, listener)
  * @param {function} listener - The event listener.
  */
 
-EventDispatcher.prototype.removeEventListener = function(type, listener)
+EventTarget.prototype.removeEventListener = function(type, listener)
 {
  var listeners = this._listeners,
   listenerArray = listeners[type],
@@ -96,7 +96,7 @@ EventDispatcher.prototype.removeEventListener = function(type, listener)
  * @param {Event} event - The event.
  */
 
-EventDispatcher.prototype.dispatchEvent = function(event)
+EventTarget.prototype.dispatchEvent = function(event)
 {
  var listeners = this._listeners,
   listenerArray = listeners[event.type],
@@ -120,12 +120,12 @@ EventDispatcher.prototype.dispatchEvent = function(event)
  }
 };
 
-module.exports = EventDispatcher;
+module.exports = EventTarget;
 
 },{}],2:[function(require,module,exports){
 "use strict";
 
-var EventDispatcher = require("@zayesh/eventdispatcher"),
+var EventTarget = require("@zayesh/eventtarget"),
  index = "/";
 
 /**
@@ -165,7 +165,7 @@ function Stay(options)
 {
  var self = this;
 
- EventDispatcher.call(this);
+ EventTarget.call(this);
 
  this.responseFields = ["content", "navigation"];
  this.infix = "/json";
@@ -277,7 +277,7 @@ function Stay(options)
  this._updateListeners();
 }
 
-Stay.prototype = Object.create(EventDispatcher.prototype);
+Stay.prototype = Object.create(EventTarget.prototype);
 Stay.prototype.constructor = Stay;
 
 /**
@@ -510,5 +510,5 @@ Stay.Error = Object.freeze({
 // Reveal public members.
 module.exports = Stay;
 
-},{"@zayesh/eventdispatcher":1}]},{},[2])(2)
+},{"@zayesh/eventtarget":1}]},{},[2])(2)
 });
