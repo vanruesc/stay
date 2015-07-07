@@ -2,7 +2,7 @@
   "name": "@zayesh/stay",
   "description": "Stay is a small but effective library for the creation of dynamic xhr-driven web applications.",
   "keywords": ["xhr", "xmlhttprequest", "ajax", "web", "application"],
-  "version": "0.0.0",
+  "version": "0.0.4",
   "homepage": "https://github.com/vanruesc/stay",
   "author": {
     "name": "Raoul van Rueschen",

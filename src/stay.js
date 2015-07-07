@@ -29,6 +29,11 @@ function getUrlParts(url)
  *
  * @constructor
  * @param {Object} options - The options.
+ * @param {array} options.responseField - The content container IDs. These have to be the same as the data fields in the server response.
+ * @param {string} options.infix - The special url pattern infix for the asynchronous content requests.
+ * @param {number} options.timeoutPost - Hard timeout for POST. 0 means no timeout. Default is 60000 (ms).
+ * @param {number} options.timeoutGet - Hard timeout for GET. 0 means no timeout. Default is 5000 (ms).
+ * @param {boolean} options.autoUpdate - Whether Stay should automatically update the page content. Defaults to true.
  */
 
 function Stay(options)
@@ -41,6 +46,7 @@ function Stay(options)
  this.infix = "/json";
  this.timeoutPost = 60000;
  this.timeoutGet = 5000;
+ this.autoUpdate = true;
 
  if(options !== undefined)
  {
@@ -48,6 +54,7 @@ function Stay(options)
   if(options.infix !== undefined) { this.infix = options.infix; }
   if(options.timeoutPost !== undefined) { this.timeoutPost = options.timeoutPost; }
   if(options.timeoutGet !== undefined) { this.timeoutGet = options.timeoutGet; }
+  if(options.autoUpdate !== undefined) { this.autoUpdate = options.autoUpdate; }
  }
 
  this.locked = false;
@@ -57,10 +64,11 @@ function Stay(options)
  this.intermediateContainer = null;
  this.navigationListeners = [];
  this.eventNavigate = {type: "navigate"};
+ this.eventContentReceived = {type: "contentreceived", response: null};
  this.eventLoad = {type: "load"};
 
  this.xhr = new XMLHttpRequest();
- this.xhr.addEventListener("readystatechange", function(event) { self.handleResponse(this, event); });
+ this.xhr.addEventListener("readystatechange", function(event) { self._handleResponse(this, event); });
  this.xhr.addEventListener("timeout", function()
  {
   var response = {};
@@ -68,7 +76,7 @@ function Stay(options)
   if(self.responseFields.length)
   {
    response.title = "Timeout Error";
-   response[self.responseFields[0]] = Stay.Error.UNPARSABLE;
+   response[self.responseFields[0]] = Stay.Error.TIMEOUT;
    self.locked = true;
    self.update(response);
   }
@@ -89,7 +97,7 @@ function Stay(options)
   if(!self.locked && event.state !== null)
   {
    self.backForward = true;
-   self.navigate({href: event.state.url});
+   self._navigate({href: event.state.url});
   }
  });
 
@@ -101,7 +109,7 @@ function Stay(options)
   * @param {Event} event - The event.
   */
 
- this.switchPage = function(event)
+ this._switchPage = function(event)
  {
   var preventable = (event.preventDefault !== undefined),
    proceed = false;
@@ -133,14 +141,15 @@ function Stay(options)
   if(proceed)
   {
    if(preventable) { event.preventDefault(); }
-   if(!self.locked) { self.navigate(this); }
+   if(!self.locked) { self._navigate(this); }
   }
 
   // Only return false if it was a left click, but the default behaviour couldn't be prevented.
   return !(proceed && !preventable);
  };
 
- this.updateListeners();
+ // Start the system by binding all handlers.
+ this._updateListeners();
 }
 
 Stay.prototype = Object.create(EventDispatcher.prototype);
@@ -152,15 +161,16 @@ Stay.prototype.constructor = Stay;
  * @param {HTMLElement} firingElement - The element on which the click event occured.
  */
 
-Stay.prototype.navigate = function(firingElement)
+Stay.prototype._navigate = function(firingElement)
 {
- var formData, parts, url;
+ var formData, parts, url, post = false;
 
  if(firingElement.action)
  {
   // Collect form data if the firing element is a form.
   this.absolutePath = firingElement.action;
   formData = new FormData(firingElement);
+  post = true;
  }
  else
  {
@@ -175,9 +185,10 @@ Stay.prototype.navigate = function(firingElement)
   this.absolutePath.slice(0, this.absolutePath.length - 1) + this.infix + parts.pathname :
   this.absolutePath.replace(parts.pathname, this.infix + parts.pathname);
 
+ this.eventNavigate.method = post ? "POST" : "GET";
  this.dispatchEvent(this.eventNavigate);
 
- if(formData)
+ if(post)
  {
   this.xhr.open("POST", url, true);
   this.xhr.timeout = this.timeoutPost;
@@ -197,9 +208,9 @@ Stay.prototype.navigate = function(firingElement)
  * @param {object} response - The response to display. Assumed to contain the data fields specified in "responseFields".
  */
 
-Stay.prototype.updateView = function(response)
+Stay.prototype._updateView = function(response)
 {
- var i, l, c, r;
+ var i, l, c, r, contentChanged = false;
 
  if(this.intermediateContainer === null)
  {
@@ -241,7 +252,14 @@ Stay.prototype.updateView = function(response)
    {
     c.appendChild(this.intermediateContainer.children[0]);
    }
+
+   contentChanged = true;
   }
+ }
+
+ if(contentChanged)
+ {
+  this._updateListeners();
  }
 };
 
@@ -251,7 +269,7 @@ Stay.prototype.updateView = function(response)
  * basically refreshes the navigation listeners.
  */
 
-Stay.prototype.updateListeners = function()
+Stay.prototype._updateListeners = function()
 {
  var self = this, i, l,
   links = document.getElementsByTagName("a"),
@@ -259,18 +277,18 @@ Stay.prototype.updateListeners = function()
 
  for(i = 0, l = this.navigationListeners.length; i < l; ++i)
  {
-  this.navigationListeners[i][0].removeEventListener(this.navigationListeners[i][1], self.switchPage);
+  this.navigationListeners[i][0].removeEventListener(this.navigationListeners[i][1], self._switchPage);
  }
 
  for(i = 0, l = links.length; i < l; ++i)
  {
-  links[i].addEventListener("click", self.switchPage);
+  links[i].addEventListener("click", self._switchPage);
   this.navigationListeners.push([links[i], "click"]);
  }
 
  for(i = 0, l = forms.length; i < l; ++i)
  {
-  forms[i].addEventListener("submit", self.switchPage);
+  forms[i].addEventListener("submit", self._switchPage);
   this.navigationListeners.push([forms[i], "submit"]);
  }
 };
@@ -279,14 +297,18 @@ Stay.prototype.updateListeners = function()
  * Updates the view, the navigation listeners and the history state.
  * Also emits an event to signilize that the page has been loaded.
  *
+ * The update function needs to be called after each navigation in 
+ * order to unlock the system. This happens by default, but that
+ * behaviour can be disabled. It is then the responsibility of the
+ * programmer to call update with the response data provided by the
+ * "contentreceived" event.
+ *
  * @param {object} response - The response to display.
  */
 
 Stay.prototype.update = function(response)
 {
- this.updateView(response);
- this.updateListeners();
-
+ this._updateView(response);
  document.title = response.title;
 
  if(response.url)
@@ -303,6 +325,7 @@ Stay.prototype.update = function(response)
   this.backForward = false;
  }
 
+ this.eventContentReceived.response = null;
  this.dispatchEvent(this.eventLoad);
  this.locked = false;
 };
@@ -316,7 +339,7 @@ Stay.prototype.update = function(response)
  * @param {Event} event - The event of the xhr.
  */
 
-Stay.prototype.handleResponse = function(xhr)
+Stay.prototype._handleResponse = function(xhr)
 {
  var response = {};
 
@@ -339,7 +362,13 @@ Stay.prototype.handleResponse = function(xhr)
   }
 
   response.url = xhr.responseURL;
-  this.update(response);
+  this.eventContentReceived.response = response;
+  this.dispatchEvent(this.eventContentReceived);
+
+  if(this.autoUpdate)
+  {
+   this.update(response);
+  }
  }
 };
 
