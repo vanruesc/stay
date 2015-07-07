@@ -1,6 +1,6 @@
 "use strict";
 
-var EventTarget = require("@zayesh/eventtarget"),
+var EventDispatcher = require("@zayesh/eventdispatcher"),
  index = "/";
 
 /**
@@ -40,7 +40,7 @@ function Stay(options)
 {
  var self = this;
 
- EventTarget.call(this);
+ EventDispatcher.call(this);
 
  this.responseFields = ["content", "navigation"];
  this.infix = "/json";
@@ -152,7 +152,7 @@ function Stay(options)
  this._updateListeners();
 }
 
-Stay.prototype = Object.create(EventTarget.prototype);
+Stay.prototype = Object.create(EventDispatcher.prototype);
 Stay.prototype.constructor = Stay;
 
 /**
