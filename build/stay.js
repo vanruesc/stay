@@ -233,21 +233,13 @@ function Stay(options)
   }
   else if(!event.metaKey && !event.shiftKey && !event.altKey && !event.ctrlKey)
   {
-   if(event.buttons !== undefined)
-   {
-    proceed = event.buttons === 0;
-   }
-   else if(event.which !== undefined)
+   if(event.which !== undefined)
    {
     proceed = event.which === 1;
    }
    else if(event.button !== undefined)
    {
     proceed = event.button === 0;
-   }
-   else if(event.keyCode !== undefined)
-   {
-    proceed = event.keyCode === 0;
    }
   }
 
