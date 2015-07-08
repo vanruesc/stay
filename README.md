@@ -30,7 +30,7 @@ var Stay = require("@zayesh/stay");
 
 var stay = new Stay({
  /* Default is ["main", "complementary", "contentinfo"] */
- responseFields: ["myContent", "myNavigation", "myFooter", ""],
+ responseFields: ["myContent", "myNavigation", "myFooter", "myWidget"],
  /* Default is "/json" */
  infix: "/urlPatternForAsyncRequests",
  /* Default is 60000ms, 0 means no timeout */
