@@ -4,7 +4,9 @@
 [![npm version](https://badge.fury.io/js/%40zayesh%2Fstay.svg)](http://badge.fury.io/js/%40zayesh%2Fstay) 
 [![Dependencies](https://david-dm.org/vanruesc/stay.svg?branch=master)](https://david-dm.org/vanruesc/stay)
 
-Stay is a small but effective JavaScript library for the creation of dynamic xhr-driven web applications.
+Stay is a small but effective module for the creation of dynamic xhr-driven web applications. 
+It expects the server to be able to send the page content as a JSON string in which the key names 
+correspond with the IDs of the target DOM containers.
 
 ## Installation
 
@@ -27,19 +29,33 @@ $ npm install @zayesh/stay
 var Stay = require("@zayesh/stay");
 
 var stay = new Stay({
- /* Default is ["content", "navigation"] */
- responseFields: ["myContent", "myNavigation", "myFooter"],
+ /* Default is ["main", "complementary", "contentinfo"] */
+ responseFields: ["myContent", "myNavigation", "myFooter", "myWidget"],
  /* Default is "/json" */
  infix: "/urlPatternForAsyncRequests",
  /* Default is 60000ms, 0 means no timeout */
  timeoutPost: 0,
  /* Default is 5000ms */
- timeoutGet: 0
+ timeoutGet: 0,
+ /* Default is true */
+ autoUpdate: false
 });
+
+// You can also add and remove response fields.
+stay.addResponseField("myContainer");
+stay.removeResponseField("contentinfo");
 
 stay.addEventListener("navigate", function()
 {
  alert("Page navigation has started.");
+});
+
+stay.addEventListener("receive", function(event)
+{
+ // If autoUpdate is set to false, the programmer can 
+ // decide when to update the page content.
+ // The response is the parsed JSON string from the server.
+ stay.update(event.response);
 });
 
 stay.addEventListener("load", function()

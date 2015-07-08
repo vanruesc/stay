@@ -42,7 +42,7 @@ function Stay(options)
 
  EventDispatcher.call(this);
 
- this.responseFields = ["content", "navigation"];
+ this.responseFields = ["main", "complementary", "contentinfo"];
  this.infix = "/json";
  this.timeoutPost = 60000;
  this.timeoutGet = 5000;
@@ -64,7 +64,7 @@ function Stay(options)
  this.intermediateContainer = null;
  this.navigationListeners = [];
  this.eventNavigate = {type: "navigate"};
- this.eventContentReceived = {type: "contentreceived", response: null};
+ this.eventReceive = {type: "receive", response: null};
  this.eventLoad = {type: "load"};
 
  this.xhr = new XMLHttpRequest();
@@ -120,21 +120,13 @@ function Stay(options)
   }
   else if(!event.metaKey && !event.shiftKey && !event.altKey && !event.ctrlKey)
   {
-   if(event.buttons !== undefined)
-   {
-    proceed = event.buttons === 0;
-   }
-   else if(event.which !== undefined)
+   if(event.which !== undefined)
    {
     proceed = event.which === 1;
    }
    else if(event.button !== undefined)
    {
     proceed = event.button === 0;
-   }
-   else if(event.keyCode !== undefined)
-   {
-    proceed = event.keyCode === 0;
    }
   }
 
@@ -154,6 +146,36 @@ function Stay(options)
 
 Stay.prototype = Object.create(EventDispatcher.prototype);
 Stay.prototype.constructor = Stay;
+
+/**
+ * Adds a response field.
+ *
+ * @param {string} field - The field to add.
+ */
+
+Stay.prototype.addResponseField = function(field)
+{
+ if(this.responseFields.indexOf(field) === -1)
+ {
+  this.responseFields.push(field);
+ }
+};
+
+/**
+ * Removes a response field.
+ *
+ * @param {string} field - The field to remove.
+ */
+
+Stay.prototype.removeResponseField = function(field)
+{
+ var i = this.responseFields.indexOf(field);
+
+ if(i !== -1)
+ {
+  this.responseFields.splice(i, 1);
+ }
+};
 
 /**
  * Navigates to the next target uri.
@@ -265,8 +287,8 @@ Stay.prototype._updateView = function(response)
 
 /**
  * Binds event listeners to all links and forms.
- * This method is combined with the cleanup and 
- * basically refreshes the navigation listeners.
+ * This method is combined with the cleanup and  basically refreshes 
+ * the navigation listeners.
  */
 
 Stay.prototype._updateListeners = function()
@@ -300,8 +322,8 @@ Stay.prototype._updateListeners = function()
  * The update function needs to be called after each navigation in 
  * order to unlock the system. This happens by default, but that
  * behaviour can be disabled. It is then the responsibility of the
- * programmer to call update with the response data provided by the
- * "contentreceived" event.
+ * programmer to call stay.update() with the response data provided 
+ * by the "receive" event.
  *
  * @param {object} response - The response to display.
  */
@@ -325,7 +347,7 @@ Stay.prototype.update = function(response)
   this.backForward = false;
  }
 
- this.eventContentReceived.response = null;
+ this.eventReceive.response = null;
  this.dispatchEvent(this.eventLoad);
  this.locked = false;
 };
@@ -362,8 +384,8 @@ Stay.prototype._handleResponse = function(xhr)
   }
 
   response.url = xhr.responseURL;
-  this.eventContentReceived.response = response;
-  this.dispatchEvent(this.eventContentReceived);
+  this.eventReceive.response = response;
+  this.dispatchEvent(this.eventReceive);
 
   if(this.autoUpdate)
   {
