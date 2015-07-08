@@ -42,7 +42,7 @@ function Stay(options)
 
  EventDispatcher.call(this);
 
- this.responseFields = ["content", "navigation"];
+ this.responseFields = ["main", "complementary", "contentinfo"];
  this.infix = "/json";
  this.timeoutPost = 60000;
  this.timeoutGet = 5000;
@@ -146,6 +146,36 @@ function Stay(options)
 
 Stay.prototype = Object.create(EventDispatcher.prototype);
 Stay.prototype.constructor = Stay;
+
+/**
+ * Adds a response field.
+ *
+ * @param {string} field - The field to add.
+ */
+
+Stay.prototype.addResponseField = function(field)
+{
+ if(this.responseFields.indexOf(field) === -1)
+ {
+  this.responseFields.push(field);
+ }
+};
+
+/**
+ * Removes a response field.
+ *
+ * @param {string} field - The field to remove.
+ */
+
+Stay.prototype.removeResponseField = function(field)
+{
+ var i = this.responseFields.indexOf(field);
+
+ if(i !== -1)
+ {
+  this.responseFields.splice(i, 1);
+ }
+};
 
 /**
  * Navigates to the next target uri.

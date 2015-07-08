@@ -29,8 +29,8 @@ $ npm install @zayesh/stay
 var Stay = require("@zayesh/stay");
 
 var stay = new Stay({
- /* Default is ["content", "navigation", "contentinfo"] */
- responseFields: ["myContent", "myNavigation"],
+ /* Default is ["main", "complementary", "contentinfo"] */
+ responseFields: ["myContent", "myNavigation", "myFooter", ""],
  /* Default is "/json" */
  infix: "/urlPatternForAsyncRequests",
  /* Default is 60000ms, 0 means no timeout */
@@ -41,6 +41,10 @@ var stay = new Stay({
  autoUpdate: false
 });
 
+// You can also add and remove response fields.
+stay.addResponseField("myContainer");
+stay.removeResponseField("contentinfo");
+
 stay.addEventListener("navigate", function()
 {
  alert("Page navigation has started.");
@@ -50,7 +54,7 @@ stay.addEventListener("receive", function(event)
 {
  // If autoUpdate is set to false, the programmer can 
  // decide when to update the page content.
- // The response is a parsed JSON string from the server.
+ // The response is the parsed JSON string from the server.
  stay.update(event.response);
 });
 
