@@ -43,7 +43,7 @@ var stay = new Stay({
 
 // You can also add and remove response fields.
 stay.addResponseField("myContainer");
-stay.removeResponseField("contentinfo");
+stay.removeResponseField("main");
 
 stay.addEventListener("navigate", function()
 {
