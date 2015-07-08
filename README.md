@@ -29,8 +29,8 @@ $ npm install @zayesh/stay
 var Stay = require("@zayesh/stay");
 
 var stay = new Stay({
- /* Default is ["main", "complementary", "contentinfo"] */
- responseFields: ["myContent", "myNavigation", "myFooter", "myWidget"],
+ /* Default is ["main", "navigation", "footer"] */
+ responseFields: ["myContent"],
  /* Default is "/json" */
  infix: "/urlPatternForAsyncRequests",
  /* Default is 60000ms, 0 means no timeout */
