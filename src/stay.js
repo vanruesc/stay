@@ -413,5 +413,4 @@ Stay.Error = Object.freeze({
  NO_RESPONSE_FIELDS: "<p>No response fields have been specified!</p>"
 });
 
-// Reveal public members.
 module.exports = Stay;
