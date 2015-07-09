@@ -193,7 +193,9 @@ Stay.prototype.removeResponseField = function(field)
 
 Stay.prototype._navigate = function(firingElement)
 {
- var formData, parts, url, post = false;
+ var formData, pathname, url, post = false;
+
+ this.locked = true;
 
  if(firingElement.action)
  {
@@ -207,19 +209,17 @@ Stay.prototype._navigate = function(firingElement)
   this.absolutePath = firingElement.href;
  }
 
- parts = getUrlParts(this.absolutePath);
- this.locked = true;
+ pathname = getUrlParts(this.absolutePath).pathname;
+ if(pathname.charAt(0) !== "/") { pathname = "/" + pathname; }
 
  // Special treatment for the index page.
- url = (parts.pathname === index) ?
-  this.absolutePath.slice(0, this.absolutePath.length - 1) + this.infix + parts.pathname :
-  this.absolutePath.replace(new RegExp(parts.pathname), this.infix + parts.pathname);
+ url = (pathname === index) ?
+  this.absolutePath.slice(0, this.absolutePath.length - 1) + this.infix + pathname :
+  this.absolutePath.replace(new RegExp(pathname), this.infix + pathname);
 
  this.eventNavigate.method = post ? "POST" : "GET";
  this.dispatchEvent(this.eventNavigate);
-
  this.xhr.open(this.eventNavigate.method, url, true);
- this.xhr.responseType = "json";
 
  if(post)
  {
@@ -381,22 +381,15 @@ Stay.prototype._handleResponse = function(xhr)
  }
  else if(xhr.readyState === 4)
  {
-  if(xhr.response !== undefined)
+  try
   {
-   response = xhr.response;
+   response = JSON.parse(xhr.responseText);
   }
-  else
+  catch(e)
   {
-   try
-   {
-    response = JSON.parse(xhr.responseText);
-   }
-   catch(e)
-   {
-    response.title = "Parse Error";
-    response[this.responseFields[0]] = Stay.Error.UNPARSABLE;
-    console.log(e);
-   }
+   response.title = "Parse Error";
+   response[this.responseFields[0]] = Stay.Error.UNPARSABLE;
+   console.log(e);
   }
 
   response.url = xhr.responseURL;
@@ -417,7 +410,7 @@ Stay.prototype._handleResponse = function(xhr)
 Stay.Error = Object.freeze({
  TIMEOUT: "<p>The server didn't respond in time. Please try again later!</p>",
  UNPARSABLE: "<p>The received content could not be parsed.</p>",
- NO_RESPONSE_FIELDS: "<p>No response fields have been specified.</p>"
+ NO_RESPONSE_FIELDS: "<p>No response fields have been specified!</p>"
 });
 
 // Reveal public members.
