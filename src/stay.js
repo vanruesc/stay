@@ -67,7 +67,15 @@ function Stay(options)
  this.eventReceive = {type: "receive", response: null};
  this.eventLoad = {type: "load"};
 
- this.xhr = new XMLHttpRequest();
+ if(XMLHttpRequest !== undefined)
+ {
+  this.xhr = new XMLHttpRequest();
+ }
+ else
+ {
+  throw new Error("XMLHttpRequest functionality not available.");
+ }
+
  this.xhr.addEventListener("readystatechange", function(event) { self._handleResponse(this, event); });
  this.xhr.addEventListener("timeout", function()
  {
@@ -205,20 +213,21 @@ Stay.prototype._navigate = function(firingElement)
  // Special treatment for the index page.
  url = (parts.pathname === index) ?
   this.absolutePath.slice(0, this.absolutePath.length - 1) + this.infix + parts.pathname :
-  this.absolutePath.replace(parts.pathname, this.infix + parts.pathname);
+  this.absolutePath.replace(new RegExp(parts.pathname), this.infix + parts.pathname);
 
  this.eventNavigate.method = post ? "POST" : "GET";
  this.dispatchEvent(this.eventNavigate);
 
+ this.xhr.open(this.eventNavigate.method, url, true);
+ this.xhr.responseType = "json";
+
  if(post)
  {
-  this.xhr.open("POST", url, true);
   this.xhr.timeout = this.timeoutPost;
   this.xhr.send(formData);
  }
  else
  {
-  this.xhr.open("GET", url, true);
   this.xhr.timeout = this.timeoutGet;
   this.xhr.send();
  }
@@ -372,15 +381,22 @@ Stay.prototype._handleResponse = function(xhr)
  }
  else if(xhr.readyState === 4)
  {
-  try
+  if(xhr.response !== undefined)
   {
-   response = JSON.parse(xhr.responseText);
+   response = xhr.response;
   }
-  catch(e)
+  else
   {
-   response.title = "Parse Error";
-   response[this.responseFields[0]] = Stay.Error.UNPARSABLE;
-   console.log(e);
+   try
+   {
+    response = JSON.parse(xhr.responseText);
+   }
+   catch(e)
+   {
+    response.title = "Parse Error";
+    response[this.responseFields[0]] = Stay.Error.UNPARSABLE;
+    console.log(e);
+   }
   }
 
   response.url = xhr.responseURL;
