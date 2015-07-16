@@ -29,11 +29,11 @@ function getUrlParts(url)
  *
  * @constructor
  * @param {Object} options - The options.
- * @param {array} options.responseField - The content container IDs. These have to be the same as the data fields in the server response.
- * @param {string} options.infix - The special url pattern infix for the asynchronous content requests.
- * @param {number} options.timeoutPost - Hard timeout for POST. 0 means no timeout. Default is 60000 (ms).
- * @param {number} options.timeoutGet - Hard timeout for GET. 0 means no timeout. Default is 5000 (ms).
- * @param {boolean} options.autoUpdate - Whether Stay should automatically update the page content. Defaults to true.
+ * @param {array} [options.responseFields] - The content container IDs. These have to be the same as the data fields in the server response.
+ * @param {string} [options.infix] - The special url pattern infix for the asynchronous content requests.
+ * @param {number} [options.timeoutPost] - Hard timeout for POST. 0 means no timeout. Default is 60000 (ms).
+ * @param {number} [options.timeoutGet] - Hard timeout for GET. 0 means no timeout. Default is 5000 (ms).
+ * @param {boolean} [options.autoUpdate] - Whether Stay should automatically update the page content. Defaults to true.
  */
 
 function Stay(options)
