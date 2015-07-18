@@ -1,19 +1,7 @@
 /**
- * stay build 08.07.2015
- *
- * Copyright 2015 Raoul van Rueschen
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- * http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
+ * stay v0.0.10 build 18.07.2015
+ * https://github.com/vanruesc/stay
+ * Copyright 2015 Raoul van Rueschen, Apache-2.0
  */
 
 (function(f){if(typeof exports==="object"&&typeof module!=="undefined"){module.exports=f()}else if(typeof define==="function"&&define.amd){define([],f)}else{var g;if(typeof window!=="undefined"){g=window}else if(typeof global!=="undefined"){g=global}else if(typeof self!=="undefined"){g=self}else{g=this}g.Stay = f()}})(function(){var define,module,exports;return (function e(t,n,r){function s(o,u){if(!n[o]){if(!t[o]){var a=typeof require=="function"&&require;if(!u&&a)return a(o,!0);if(i)return i(o,!0);var f=new Error("Cannot find module '"+o+"'");throw f.code="MODULE_NOT_FOUND",f}var l=n[o]={exports:{}};t[o][0].call(l.exports,function(e){var n=t[o][1][e];return s(n?n:e)},l,l.exports,e,t,n,r)}return n[o].exports}var i=typeof require=="function"&&require;for(var o=0;o<r.length;o++)s(r[o]);return s})({1:[function(require,module,exports){
@@ -142,11 +130,11 @@ function getUrlParts(url)
  *
  * @constructor
  * @param {Object} options - The options.
- * @param {array} options.responseField - The content container IDs. These have to be the same as the data fields in the server response.
- * @param {string} options.infix - The special url pattern infix for the asynchronous content requests.
- * @param {number} options.timeoutPost - Hard timeout for POST. 0 means no timeout. Default is 60000 (ms).
- * @param {number} options.timeoutGet - Hard timeout for GET. 0 means no timeout. Default is 5000 (ms).
- * @param {boolean} options.autoUpdate - Whether Stay should automatically update the page content. Defaults to true.
+ * @param {array} [options.responseFields] - The content container IDs. These have to be the same as the data fields in the server response.
+ * @param {string} [options.infix] - The special url pattern infix for the asynchronous content requests.
+ * @param {number} [options.timeoutPost] - Hard timeout for POST. 0 means no timeout. Default is 60000 (ms).
+ * @param {number} [options.timeoutGet] - Hard timeout for GET. 0 means no timeout. Default is 5000 (ms).
+ * @param {boolean} [options.autoUpdate] - Whether Stay should automatically update the page content. Defaults to true.
  */
 
 function Stay(options)
@@ -155,7 +143,7 @@ function Stay(options)
 
  EventDispatcher.call(this);
 
- this.responseFields = ["main", "complementary", "contentinfo"];
+ this.responseFields = ["main", "navigation", "footer"];
  this.infix = "/json";
  this.timeoutPost = 60000;
  this.timeoutGet = 5000;
@@ -180,7 +168,15 @@ function Stay(options)
  this.eventReceive = {type: "receive", response: null};
  this.eventLoad = {type: "load"};
 
- this.xhr = new XMLHttpRequest();
+ if(XMLHttpRequest !== undefined)
+ {
+  this.xhr = new XMLHttpRequest();
+ }
+ else
+ {
+  throw new Error("XMLHttpRequest functionality not available.");
+ }
+
  this.xhr.addEventListener("readystatechange", function(event) { self._handleResponse(this, event); });
  this.xhr.addEventListener("timeout", function()
  {
@@ -253,7 +249,13 @@ function Stay(options)
   return !(proceed && !preventable);
  };
 
- // Start the system by binding all handlers.
+ // Indirectly push the initial state.
+ this.update({
+  title: document.title,
+  url: window.location.href
+ });
+
+ // Start the system by binding all event handlers.
  this._updateListeners();
 }
 
@@ -298,7 +300,9 @@ Stay.prototype.removeResponseField = function(field)
 
 Stay.prototype._navigate = function(firingElement)
 {
- var formData, parts, url, post = false;
+ var formData, pathname, url, post = false;
+
+ this.locked = true;
 
  if(firingElement.action)
  {
@@ -312,26 +316,25 @@ Stay.prototype._navigate = function(firingElement)
   this.absolutePath = firingElement.href;
  }
 
- parts = getUrlParts(this.absolutePath);
- this.locked = true;
+ pathname = getUrlParts(this.absolutePath).pathname;
+ if(pathname.charAt(0) !== "/") { pathname = "/" + pathname; }
 
  // Special treatment for the index page.
- url = (parts.pathname === index) ?
-  this.absolutePath.slice(0, this.absolutePath.length - 1) + this.infix + parts.pathname :
-  this.absolutePath.replace(parts.pathname, this.infix + parts.pathname);
+ url = (pathname === index) ?
+  this.absolutePath.slice(0, this.absolutePath.length - 1) + this.infix + pathname :
+  this.absolutePath.replace(new RegExp(pathname), this.infix + pathname);
 
  this.eventNavigate.method = post ? "POST" : "GET";
  this.dispatchEvent(this.eventNavigate);
+ this.xhr.open(this.eventNavigate.method, url, true);
 
  if(post)
  {
-  this.xhr.open("POST", url, true);
   this.xhr.timeout = this.timeoutPost;
   this.xhr.send(formData);
  }
  else
  {
-  this.xhr.open("GET", url, true);
   this.xhr.timeout = this.timeoutGet;
   this.xhr.send();
  }
@@ -400,7 +403,7 @@ Stay.prototype._updateView = function(response)
 
 /**
  * Binds event listeners to all links and forms.
- * This method is combined with the cleanup and  basically refreshes 
+ * This method is combined with the cleanup and basically refreshes 
  * the navigation listeners.
  */
 
@@ -466,7 +469,7 @@ Stay.prototype.update = function(response)
 };
 
 /**
- * This function acts when a requested page has completely been received.
+ * This function acts when the xhr object changes its readyState.
  * The response will be a json object or an error page. Anything else will 
  * be treated as a json parse exception.
  *
@@ -514,10 +517,9 @@ Stay.prototype._handleResponse = function(xhr)
 Stay.Error = Object.freeze({
  TIMEOUT: "<p>The server didn't respond in time. Please try again later!</p>",
  UNPARSABLE: "<p>The received content could not be parsed.</p>",
- NO_RESPONSE_FIELDS: "<p>No response fields have been specified.</p>"
+ NO_RESPONSE_FIELDS: "<p>No response fields have been specified!</p>"
 });
 
-// Reveal public members.
 module.exports = Stay;
 
 },{"@zayesh/eventdispatcher":1}]},{},[2])(2)

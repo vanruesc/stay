@@ -29,11 +29,11 @@ function getUrlParts(url)
  *
  * @constructor
  * @param {Object} options - The options.
- * @param {array} options.responseField - The content container IDs. These have to be the same as the data fields in the server response.
- * @param {string} options.infix - The special url pattern infix for the asynchronous content requests.
- * @param {number} options.timeoutPost - Hard timeout for POST. 0 means no timeout. Default is 60000 (ms).
- * @param {number} options.timeoutGet - Hard timeout for GET. 0 means no timeout. Default is 5000 (ms).
- * @param {boolean} options.autoUpdate - Whether Stay should automatically update the page content. Defaults to true.
+ * @param {array} [options.responseFields] - The content container IDs. These have to be the same as the data fields in the server response.
+ * @param {string} [options.infix] - The special url pattern infix for the asynchronous content requests.
+ * @param {number} [options.timeoutPost] - Hard timeout for POST. 0 means no timeout. Default is 60000 (ms).
+ * @param {number} [options.timeoutGet] - Hard timeout for GET. 0 means no timeout. Default is 5000 (ms).
+ * @param {boolean} [options.autoUpdate] - Whether Stay should automatically update the page content. Defaults to true.
  */
 
 function Stay(options)
@@ -42,7 +42,7 @@ function Stay(options)
 
  EventDispatcher.call(this);
 
- this.responseFields = ["main", "complementary", "contentinfo"];
+ this.responseFields = ["main", "navigation", "footer"];
  this.infix = "/json";
  this.timeoutPost = 60000;
  this.timeoutGet = 5000;
@@ -67,7 +67,15 @@ function Stay(options)
  this.eventReceive = {type: "receive", response: null};
  this.eventLoad = {type: "load"};
 
- this.xhr = new XMLHttpRequest();
+ if(XMLHttpRequest !== undefined)
+ {
+  this.xhr = new XMLHttpRequest();
+ }
+ else
+ {
+  throw new Error("XMLHttpRequest functionality not available.");
+ }
+
  this.xhr.addEventListener("readystatechange", function(event) { self._handleResponse(this, event); });
  this.xhr.addEventListener("timeout", function()
  {
@@ -140,7 +148,13 @@ function Stay(options)
   return !(proceed && !preventable);
  };
 
- // Start the system by binding all handlers.
+ // Indirectly push the initial state.
+ this.update({
+  title: document.title,
+  url: window.location.href
+ });
+
+ // Start the system by binding all event handlers.
  this._updateListeners();
 }
 
@@ -185,7 +199,9 @@ Stay.prototype.removeResponseField = function(field)
 
 Stay.prototype._navigate = function(firingElement)
 {
- var formData, parts, url, post = false;
+ var formData, pathname, url, post = false;
+
+ this.locked = true;
 
  if(firingElement.action)
  {
@@ -199,26 +215,25 @@ Stay.prototype._navigate = function(firingElement)
   this.absolutePath = firingElement.href;
  }
 
- parts = getUrlParts(this.absolutePath);
- this.locked = true;
+ pathname = getUrlParts(this.absolutePath).pathname;
+ if(pathname.charAt(0) !== "/") { pathname = "/" + pathname; }
 
  // Special treatment for the index page.
- url = (parts.pathname === index) ?
-  this.absolutePath.slice(0, this.absolutePath.length - 1) + this.infix + parts.pathname :
-  this.absolutePath.replace(parts.pathname, this.infix + parts.pathname);
+ url = (pathname === index) ?
+  this.absolutePath.slice(0, this.absolutePath.length - 1) + this.infix + pathname :
+  this.absolutePath.replace(new RegExp(pathname), this.infix + pathname);
 
  this.eventNavigate.method = post ? "POST" : "GET";
  this.dispatchEvent(this.eventNavigate);
+ this.xhr.open(this.eventNavigate.method, url, true);
 
  if(post)
  {
-  this.xhr.open("POST", url, true);
   this.xhr.timeout = this.timeoutPost;
   this.xhr.send(formData);
  }
  else
  {
-  this.xhr.open("GET", url, true);
   this.xhr.timeout = this.timeoutGet;
   this.xhr.send();
  }
@@ -287,7 +302,7 @@ Stay.prototype._updateView = function(response)
 
 /**
  * Binds event listeners to all links and forms.
- * This method is combined with the cleanup and  basically refreshes 
+ * This method is combined with the cleanup and basically refreshes 
  * the navigation listeners.
  */
 
@@ -353,7 +368,7 @@ Stay.prototype.update = function(response)
 };
 
 /**
- * This function acts when a requested page has completely been received.
+ * This function acts when the xhr object changes its readyState.
  * The response will be a json object or an error page. Anything else will 
  * be treated as a json parse exception.
  *
@@ -401,8 +416,7 @@ Stay.prototype._handleResponse = function(xhr)
 Stay.Error = Object.freeze({
  TIMEOUT: "<p>The server didn't respond in time. Please try again later!</p>",
  UNPARSABLE: "<p>The received content could not be parsed.</p>",
- NO_RESPONSE_FIELDS: "<p>No response fields have been specified.</p>"
+ NO_RESPONSE_FIELDS: "<p>No response fields have been specified!</p>"
 });
 
-// Reveal public members.
 module.exports = Stay;

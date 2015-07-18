@@ -4,7 +4,6 @@ module.exports = function(grunt)
 {
   // Project configuration.
   grunt.initConfig({
-    license: require("fs").readFileSync("LICENSE").toString(),
     pkg: grunt.file.readJSON("package.json"),
     name: "stay",
 
@@ -46,7 +45,9 @@ module.exports = function(grunt)
         src: ["src/<%= name %>.js"],
         dest: "build/<%= name %>.js",
         options: {
-          banner: "/**\n * <%= name %> build <%= grunt.template.today(\"dd.mm.yyyy\") %>\n *\n<%= license %>\n */\n",
+          banner: "/**\n * <%= name %> v<%= pkg.version %> build <%= grunt.template.today(\"dd.mm.yyyy\") %>\n" +
+            " * <%= pkg.homepage %>\n" +
+            " * Copyright <%= grunt.template.today(\"yyyy\") %> <%= pkg.author.name %>, <%= pkg.license %>\n */\n",
           browserifyOptions: {
             standalone: "Stay"
           }
