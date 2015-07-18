@@ -148,7 +148,13 @@ function Stay(options)
   return !(proceed && !preventable);
  };
 
- // Start the system by binding all handlers.
+ // Indirectly push the initial state.
+ this.update({
+  title: document.title,
+  url: window.location.href
+ });
+
+ // Start the system by binding all event handlers.
  this._updateListeners();
 }
 
@@ -296,7 +302,7 @@ Stay.prototype._updateView = function(response)
 
 /**
  * Binds event listeners to all links and forms.
- * This method is combined with the cleanup and  basically refreshes 
+ * This method is combined with the cleanup and basically refreshes 
  * the navigation listeners.
  */
 
@@ -362,7 +368,7 @@ Stay.prototype.update = function(response)
 };
 
 /**
- * This function acts when a requested page has completely been received.
+ * This function acts when the xhr object changes its readyState.
  * The response will be a json object or an error page. Anything else will 
  * be treated as a json parse exception.
  *
