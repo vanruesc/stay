@@ -2,7 +2,7 @@
     "project": {
         "name": "@zayesh/stay",
         "description": "Stay is a small but effective library for the creation of dynamic xhr-driven web applications.",
-        "version": "0.0.11",
+        "version": "0.0.14",
         "url": "https://github.com/vanruesc/stay"
     },
     "files": {
@@ -29,7 +29,7 @@
             "namespaces": {},
             "tag": "module",
             "file": "src\\stay.js",
-            "line": 37,
+            "line": 23,
             "description": "Export as module."
         }
     },
@@ -44,7 +44,7 @@
             "extension_for": [],
             "module": "Stay",
             "file": "src\\stay.js",
-            "line": 37,
+            "line": 23,
             "description": "The Stay XHR System.\n\nUsed for requesting page content asynchronously\nwhile staying on the same page.\n\nEach request can have a hard timeout to avoid endless\nloading times that are often deemed to fail anyways.",
             "is_constructor": 1,
             "params": [
@@ -112,34 +112,13 @@
         },
         {
             "file": "src\\stay.js",
-            "line": 23,
-            "description": "Checks if the given url is external.",
-            "itemtype": "method",
-            "name": "isExternalUrl",
-            "access": "private",
-            "tagname": "",
-            "params": [
-                {
-                    "name": "url",
-                    "description": "- The URL to check.",
-                    "type": "String"
-                }
-            ],
-            "return": {
-                "description": "Whether the url is external.",
-                "type": "Boolean"
-            },
-            "class": "Stay"
-        },
-        {
-            "file": "src\\stay.js",
-            "line": 110,
+            "line": 96,
             "description": "Support browser functionality \"back\" and \"forward\".\nDepends on the boolean variable \"locked\" in order to\ndetermine whether this navigation should be executed.\nThe \"backForward\" flag tells the system that the next\nstate mustn't be pushed.",
             "class": "Stay"
         },
         {
             "file": "src\\stay.js",
-            "line": 127,
+            "line": 113,
             "description": "This function is bound to all links and forms\nand executes the desired page navigation on left clicks.",
             "itemtype": "method",
             "name": "_switchPage",
@@ -156,7 +135,7 @@
         },
         {
             "file": "src\\stay.js",
-            "line": 180,
+            "line": 166,
             "description": "Adds a response field.",
             "itemtype": "method",
             "name": "addResponseField",
@@ -171,7 +150,7 @@
         },
         {
             "file": "src\\stay.js",
-            "line": 195,
+            "line": 181,
             "description": "Removes a response field.",
             "itemtype": "method",
             "name": "removeResponseField",
@@ -186,7 +165,7 @@
         },
         {
             "file": "src\\stay.js",
-            "line": 212,
+            "line": 198,
             "description": "Navigates to the next target uri.",
             "itemtype": "method",
             "name": "_navigate",
@@ -203,7 +182,7 @@
         },
         {
             "file": "src\\stay.js",
-            "line": 262,
+            "line": 248,
             "description": "Updates the containers with the new data.",
             "itemtype": "method",
             "name": "_updateView",
@@ -220,7 +199,7 @@
         },
         {
             "file": "src\\stay.js",
-            "line": 325,
+            "line": 311,
             "description": "Binds event listeners to all links and forms.\nThis method is combined with the cleanup and basically refreshes \nthe navigation listeners.",
             "itemtype": "method",
             "name": "_updateListeners",
@@ -230,7 +209,7 @@
         },
         {
             "file": "src\\stay.js",
-            "line": 364,
+            "line": 350,
             "description": "Updates the view, the navigation listeners and the history state.\nAlso emits an event to signilize that the page has been loaded.\n\nThe update function needs to be called after each navigation in \norder to unlock the system. This happens by default, but that\nbehaviour can be disabled. It is then the responsibility of the\nprogrammer to call stay.update() with the response data provided \nby the \"receive\" event.",
             "itemtype": "method",
             "name": "update",
@@ -245,7 +224,7 @@
         },
         {
             "file": "src\\stay.js",
-            "line": 402,
+            "line": 388,
             "description": "This function acts when the xhr object changes its readyState.\nThe response will be a json object or an error page. Anything else will \nbe treated as a json parse exception.",
             "itemtype": "method",
             "name": "_handleResponse",
@@ -262,7 +241,7 @@
         },
         {
             "file": "src\\stay.js",
-            "line": 445,
+            "line": 431,
             "description": "Enumeration of Error Messages.",
             "itemtype": "property",
             "name": "Error",
@@ -276,7 +255,7 @@
     "warnings": [
         {
             "message": "Missing item type\nSupport browser functionality \"back\" and \"forward\".\nDepends on the boolean variable \"locked\" in order to\ndetermine whether this navigation should be executed.\nThe \"backForward\" flag tells the system that the next\nstate mustn't be pushed.",
-            "line": " src\\stay.js:110"
+            "line": " src\\stay.js:96"
         }
     ]
 }

@@ -1,5 +1,5 @@
 /**
- * stay v0.0.11 build 27.07.2015
+ * stay v0.0.14 build 28.07.2015
  * https://github.com/vanruesc/stay
  * Copyright 2015 Raoul van Rueschen, Apache-2.0
  */
@@ -102,7 +102,7 @@ module.exports = EventDispatcher;
 "use strict";
 
 var EventDispatcher = require("@zayesh/eventdispatcher"),
- domain = /https?:\/\/((?:[\w\d]+\.)+[\w\d]{2,})/i;
+ local = new RegExp("^" + location.protocol + "//" + location.host);
 
 /**
  * Use the native browser url parsing mechanism
@@ -119,20 +119,6 @@ function getUrlParts(url)
  var a = document.createElement("a");
  a.href = url;
  return a;
-}
-
-/**
- * Checks if the given url is external.
- *
- * @method isExternalUrl
- * @private
- * @param {string} url - The URL to check.
- * @return {boolean} Whether the url is external.
- */
-
-function isExternalUrl(url)
-{
- return domain.exec(location.href)[1] !== domain.exec(url)[1];
 }
 
 /**
@@ -445,7 +431,7 @@ Stay.prototype._updateListeners = function()
 
  for(i = 0, l = links.length; i < l; ++i)
  {
-  if(!isExternalUrl(links[i].host))
+  if(local.test(links[i].href))
   {
    links[i].addEventListener("click", self._switchPage);
    this.navigationListeners.push([links[i], "click"]);
@@ -454,7 +440,7 @@ Stay.prototype._updateListeners = function()
 
  for(i = 0, l = forms.length; i < l; ++i)
  {
-  if(!isExternalUrl(forms[i].action))
+  if(local.test(forms[i].action))
   {
    forms[i].addEventListener("submit", self._switchPage);
    this.navigationListeners.push([forms[i], "submit"]);
