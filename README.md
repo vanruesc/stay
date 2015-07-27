@@ -64,6 +64,9 @@ stay.addEventListener("load", function()
 });
 ```
 
+## Documentation
+[API](http://vanruesc.github.io/stay/docs)
+
 ## Contributing
 Maintain the existing coding style. Add unit tests for any new or changed functionality. Lint and test your code.
 

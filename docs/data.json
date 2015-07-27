@@ -1,0 +1,282 @@
+{
+    "project": {
+        "name": "@zayesh/stay",
+        "description": "Stay is a small but effective library for the creation of dynamic xhr-driven web applications.",
+        "version": "0.0.11",
+        "url": "https://github.com/vanruesc/stay"
+    },
+    "files": {
+        "src\\stay.js": {
+            "name": "src\\stay.js",
+            "modules": {
+                "Stay": 1
+            },
+            "classes": {
+                "Stay": 1
+            },
+            "fors": {},
+            "namespaces": {}
+        }
+    },
+    "modules": {
+        "Stay": {
+            "name": "Stay",
+            "submodules": {},
+            "classes": {
+                "Stay": 1
+            },
+            "fors": {},
+            "namespaces": {},
+            "tag": "module",
+            "file": "src\\stay.js",
+            "line": 37,
+            "description": "Export as module."
+        }
+    },
+    "classes": {
+        "Stay": {
+            "name": "Stay",
+            "shortname": "Stay",
+            "classitems": [],
+            "plugins": [],
+            "extensions": [],
+            "plugin_for": [],
+            "extension_for": [],
+            "module": "Stay",
+            "file": "src\\stay.js",
+            "line": 37,
+            "description": "The Stay XHR System.\n\nUsed for requesting page content asynchronously\nwhile staying on the same page.\n\nEach request can have a hard timeout to avoid endless\nloading times that are often deemed to fail anyways.",
+            "is_constructor": 1,
+            "params": [
+                {
+                    "name": "options",
+                    "description": "- The options.",
+                    "type": "Object",
+                    "props": [
+                        {
+                            "name": "responseFields",
+                            "description": "- The content container IDs. These have to be the same as the data fields in the server response.",
+                            "type": "Array",
+                            "optional": true
+                        },
+                        {
+                            "name": "infix",
+                            "description": "- The special url pattern infix for the asynchronous content requests.",
+                            "type": "String",
+                            "optional": true
+                        },
+                        {
+                            "name": "timeoutPost",
+                            "description": "- Hard timeout for POST. 0 means no timeout. Default is 60000 (ms).",
+                            "type": "Number",
+                            "optional": true
+                        },
+                        {
+                            "name": "timeoutGet",
+                            "description": "- Hard timeout for GET. 0 means no timeout. Default is 5000 (ms).",
+                            "type": "Number",
+                            "optional": true
+                        },
+                        {
+                            "name": "autoUpdate",
+                            "description": "- Whether Stay should automatically update the page content. Defaults to true.",
+                            "type": "Boolean",
+                            "optional": true
+                        }
+                    ]
+                }
+            ]
+        }
+    },
+    "classitems": [
+        {
+            "file": "src\\stay.js",
+            "line": 6,
+            "description": "Use the native browser url parsing mechanism\nto retrieve the parts of a url.",
+            "itemtype": "method",
+            "name": "getUrlParts",
+            "access": "private",
+            "tagname": "",
+            "params": [
+                {
+                    "name": "url",
+                    "description": "- The URL to parse.",
+                    "type": "String"
+                }
+            ],
+            "return": {
+                "description": "An object containing the url parts.",
+                "type": "HTMLAnchorElement"
+            },
+            "class": "Stay"
+        },
+        {
+            "file": "src\\stay.js",
+            "line": 23,
+            "description": "Checks if the given url is external.",
+            "itemtype": "method",
+            "name": "isExternalUrl",
+            "access": "private",
+            "tagname": "",
+            "params": [
+                {
+                    "name": "url",
+                    "description": "- The URL to check.",
+                    "type": "String"
+                }
+            ],
+            "return": {
+                "description": "Whether the url is external.",
+                "type": "Boolean"
+            },
+            "class": "Stay"
+        },
+        {
+            "file": "src\\stay.js",
+            "line": 110,
+            "description": "Support browser functionality \"back\" and \"forward\".\nDepends on the boolean variable \"locked\" in order to\ndetermine whether this navigation should be executed.\nThe \"backForward\" flag tells the system that the next\nstate mustn't be pushed.",
+            "class": "Stay"
+        },
+        {
+            "file": "src\\stay.js",
+            "line": 127,
+            "description": "This function is bound to all links and forms\nand executes the desired page navigation on left clicks.",
+            "itemtype": "method",
+            "name": "_switchPage",
+            "access": "private",
+            "tagname": "",
+            "params": [
+                {
+                    "name": "event",
+                    "description": "- The event.",
+                    "type": "Event"
+                }
+            ],
+            "class": "Stay"
+        },
+        {
+            "file": "src\\stay.js",
+            "line": 180,
+            "description": "Adds a response field.",
+            "itemtype": "method",
+            "name": "addResponseField",
+            "params": [
+                {
+                    "name": "field",
+                    "description": "- The field to add.",
+                    "type": "String"
+                }
+            ],
+            "class": "Stay"
+        },
+        {
+            "file": "src\\stay.js",
+            "line": 195,
+            "description": "Removes a response field.",
+            "itemtype": "method",
+            "name": "removeResponseField",
+            "params": [
+                {
+                    "name": "field",
+                    "description": "- The field to remove.",
+                    "type": "String"
+                }
+            ],
+            "class": "Stay"
+        },
+        {
+            "file": "src\\stay.js",
+            "line": 212,
+            "description": "Navigates to the next target uri.",
+            "itemtype": "method",
+            "name": "_navigate",
+            "access": "private",
+            "tagname": "",
+            "params": [
+                {
+                    "name": "firingElement",
+                    "description": "- The element on which the click event occured.",
+                    "type": "HTMLElement"
+                }
+            ],
+            "class": "Stay"
+        },
+        {
+            "file": "src\\stay.js",
+            "line": 262,
+            "description": "Updates the containers with the new data.",
+            "itemtype": "method",
+            "name": "_updateView",
+            "access": "private",
+            "tagname": "",
+            "params": [
+                {
+                    "name": "response",
+                    "description": "- The response to display. Assumed to contain the data fields specified in \"responseFields\".",
+                    "type": "Object"
+                }
+            ],
+            "class": "Stay"
+        },
+        {
+            "file": "src\\stay.js",
+            "line": 325,
+            "description": "Binds event listeners to all links and forms.\nThis method is combined with the cleanup and basically refreshes \nthe navigation listeners.",
+            "itemtype": "method",
+            "name": "_updateListeners",
+            "access": "private",
+            "tagname": "",
+            "class": "Stay"
+        },
+        {
+            "file": "src\\stay.js",
+            "line": 364,
+            "description": "Updates the view, the navigation listeners and the history state.\nAlso emits an event to signilize that the page has been loaded.\n\nThe update function needs to be called after each navigation in \norder to unlock the system. This happens by default, but that\nbehaviour can be disabled. It is then the responsibility of the\nprogrammer to call stay.update() with the response data provided \nby the \"receive\" event.",
+            "itemtype": "method",
+            "name": "update",
+            "params": [
+                {
+                    "name": "response",
+                    "description": "- The response to display.",
+                    "type": "Object"
+                }
+            ],
+            "class": "Stay"
+        },
+        {
+            "file": "src\\stay.js",
+            "line": 402,
+            "description": "This function acts when the xhr object changes its readyState.\nThe response will be a json object or an error page. Anything else will \nbe treated as a json parse exception.",
+            "itemtype": "method",
+            "name": "_handleResponse",
+            "access": "private",
+            "tagname": "",
+            "params": [
+                {
+                    "name": "xhr",
+                    "description": "- The xhr object that fired the event.",
+                    "type": "XMLHttpRequest"
+                }
+            ],
+            "class": "Stay"
+        },
+        {
+            "file": "src\\stay.js",
+            "line": 445,
+            "description": "Enumeration of Error Messages.",
+            "itemtype": "property",
+            "name": "Error",
+            "access": "private",
+            "tagname": "",
+            "static": 1,
+            "final": 1,
+            "class": "Stay"
+        }
+    ],
+    "warnings": [
+        {
+            "message": "Missing item type\nSupport browser functionality \"back\" and \"forward\".\nDepends on the boolean variable \"locked\" in order to\ndetermine whether this navigation should be executed.\nThe \"backForward\" flag tells the system that the next\nstate mustn't be pushed.",
+            "line": " src\\stay.js:110"
+        }
+    ]
+}
