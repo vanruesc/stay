@@ -1,12 +1,14 @@
 "use strict";
 
 var EventDispatcher = require("@zayesh/eventdispatcher"),
- index = "/";
+ domain = /https?:\/\/((?:[\w\d]+\.)+[\w\d]{2,})/i;
 
 /**
  * Use the native browser url parsing mechanism
  * to retrieve the parts of a url.
  *
+ * @method getUrlParts
+ * @private
  * @param {string} url - The URL to parse.
  * @return {HTMLAnchorElement} An object containing the url parts.
  */
@@ -19,6 +21,20 @@ function getUrlParts(url)
 }
 
 /**
+ * Checks if the given url is external.
+ *
+ * @method isExternalUrl
+ * @private
+ * @param {string} url - The URL to check.
+ * @return {boolean} Whether the url is external.
+ */
+
+function isExternalUrl(url)
+{
+ return domain.exec(location.href)[1] !== domain.exec(url)[1];
+}
+
+/**
  * The Stay XHR System.
  *
  * Used for requesting page content asynchronously
@@ -27,6 +43,7 @@ function getUrlParts(url)
  * Each request can have a hard timeout to avoid endless
  * loading times that are often deemed to fail anyways.
  *
+ * @class Stay
  * @constructor
  * @param {Object} options - The options.
  * @param {array} [options.responseFields] - The content container IDs. These have to be the same as the data fields in the server response.
@@ -96,8 +113,6 @@ function Stay(options)
   * determine whether this navigation should be executed.
   * The "backForward" flag tells the system that the next
   * state mustn't be pushed.
-  *
-  * @param {Event} event - The event, dispatched by window.
   */
 
  window.addEventListener("popstate", function(event)
@@ -113,7 +128,8 @@ function Stay(options)
   * This function is bound to all links and forms
   * and executes the desired page navigation on left clicks.
   *
-  * @param {HTMLElement} element - The element that dispatched the event.
+  * @method _switchPage
+  * @private
   * @param {Event} event - The event.
   */
 
@@ -164,6 +180,7 @@ Stay.prototype.constructor = Stay;
 /**
  * Adds a response field.
  *
+ * @method addResponseField
  * @param {string} field - The field to add.
  */
 
@@ -178,6 +195,7 @@ Stay.prototype.addResponseField = function(field)
 /**
  * Removes a response field.
  *
+ * @method removeResponseField
  * @param {string} field - The field to remove.
  */
 
@@ -194,6 +212,8 @@ Stay.prototype.removeResponseField = function(field)
 /**
  * Navigates to the next target uri.
  *
+ * @method _navigate
+ * @private
  * @param {HTMLElement} firingElement - The element on which the click event occured.
  */
 
@@ -219,7 +239,7 @@ Stay.prototype._navigate = function(firingElement)
  if(pathname.charAt(0) !== "/") { pathname = "/" + pathname; }
 
  // Special treatment for the index page.
- url = (pathname === index) ?
+ url = (pathname === "/") ?
   this.absolutePath.slice(0, this.absolutePath.length - 1) + this.infix + pathname :
   this.absolutePath.replace(new RegExp(pathname), this.infix + pathname);
 
@@ -242,6 +262,8 @@ Stay.prototype._navigate = function(firingElement)
 /**
  * Updates the containers with the new data.
  *
+ * @method _updateView
+ * @private
  * @param {object} response - The response to display. Assumed to contain the data fields specified in "responseFields".
  */
 
@@ -304,6 +326,9 @@ Stay.prototype._updateView = function(response)
  * Binds event listeners to all links and forms.
  * This method is combined with the cleanup and basically refreshes 
  * the navigation listeners.
+ *
+ * @method _updateListeners
+ * @private
  */
 
 Stay.prototype._updateListeners = function()
@@ -319,14 +344,20 @@ Stay.prototype._updateListeners = function()
 
  for(i = 0, l = links.length; i < l; ++i)
  {
-  links[i].addEventListener("click", self._switchPage);
-  this.navigationListeners.push([links[i], "click"]);
+  if(!isExternalUrl(links[i].host))
+  {
+   links[i].addEventListener("click", self._switchPage);
+   this.navigationListeners.push([links[i], "click"]);
+  }
  }
 
  for(i = 0, l = forms.length; i < l; ++i)
  {
-  forms[i].addEventListener("submit", self._switchPage);
-  this.navigationListeners.push([forms[i], "submit"]);
+  if(!isExternalUrl(forms[i].action))
+  {
+   forms[i].addEventListener("submit", self._switchPage);
+   this.navigationListeners.push([forms[i], "submit"]);
+  }
  }
 };
 
@@ -340,6 +371,7 @@ Stay.prototype._updateListeners = function()
  * programmer to call stay.update() with the response data provided 
  * by the "receive" event.
  *
+ * @method update
  * @param {object} response - The response to display.
  */
 
@@ -372,8 +404,9 @@ Stay.prototype.update = function(response)
  * The response will be a json object or an error page. Anything else will 
  * be treated as a json parse exception.
  *
+ * @method _handleResponse
+ * @private
  * @param {XMLHttpRequest} xhr - The xhr object that fired the event.
- * @param {Event} event - The event of the xhr.
  */
 
 Stay.prototype._handleResponse = function(xhr)
@@ -411,6 +444,11 @@ Stay.prototype._handleResponse = function(xhr)
 
 /**
  * Enumeration of Error Messages.
+ *
+ * @property Error
+ * @private
+ * @static
+ * @final
  */
 
 Stay.Error = Object.freeze({
@@ -418,5 +456,11 @@ Stay.Error = Object.freeze({
  UNPARSABLE: "<p>The received content could not be parsed.</p>",
  NO_RESPONSE_FIELDS: "<p>No response fields have been specified!</p>"
 });
+
+/**
+ * Export as module.
+ *
+ * @module Stay
+ */
 
 module.exports = Stay;
