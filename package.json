@@ -8,7 +8,7 @@
     "web",
     "application"
   ],
-  "version": "0.0.11",
+  "version": "0.0.14",
   "homepage": "https://github.com/vanruesc/stay",
   "author": {
     "name": "Raoul van Rueschen",
@@ -40,6 +40,6 @@
     "grunt-contrib-jshint": "0.11.x",
     "grunt-contrib-uglify": "0.9.x",
     "grunt-contrib-watch": "0.6.x",
-    "grunt-contrib-yuidoc": "^0.8.0"
+    "grunt-contrib-yuidoc": "0.8.x"
   }
 }
