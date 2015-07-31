@@ -1,5 +1,5 @@
 /**
- * stay v0.0.14 build 28.07.2015
+ * stay v0.0.14 build 31.07.2015
  * https://github.com/vanruesc/stay
  * Copyright 2015 Raoul van Rueschen, Apache-2.0
  */
@@ -101,8 +101,15 @@ module.exports = EventDispatcher;
 },{}],2:[function(require,module,exports){
 "use strict";
 
-var EventDispatcher = require("@zayesh/eventdispatcher"),
- local = new RegExp("^" + location.protocol + "//" + location.host);
+/**
+ * The Stay module is the class.
+ *
+ * @module Stay
+ */
+
+module.exports = Stay;
+
+var EventDispatcher = require("@zayesh/eventdispatcher");
 
 /**
  * Use the native browser url parsing mechanism
@@ -110,7 +117,7 @@ var EventDispatcher = require("@zayesh/eventdispatcher"),
  *
  * @method getUrlParts
  * @private
- * @param {string} url - The URL to parse.
+ * @param {String} url - The URL to parse.
  * @return {HTMLAnchorElement} An object containing the url parts.
  */
 
@@ -132,12 +139,14 @@ function getUrlParts(url)
  *
  * @class Stay
  * @constructor
- * @param {Object} options - The options.
- * @param {array} [options.responseFields] - The content container IDs. These have to be the same as the data fields in the server response.
- * @param {string} [options.infix] - The special url pattern infix for the asynchronous content requests.
- * @param {number} [options.timeoutPost] - Hard timeout for POST. 0 means no timeout. Default is 60000 (ms).
- * @param {number} [options.timeoutGet] - Hard timeout for GET. 0 means no timeout. Default is 5000 (ms).
- * @param {boolean} [options.autoUpdate] - Whether Stay should automatically update the page content. Defaults to true.
+ * @extends EventDispatcher
+ * @throws {Error} An error is thrown if asynchronous request are not supported.
+ * @param {Object} [options] - The options.
+ * @param {Array} [options.responseFields=["main", "navigation", "footer"]] - The content container IDs. These have to be the same as the data fields in the server response.
+ * @param {String} [options.infix="/json"] - The special url pattern infix for the asynchronous content requests.
+ * @param {Number} [options.timeoutPost=60000] - Hard timeout for POST. 0 means no timeout.
+ * @param {Number} [options.timeoutGet=5000] - Hard timeout for GET. 0 means no timeout.
+ * @param {Boolean} [options.autoUpdate=true] - Whether Stay should automatically update the page content.
  */
 
 function Stay(options)
@@ -146,12 +155,63 @@ function Stay(options)
 
  EventDispatcher.call(this);
 
+ /**
+  * Regular expression to check if a url is local.
+  *
+  * @property local
+  * @type RegExp
+  * @private
+  */
+
+ this.local = new RegExp("^" + location.protocol + "//" + location.host);
+
+ /**
+  * The response fields are the IDs of the DOM elements
+  * that need to be filled with the server response fields.
+  *
+  * @property responseFields
+  * @type Array
+  */
+
  this.responseFields = ["main", "navigation", "footer"];
+
+ /**
+  * The infix to use for the asynchronous requests.
+  *
+  * @property infix
+  * @type String
+  */
+
  this.infix = "/json";
+
+ /**
+  * POST timeout.
+  *
+  * @property timeoutPost
+  * @type Number
+  */
+
  this.timeoutPost = 60000;
+
+ /**
+  * GET timeout.
+  *
+  * @property timeoutGet
+  * @type Number
+  */
+
  this.timeoutGet = 5000;
+
+ /**
+  * Auto update flag.
+  *
+  * @property autoUpdate
+  * @type Boolean
+  */
+
  this.autoUpdate = true;
 
+ // Overwrite default values.
  if(options !== undefined)
  {
   if(options.responseFields !== undefined) { this.responseFields = options.responseFields; }
@@ -161,15 +221,101 @@ function Stay(options)
   if(options.autoUpdate !== undefined) { this.autoUpdate = options.autoUpdate; }
  }
 
+ /**
+  * Lock flag.
+  *
+  * @property locked
+  * @type Boolean
+  * @private
+  */
+
  this.locked = false;
+
+ /**
+  * Back-forward flag.
+  *
+  * @property backForward
+  * @type Boolean
+  * @private
+  */
+
  this.backForward = false;
+
+ /**
+  * The current absolute path.
+  *
+  * @property absolutePath
+  * @type String
+  * @private
+  */
+
  this.absolutePath = null;
+
+ /**
+  * A list of references to the response field DOM elements.
+  *
+  * @property containers
+  * @type Array
+  * @private
+  */
+
  this.containers = [];
+
+ /**
+  * A container which is filled by setting its innerHTML.
+  * The created DOM elements are taken from this container
+  * and appended to the response fields.
+  *
+  * @property intermediateContainer
+  * @type HTMLDivElement
+  * @private
+  */
+
  this.intermediateContainer = null;
+
+ /**
+  * A list of navigation listeners for unbinding.
+  *
+  * @property navigationListeners
+  * @type Array
+  * @private
+  */
+
  this.navigationListeners = [];
+
+ /**
+  * Signalises that a page navigation has started.
+  *
+  * @event navigate
+  */
+
  this.eventNavigate = {type: "navigate"};
- this.eventReceive = {type: "receive", response: null};
+
+ /**
+  * Returns the parsed server response.
+  *
+  * @event receive
+  * @param {Object} response - The server response, ready to be inserted into the respective response fields.
+  * @param {number} status - The status of the xhr response.
+  */
+
+ this.eventReceive = {type: "receive", response: null, status: 0};
+
+ /**
+  * Signalises that a page update has finished.
+  *
+  * @event load
+  */
+
  this.eventLoad = {type: "load"};
+
+ /**
+  * The internal XMLHttpRequest instance.
+  *
+  * @property xhr
+  * @type XMLHttpRequest
+  * @private
+  */
 
  if(XMLHttpRequest !== undefined)
  {
@@ -180,8 +326,24 @@ function Stay(options)
   throw new Error("XMLHttpRequest functionality not available.");
  }
 
- this.xhr.addEventListener("readystatechange", function(event) { self._handleResponse(this, event); });
- this.xhr.addEventListener("timeout", function()
+ /**
+  * Triggers the internal response handler.
+  *
+  * @method handleResponse
+  * @private
+  * @param {Object} event - The event.
+  */
+
+ this.xhr.addEventListener("readystatechange", function handleResponse(event) { self._handleResponse(this, event); });
+
+ /**
+  * Handles xhr timeouts, ignores the event object.
+  *
+  * @method handleTimeout
+  * @private
+  */
+
+ this.xhr.addEventListener("timeout", function handleTimeout()
  {
   var response = {};
 
@@ -200,9 +362,13 @@ function Stay(options)
   * determine whether this navigation should be executed.
   * The "backForward" flag tells the system that the next
   * state mustn't be pushed.
+  *
+  * @method handleBackForward
+  * @private
+  * @param {Object} event - The event.
   */
 
- window.addEventListener("popstate", function(event)
+ window.addEventListener("popstate", function handleBackForward(event)
  {
   if(!self.locked && event.state !== null)
   {
@@ -431,7 +597,7 @@ Stay.prototype._updateListeners = function()
 
  for(i = 0, l = links.length; i < l; ++i)
  {
-  if(local.test(links[i].href))
+  if(this.local.test(links[i].href))
   {
    links[i].addEventListener("click", self._switchPage);
    this.navigationListeners.push([links[i], "click"]);
@@ -440,7 +606,7 @@ Stay.prototype._updateListeners = function()
 
  for(i = 0, l = forms.length; i < l; ++i)
  {
-  if(local.test(forms[i].action))
+  if(this.local.test(forms[i].action))
   {
    forms[i].addEventListener("submit", self._switchPage);
    this.navigationListeners.push([forms[i], "submit"]);
@@ -489,7 +655,7 @@ Stay.prototype.update = function(response)
 /**
  * This function acts when the xhr object changes its readyState.
  * The response will be a json object or an error page. Anything else will 
- * be treated as a json parse exception.
+ * be caught as a json parse exception and announced in the first response field.
  *
  * @method _handleResponse
  * @private
@@ -515,10 +681,11 @@ Stay.prototype._handleResponse = function(xhr)
   {
    response.title = "Parse Error";
    response[this.responseFields[0]] = Stay.Error.UNPARSABLE;
-   console.log(e);
+   if(console !== undefined) { console.log(e); }
   }
 
   response.url = xhr.responseURL;
+  this.eventReceive.status = xhr.status;
   this.eventReceive.response = response;
   this.dispatchEvent(this.eventReceive);
 
@@ -533,6 +700,7 @@ Stay.prototype._handleResponse = function(xhr)
  * Enumeration of Error Messages.
  *
  * @property Error
+ * @type Object
  * @private
  * @static
  * @final
@@ -543,14 +711,6 @@ Stay.Error = Object.freeze({
  UNPARSABLE: "<p>The received content could not be parsed.</p>",
  NO_RESPONSE_FIELDS: "<p>No response fields have been specified!</p>"
 });
-
-/**
- * Export as module.
- *
- * @module Stay
- */
-
-module.exports = Stay;
 
 },{"@zayesh/eventdispatcher":1}]},{},[2])(2)
 });

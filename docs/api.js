@@ -10,7 +10,7 @@ YUI.add("yuidoc-meta", function(Y) {
         {
             "displayName": "Stay",
             "name": "Stay",
-            "description": "Export as module."
+            "description": "The Stay module is the class."
         }
     ]
 } };
