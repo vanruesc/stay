@@ -1,5 +1,5 @@
 /**
- * stay v0.0.14 build 31.07.2015
+ * stay v0.0.15 build 31.07.2015
  * https://github.com/vanruesc/stay
  * Copyright 2015 Raoul van Rueschen, Apache-2.0
  */
@@ -117,6 +117,7 @@ var EventDispatcher = require("@zayesh/eventdispatcher");
  *
  * @method getUrlParts
  * @private
+ * @static
  * @param {String} url - The URL to parse.
  * @return {HTMLAnchorElement} An object containing the url parts.
  */
@@ -140,7 +141,7 @@ function getUrlParts(url)
  * @class Stay
  * @constructor
  * @extends EventDispatcher
- * @throws {Error} An error is thrown if asynchronous request are not supported.
+ * @throws {Error} An error is thrown if asynchronous requests are not supported.
  * @param {Object} [options] - The options.
  * @param {Array} [options.responseFields=["main", "navigation", "footer"]] - The content container IDs. These have to be the same as the data fields in the server response.
  * @param {String} [options.infix="/json"] - The special url pattern infix for the asynchronous content requests.
