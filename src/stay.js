@@ -1,11 +1,5 @@
 "use strict";
 
-/**
- * The Stay module is the class.
- *
- * @module Stay
- */
-
 module.exports = Stay;
 
 var EventDispatcher = require("@zayesh/eventdispatcher");
