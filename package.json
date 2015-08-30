@@ -23,7 +23,7 @@
   "license": "Apache-2.0",
   "main": "src/stay",
   "scripts": {
-    "test": "grunt test"
+    "test": "grunt"
   },
   "engines": {
     "node": ">= 0.8.0"

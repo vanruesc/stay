@@ -307,7 +307,7 @@ function Stay(options)
    if(!self.locked) { self._navigate(this); }
   }
 
-  // Only return false if it was a left click, but the default behaviour couldn't be prevented.
+  // Only return false if it was a left click and the default behaviour couldn't be prevented.
   return !(proceed && !preventable);
  };
 

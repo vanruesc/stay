@@ -1,5 +1,5 @@
 /**
- * stay v0.0.15 build 01.08.2015
+ * stay v0.0.16 build 30.08.2015
  * https://github.com/vanruesc/stay
  * Copyright 2015 Raoul van Rueschen, Apache-2.0
  */
@@ -408,7 +408,7 @@ function Stay(options)
    if(!self.locked) { self._navigate(this); }
   }
 
-  // Only return false if it was a left click, but the default behaviour couldn't be prevented.
+  // Only return false if it was a left click and the default behaviour couldn't be prevented.
   return !(proceed && !preventable);
  };
 
