@@ -1,109 +1,169 @@
 /**
- * stay v0.0.15 build 01.08.2015
+ * stay v0.1.0 build Sep 16 2015
  * https://github.com/vanruesc/stay
  * Copyright 2015 Raoul van Rueschen, Apache-2.0
  */
-
 (function(f){if(typeof exports==="object"&&typeof module!=="undefined"){module.exports=f()}else if(typeof define==="function"&&define.amd){define([],f)}else{var g;if(typeof window!=="undefined"){g=window}else if(typeof global!=="undefined"){g=global}else if(typeof self!=="undefined"){g=self}else{g=this}g.Stay = f()}})(function(){var define,module,exports;return (function e(t,n,r){function s(o,u){if(!n[o]){if(!t[o]){var a=typeof require=="function"&&require;if(!u&&a)return a(o,!0);if(i)return i(o,!0);var f=new Error("Cannot find module '"+o+"'");throw f.code="MODULE_NOT_FOUND",f}var l=n[o]={exports:{}};t[o][0].call(l.exports,function(e){var n=t[o][1][e];return s(n?n:e)},l,l.exports,e,t,n,r)}return n[o].exports}var i=typeof require=="function"&&require;for(var o=0;o<r.length;o++)s(r[o]);return s})({1:[function(require,module,exports){
-"use strict";
-
 /**
- * Event Dispatcher.
- * A base class for adding and removing event listeners and dispatching events.
- *
- * @constructor
+ * eventdispatcher v0.1.5 build Sep 16 2015
+ * https://github.com/vanruesc/eventdispatcher
+ * Copyright 2015 Raoul van Rueschen, Zlib
  */
+(function (global, factory) {
+	typeof exports === 'object' && typeof module !== 'undefined' ? module.exports = factory() :
+	typeof define === 'function' && define.amd ? define(factory) :
+	global.EventDispatcher = factory();
+}(this, function () { 'use strict';
 
-function EventDispatcher()
-{
- this._listeners = {};
-}
+	/**
+	 * A base class for adding and removing event listeners and dispatching events.
+	 *
+	 * @class EventDispatcher
+	 * @constructor
+	 */
 
-/**
- * Adds an event listener.
- *
- * @param {string} type - The event type.
- * @param {function} listener - The event listener.
- */
+	function EventDispatcher() {
 
-EventDispatcher.prototype.addEventListener = function(type, listener)
-{
- if(this._listeners[type] === undefined)
- {
-  this._listeners[type] = [];
- }
+		/**
+		 * A map of listeners.
+		 *
+		 * @property _listeners
+		 * @type Object
+		 * @private
+		 */
 
- if(this._listeners[type].indexOf(listener) === -1)
- {
-  this._listeners[type].push(listener);
- }
-};
+		this._listeners = {};
 
-/**
- * Checks if the event listener exists.
- *
- * @param {string} type - The event type.
- * @param {function} listener - The event listener.
- */
+	}
 
-EventDispatcher.prototype.hasEventListener = function(type, listener)
-{
- return(this._listeners[type] !== undefined && this._listeners[type].indexOf(listener) !== -1);
-};
+	/**
+	 * Extends an object with the event dispatcher functionality.
+	 *
+	 * @method apply
+	 * @param {Object} object - The object.
+	 * @example
+	 *  EventDispatcher.prototype.apply(X.prototype);
+	 */
 
-/**
- * Removes an event listener.
- *
- * @param {string} type - The event type.
- * @param {function} listener - The event listener.
- */
+	EventDispatcher.prototype.apply = function(object) {
 
-EventDispatcher.prototype.removeEventListener = function(type, listener)
-{
- var i, listeners = this._listeners,
-  listenerArray = listeners[type];
+		object._listeners = {};
+		object.addEventListener = EventDispatcher.prototype.addEventListener;
+		object.hasEventListener = EventDispatcher.prototype.hasEventListener;
+		object.removeEventListener = EventDispatcher.prototype.removeEventListener;
+		object.dispatchEvent = EventDispatcher.prototype.dispatchEvent;
 
- if(listenerArray !== undefined)
- {
-  i = listenerArray.indexOf(listener);
+	};
 
-  if(i !== -1)
-  {
-   listenerArray.splice(i, 1);
-  }
- }
-};
+	/**
+	 * Adds an event listener.
+	 *
+	 * @method addEventListener
+	 * @param {String} type - The event type.
+	 * @param {Function} listener - The event listener.
+	 */
 
-/**
- * Dispatches an event to all respective listeners.
- *
- * @param {Object} event - The event.
- */
+	EventDispatcher.prototype.addEventListener = function(type, listener) {
 
-EventDispatcher.prototype.dispatchEvent = function(event)
-{
- var i, l, listeners = this._listeners,
-  listenerArray = listeners[event.type];
+		if(this._listeners[type] === undefined) {
 
- if(listenerArray !== undefined)
- {
-  event.target = this;
+			this._listeners[type] = [];
 
-  for(i = 0, l = listenerArray.length; i < l; ++i)
-  {
-   listenerArray[i].call(this, event);
-  }
- }
-};
+		}
 
-module.exports = EventDispatcher;
+		if(this._listeners[type].indexOf(listener) === -1) {
 
+			this._listeners[type].push(listener);
+
+		}
+
+	};
+
+	/**
+	 * Checks if the event listener exists.
+	 *
+	 * @method hasEventListener
+	 * @param {String} type - The event type.
+	 * @param {Function} listener - The event listener.
+	 */
+
+	EventDispatcher.prototype.hasEventListener = function(type, listener) {
+
+		return (this._listeners[type] !== undefined && this._listeners[type].indexOf(listener) !== -1);
+
+	};
+
+	/**
+	 * Removes an event listener.
+	 *
+	 * @method removeEventListener
+	 * @param {String} type - The event type.
+	 * @param {Function} listener - The event listener.
+	 */
+
+	EventDispatcher.prototype.removeEventListener = function(type, listener) {
+
+		var i, listenerArray;
+
+		listenerArray = this._listeners[type];
+
+		if(listenerArray !== undefined) {
+
+			i = listenerArray.indexOf(listener);
+
+			if(i !== -1) {
+
+				listenerArray.splice(i, 1);
+
+			}
+
+		}
+
+	};
+
+	/**
+	 * Dispatches an event to all respective listeners.
+	 *
+	 * @method dispatchEvent
+	 * @param {Object} event - The event.
+	 */
+
+	EventDispatcher.prototype.dispatchEvent = function(event) {
+
+		var i, l, listenerArray;
+
+		listenerArray = this._listeners[event.type];
+
+		if(listenerArray !== undefined) {
+
+			event.target = this;
+
+			for(i = 0, l = listenerArray.length; i < l; ++i) {
+
+				listenerArray[i].call(this, event);
+
+			}
+
+		}
+
+	};
+
+	return EventDispatcher;
+
+}));
 },{}],2:[function(require,module,exports){
 "use strict";
 
-module.exports = Stay;
+Object.defineProperty(exports, "__esModule", {
+	value: true
+});
+exports["default"] = Stay;
 
-var EventDispatcher = require("@zayesh/eventdispatcher");
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { "default": obj }; }
+
+var _zayeshEventdispatcher = require("@zayesh/eventdispatcher");
+
+var _zayeshEventdispatcher2 = _interopRequireDefault(_zayeshEventdispatcher);
 
 /**
  * Use the native browser url parsing mechanism
@@ -116,11 +176,11 @@ var EventDispatcher = require("@zayesh/eventdispatcher");
  * @return {HTMLAnchorElement} An object containing the url parts.
  */
 
-function getUrlParts(url)
-{
- var a = document.createElement("a");
- a.href = url;
- return a;
+function getUrlParts(url) {
+
+	var a = document.createElement("a");
+	a.href = url;
+	return a;
 }
 
 /**
@@ -144,13 +204,13 @@ function getUrlParts(url)
  * @param {Boolean} [options.autoUpdate=true] - Whether Stay should automatically update the page content.
  */
 
-function Stay(options)
-{
- var self = this;
+function Stay(options) {
 
- EventDispatcher.call(this);
+	var self = this;
 
- /**
+	_zayeshEventdispatcher2["default"].call(this);
+
+	/**
   * Regular expression to check if a url is local.
   *
   * @property local
@@ -158,9 +218,9 @@ function Stay(options)
   * @private
   */
 
- this.local = new RegExp("^" + location.protocol + "//" + location.host);
+	this.local = new RegExp("^" + location.protocol + "//" + location.host);
 
- /**
+	/**
   * The response fields are the IDs of the DOM elements
   * that need to be filled with the server response fields.
   *
@@ -168,55 +228,65 @@ function Stay(options)
   * @type Array
   */
 
- this.responseFields = ["main", "navigation", "footer"];
+	this.responseFields = ["main", "navigation", "footer"];
 
- /**
+	/**
   * The infix to use for the asynchronous requests.
   *
   * @property infix
   * @type String
   */
 
- this.infix = "/json";
+	this.infix = "/json";
 
- /**
+	/**
   * POST timeout.
   *
   * @property timeoutPost
   * @type Number
   */
 
- this.timeoutPost = 60000;
+	this.timeoutPost = 60000;
 
- /**
+	/**
   * GET timeout.
   *
   * @property timeoutGet
   * @type Number
   */
 
- this.timeoutGet = 5000;
+	this.timeoutGet = 5000;
 
- /**
+	/**
   * Auto update flag.
   *
   * @property autoUpdate
   * @type Boolean
   */
 
- this.autoUpdate = true;
+	this.autoUpdate = true;
 
- // Overwrite default values.
- if(options !== undefined)
- {
-  if(options.responseFields !== undefined) { this.responseFields = options.responseFields; }
-  if(options.infix !== undefined) { this.infix = options.infix; }
-  if(options.timeoutPost !== undefined) { this.timeoutPost = options.timeoutPost; }
-  if(options.timeoutGet !== undefined) { this.timeoutGet = options.timeoutGet; }
-  if(options.autoUpdate !== undefined) { this.autoUpdate = options.autoUpdate; }
- }
+	// Overwrite default values.
+	if (options !== undefined) {
 
- /**
+		if (options.responseFields !== undefined) {
+			this.responseFields = options.responseFields;
+		}
+		if (options.infix !== undefined) {
+			this.infix = options.infix;
+		}
+		if (options.timeoutPost !== undefined) {
+			this.timeoutPost = options.timeoutPost;
+		}
+		if (options.timeoutGet !== undefined) {
+			this.timeoutGet = options.timeoutGet;
+		}
+		if (options.autoUpdate !== undefined) {
+			this.autoUpdate = options.autoUpdate;
+		}
+	}
+
+	/**
   * Lock flag.
   *
   * @property locked
@@ -224,9 +294,9 @@ function Stay(options)
   * @private
   */
 
- this.locked = false;
+	this.locked = false;
 
- /**
+	/**
   * Back-forward flag.
   *
   * @property backForward
@@ -234,9 +304,9 @@ function Stay(options)
   * @private
   */
 
- this.backForward = false;
+	this.backForward = false;
 
- /**
+	/**
   * The current absolute path.
   *
   * @property absolutePath
@@ -244,9 +314,9 @@ function Stay(options)
   * @private
   */
 
- this.absolutePath = null;
+	this.absolutePath = null;
 
- /**
+	/**
   * A list of references to the response field DOM elements.
   *
   * @property containers
@@ -254,9 +324,9 @@ function Stay(options)
   * @private
   */
 
- this.containers = [];
+	this.containers = [];
 
- /**
+	/**
   * A container which is filled by setting its innerHTML.
   * The created DOM elements are taken from this container
   * and appended to the response fields.
@@ -266,9 +336,9 @@ function Stay(options)
   * @private
   */
 
- this.intermediateContainer = null;
+	this.intermediateContainer = null;
 
- /**
+	/**
   * A list of navigation listeners for unbinding.
   *
   * @property navigationListeners
@@ -276,17 +346,17 @@ function Stay(options)
   * @private
   */
 
- this.navigationListeners = [];
+	this.navigationListeners = [];
 
- /**
+	/**
   * Signalises that a page navigation has started.
   *
   * @event navigate
   */
 
- this.eventNavigate = {type: "navigate"};
+	this.eventNavigate = { type: "navigate" };
 
- /**
+	/**
   * Returns the parsed server response.
   *
   * @event receive
@@ -294,17 +364,17 @@ function Stay(options)
   * @param {number} status - The status of the xhr response.
   */
 
- this.eventReceive = {type: "receive", response: null, status: 0};
+	this.eventReceive = { type: "receive", response: null, status: 0 };
 
- /**
+	/**
   * Signalises that a page update has finished.
   *
   * @event load
   */
 
- this.eventLoad = {type: "load"};
+	this.eventLoad = { type: "load" };
 
- /**
+	/**
   * The internal XMLHttpRequest instance.
   *
   * @property xhr
@@ -312,16 +382,15 @@ function Stay(options)
   * @private
   */
 
- if(XMLHttpRequest !== undefined)
- {
-  this.xhr = new XMLHttpRequest();
- }
- else
- {
-  throw new Error("XMLHttpRequest functionality not available.");
- }
+	if (XMLHttpRequest !== undefined) {
 
- /**
+		this.xhr = new XMLHttpRequest();
+	} else {
+
+		throw new Error("XMLHttpRequest functionality not available.");
+	}
+
+	/**
   * Triggers the internal response handler.
   *
   * @method handleResponse
@@ -329,29 +398,31 @@ function Stay(options)
   * @param {Object} event - The event.
   */
 
- this.xhr.addEventListener("readystatechange", function handleResponse(event) { self._handleResponse(this, event); });
+	this.xhr.addEventListener("readystatechange", function handleResponse(event) {
+		self._handleResponse(this, event);
+	});
 
- /**
+	/**
   * Handles xhr timeouts, ignores the event object.
   *
   * @method handleTimeout
   * @private
   */
 
- this.xhr.addEventListener("timeout", function handleTimeout()
- {
-  var response = {};
+	this.xhr.addEventListener("timeout", function handleTimeout() {
 
-  if(self.responseFields.length)
-  {
-   response.title = "Timeout Error";
-   response[self.responseFields[0]] = Stay.Error.TIMEOUT;
-   self.locked = true;
-   self.update(response);
-  }
- });
+		var response = {};
 
- /**
+		if (self.responseFields.length) {
+
+			response.title = "Timeout Error";
+			response[self.responseFields[0]] = Stay.Error.TIMEOUT;
+			self.locked = true;
+			self.update(response);
+		}
+	});
+
+	/**
   * Support browser functionality "back" and "forward".
   * Depends on the boolean variable "locked" in order to
   * determine whether this navigation should be executed.
@@ -363,16 +434,16 @@ function Stay(options)
   * @param {Object} event - The event.
   */
 
- window.addEventListener("popstate", function handleBackForward(event)
- {
-  if(!self.locked && event.state !== null)
-  {
-   self.backForward = true;
-   self._navigate({href: event.state.url});
-  }
- });
+	window.addEventListener("popstate", function handleBackForward(event) {
 
- /**
+		if (!self.locked && event.state !== null) {
+
+			self.backForward = true;
+			self._navigate({ href: event.state.url });
+		}
+	});
+
+	/**
   * This function is bound to all links and forms
   * and executes the desired page navigation on left clicks.
   *
@@ -381,48 +452,50 @@ function Stay(options)
   * @param {Event} event - The event.
   */
 
- this._switchPage = function(event)
- {
-  var preventable = (event.preventDefault !== undefined),
-   proceed = false;
+	this._switchPage = function (event) {
 
-  if(event.type === "submit")
-  {
-   proceed = true;
-  }
-  else if(!event.metaKey && !event.shiftKey && !event.altKey && !event.ctrlKey)
-  {
-   if(event.which !== undefined)
-   {
-    proceed = event.which === 1;
-   }
-   else if(event.button !== undefined)
-   {
-    proceed = event.button === 0;
-   }
-  }
+		var preventable = event.preventDefault !== undefined,
+		    proceed = false;
 
-  if(proceed)
-  {
-   if(preventable) { event.preventDefault(); }
-   if(!self.locked) { self._navigate(this); }
-  }
+		if (event.type === "submit") {
 
-  // Only return false if it was a left click, but the default behaviour couldn't be prevented.
-  return !(proceed && !preventable);
- };
+			proceed = true;
+		} else if (!event.metaKey && !event.shiftKey && !event.altKey && !event.ctrlKey) {
 
- // Indirectly push the initial state.
- this.update({
-  title: document.title,
-  url: window.location.href
- });
+			if (event.which !== undefined) {
 
- // Start the system by binding all event handlers.
- this._updateListeners();
+				proceed = event.which === 1;
+			} else if (event.button !== undefined) {
+
+				proceed = event.button === 0;
+			}
+		}
+
+		if (proceed) {
+
+			if (preventable) {
+				event.preventDefault();
+			}
+			if (!self.locked) {
+				self._navigate(this);
+			}
+		}
+
+		// Only return false if it was a left click and the default behaviour couldn't be prevented.
+		return !(proceed && !preventable);
+	};
+
+	// Indirectly push the initial state.
+	this.update({
+		title: document.title,
+		url: window.location.href
+	});
+
+	// Start the system by binding all event handlers.
+	this._updateListeners();
 }
 
-Stay.prototype = Object.create(EventDispatcher.prototype);
+Stay.prototype = Object.create(_zayeshEventdispatcher2["default"].prototype);
 Stay.prototype.constructor = Stay;
 
 /**
@@ -432,12 +505,12 @@ Stay.prototype.constructor = Stay;
  * @param {string} field - The field to add.
  */
 
-Stay.prototype.addResponseField = function(field)
-{
- if(this.responseFields.indexOf(field) === -1)
- {
-  this.responseFields.push(field);
- }
+Stay.prototype.addResponseField = function (field) {
+
+	if (this.responseFields.indexOf(field) === -1) {
+
+		this.responseFields.push(field);
+	}
 };
 
 /**
@@ -447,14 +520,14 @@ Stay.prototype.addResponseField = function(field)
  * @param {string} field - The field to remove.
  */
 
-Stay.prototype.removeResponseField = function(field)
-{
- var i = this.responseFields.indexOf(field);
+Stay.prototype.removeResponseField = function (field) {
 
- if(i !== -1)
- {
-  this.responseFields.splice(i, 1);
- }
+	var i = this.responseFields.indexOf(field);
+
+	if (i !== -1) {
+
+		this.responseFields.splice(i, 1);
+	}
 };
 
 /**
@@ -465,46 +538,47 @@ Stay.prototype.removeResponseField = function(field)
  * @param {HTMLElement} firingElement - The element on which the click event occured.
  */
 
-Stay.prototype._navigate = function(firingElement)
-{
- var formData, pathname, url, post = false;
+Stay.prototype._navigate = function (firingElement) {
 
- this.locked = true;
+	var formData,
+	    pathname,
+	    url,
+	    post = false;
 
- if(firingElement.action)
- {
-  // Collect form data if the firing element is a form.
-  this.absolutePath = firingElement.action;
-  formData = new FormData(firingElement);
-  post = true;
- }
- else
- {
-  this.absolutePath = firingElement.href;
- }
+	this.locked = true;
 
- pathname = getUrlParts(this.absolutePath).pathname;
- if(pathname.charAt(0) !== "/") { pathname = "/" + pathname; }
+	if (firingElement.action) {
 
- // Special treatment for the index page.
- url = (pathname === "/") ?
-  this.absolutePath.slice(0, this.absolutePath.length - 1) + this.infix + pathname :
-  this.absolutePath.replace(new RegExp(pathname), this.infix + pathname);
+		// Collect form data if the firing element is a form.
+		this.absolutePath = firingElement.action;
+		formData = new FormData(firingElement);
+		post = true;
+	} else {
 
- this.eventNavigate.method = post ? "POST" : "GET";
- this.dispatchEvent(this.eventNavigate);
- this.xhr.open(this.eventNavigate.method, url, true);
+		this.absolutePath = firingElement.href;
+	}
 
- if(post)
- {
-  this.xhr.timeout = this.timeoutPost;
-  this.xhr.send(formData);
- }
- else
- {
-  this.xhr.timeout = this.timeoutGet;
-  this.xhr.send();
- }
+	pathname = getUrlParts(this.absolutePath).pathname;
+	if (pathname.charAt(0) !== "/") {
+		pathname = "/" + pathname;
+	}
+
+	// Special treatment for the index page.
+	url = pathname === "/" ? this.absolutePath.slice(0, this.absolutePath.length - 1) + this.infix + pathname : this.absolutePath.replace(new RegExp(pathname), this.infix + pathname);
+
+	this.eventNavigate.method = post ? "POST" : "GET";
+	this.dispatchEvent(this.eventNavigate);
+	this.xhr.open(this.eventNavigate.method, url, true);
+
+	if (post) {
+
+		this.xhr.timeout = this.timeoutPost;
+		this.xhr.send(formData);
+	} else {
+
+		this.xhr.timeout = this.timeoutGet;
+		this.xhr.send();
+	}
 };
 
 /**
@@ -515,59 +589,62 @@ Stay.prototype._navigate = function(firingElement)
  * @param {object} response - The response to display. Assumed to contain the data fields specified in "responseFields".
  */
 
-Stay.prototype._updateView = function(response)
-{
- var i, l, c, r, contentChanged = false;
+Stay.prototype._updateView = function (response) {
 
- if(this.intermediateContainer === null)
- {
-  this.intermediateContainer = document.createElement("div");
- }
- else
- {
-  // Clear the intermediate container.
-  while(this.intermediateContainer.children.length > 0)
-  {
-   this.intermediateContainer.removeChild(this.intermediateContainer.children[0]);
-  }
- }
+	var i,
+	    l,
+	    c,
+	    r,
+	    contentChanged = false;
 
- for(i = 0, l = this.responseFields.length; i < l; ++i)
- {
-  c = this.containers[this.responseFields[i]];
+	if (this.intermediateContainer === null) {
 
-  if(!c)
-  {
-   // No reference exists yet. Find the element and remember it.
-   c = this.containers[this.responseFields[i]] = document.getElementById(this.responseFields[i]);
-  }
+		this.intermediateContainer = document.createElement("div");
+	} else {
 
-  r = response[this.responseFields[i]];
+		// Clear the intermediate container.
+		while (this.intermediateContainer.children.length > 0) {
 
-  if(r)
-  {
-   while(c.children.length > 0)
-   {
-    c.removeChild(c.children[0]);
-   }
+			this.intermediateContainer.removeChild(this.intermediateContainer.children[0]);
+		}
+	}
 
-   // Let the browser create the DOM elements from the html string.
-   this.intermediateContainer.innerHTML = r;
+	for (i = 0, l = this.responseFields.length; i < l; ++i) {
 
-   // Add them one after another.
-   while(this.intermediateContainer.children.length > 0)
-   {
-    c.appendChild(this.intermediateContainer.children[0]);
-   }
+		c = this.containers[this.responseFields[i]];
 
-   contentChanged = true;
-  }
- }
+		if (!c) {
 
- if(contentChanged)
- {
-  this._updateListeners();
- }
+			// No reference exists yet. Find the element and remember it.
+			c = this.containers[this.responseFields[i]] = document.getElementById(this.responseFields[i]);
+		}
+
+		r = response[this.responseFields[i]];
+
+		if (r) {
+
+			while (c.children.length > 0) {
+
+				c.removeChild(c.children[0]);
+			}
+
+			// Let the browser create the DOM elements from the html string.
+			this.intermediateContainer.innerHTML = r;
+
+			// Add them one after another.
+			while (this.intermediateContainer.children.length > 0) {
+
+				c.appendChild(this.intermediateContainer.children[0]);
+			}
+
+			contentChanged = true;
+		}
+	}
+
+	if (contentChanged) {
+
+		this._updateListeners();
+	}
 };
 
 /**
@@ -579,34 +656,36 @@ Stay.prototype._updateView = function(response)
  * @private
  */
 
-Stay.prototype._updateListeners = function()
-{
- var self = this, i, l,
-  links = document.getElementsByTagName("a"),
-  forms = document.getElementsByTagName("form");
+Stay.prototype._updateListeners = function () {
 
- for(i = 0, l = this.navigationListeners.length; i < l; ++i)
- {
-  this.navigationListeners[i][0].removeEventListener(this.navigationListeners[i][1], self._switchPage);
- }
+	var self = this,
+	    i,
+	    l,
+	    links = document.getElementsByTagName("a"),
+	    forms = document.getElementsByTagName("form");
 
- for(i = 0, l = links.length; i < l; ++i)
- {
-  if(this.local.test(links[i].href))
-  {
-   links[i].addEventListener("click", self._switchPage);
-   this.navigationListeners.push([links[i], "click"]);
-  }
- }
+	for (i = 0, l = this.navigationListeners.length; i < l; ++i) {
 
- for(i = 0, l = forms.length; i < l; ++i)
- {
-  if(this.local.test(forms[i].action))
-  {
-   forms[i].addEventListener("submit", self._switchPage);
-   this.navigationListeners.push([forms[i], "submit"]);
-  }
- }
+		this.navigationListeners[i][0].removeEventListener(this.navigationListeners[i][1], self._switchPage);
+	}
+
+	for (i = 0, l = links.length; i < l; ++i) {
+
+		if (this.local.test(links[i].href)) {
+
+			links[i].addEventListener("click", self._switchPage);
+			this.navigationListeners.push([links[i], "click"]);
+		}
+	}
+
+	for (i = 0, l = forms.length; i < l; ++i) {
+
+		if (this.local.test(forms[i].action)) {
+
+			forms[i].addEventListener("submit", self._switchPage);
+			this.navigationListeners.push([forms[i], "submit"]);
+		}
+	}
 };
 
 /**
@@ -623,28 +702,27 @@ Stay.prototype._updateListeners = function()
  * @param {object} response - The response to display.
  */
 
-Stay.prototype.update = function(response)
-{
- this._updateView(response);
- document.title = response.title;
+Stay.prototype.update = function (response) {
 
- if(response.url)
- {
-  this.absolutePath = response.url.replace(this.infix, "");
- }
+	this._updateView(response);
+	document.title = response.title;
 
- if(!this.backForward)
- {
-  history.pushState({url: this.absolutePath}, response.title, this.absolutePath);
- }
- else
- {
-  this.backForward = false;
- }
+	if (response.url) {
 
- this.eventReceive.response = null;
- this.dispatchEvent(this.eventLoad);
- this.locked = false;
+		this.absolutePath = response.url.replace(this.infix, "");
+	}
+
+	if (!this.backForward) {
+
+		history.pushState({ url: this.absolutePath }, response.title, this.absolutePath);
+	} else {
+
+		this.backForward = false;
+	}
+
+	this.eventReceive.response = null;
+	this.dispatchEvent(this.eventLoad);
+	this.locked = false;
 };
 
 /**
@@ -657,38 +735,38 @@ Stay.prototype.update = function(response)
  * @param {XMLHttpRequest} xhr - The xhr object that fired the event.
  */
 
-Stay.prototype._handleResponse = function(xhr)
-{
- var response = {};
+Stay.prototype._handleResponse = function (xhr) {
 
- if(this.responseFields.length === 0)
- {
-  response.title = "Setup Error";
-  response[this.responseFields[0]] = Stay.Error.NO_RESPONSE_FIELDS;
- }
- else if(xhr.readyState === 4)
- {
-  try
-  {
-   response = JSON.parse(xhr.responseText);
-  }
-  catch(e)
-  {
-   response.title = "Parse Error";
-   response[this.responseFields[0]] = Stay.Error.UNPARSABLE;
-   if(console !== undefined) { console.log(e); }
-  }
+	var response = {};
 
-  response.url = xhr.responseURL;
-  this.eventReceive.status = xhr.status;
-  this.eventReceive.response = response;
-  this.dispatchEvent(this.eventReceive);
+	if (this.responseFields.length === 0) {
 
-  if(this.autoUpdate)
-  {
-   this.update(response);
-  }
- }
+		response.title = "Setup Error";
+		response[this.responseFields[0]] = Stay.Error.NO_RESPONSE_FIELDS;
+	} else if (xhr.readyState === 4) {
+
+		try {
+
+			response = JSON.parse(xhr.responseText);
+		} catch (e) {
+
+			response.title = "Parse Error";
+			response[this.responseFields[0]] = Stay.Error.UNPARSABLE;
+			if (console !== undefined) {
+				console.log(e);
+			}
+		}
+
+		response.url = xhr.responseURL;
+		this.eventReceive.status = xhr.status;
+		this.eventReceive.response = response;
+		this.dispatchEvent(this.eventReceive);
+
+		if (this.autoUpdate) {
+
+			this.update(response);
+		}
+	}
 };
 
 /**
@@ -702,10 +780,11 @@ Stay.prototype._handleResponse = function(xhr)
  */
 
 Stay.Error = Object.freeze({
- TIMEOUT: "<p>The server didn't respond in time. Please try again later!</p>",
- UNPARSABLE: "<p>The received content could not be parsed.</p>",
- NO_RESPONSE_FIELDS: "<p>No response fields have been specified!</p>"
+	TIMEOUT: "<p>The server didn't respond in time. Please try again later!</p>",
+	UNPARSABLE: "<p>The received content could not be parsed.</p>",
+	NO_RESPONSE_FIELDS: "<p>No response fields have been specified!</p>"
 });
+module.exports = exports["default"];
 
 },{"@zayesh/eventdispatcher":1}]},{},[2])(2)
 });
