@@ -28,19 +28,18 @@
   },
 
   "scripts": {
-		"yuidoc": "yuidoc src -q -c yuidoc.json",
 		"jshint:banner": "jshint banner.js",
 		"jshint:test": "jshint test",
 		"jshint:lib": "jshint src",
 		"jshint": "npm run jshint:banner && npm run jshint:test && npm run jshint:lib",
-		"prebuild": "npm run jshint",
-		"build": "mkdirp build && browserify src/stay.js -t babelify -s Stay -o build/stay.js",
-		"postbuild": "npm run uglify",
 		"uglify": "uglifyjs build/stay.js -c -m -o build/stay.min.js",
 		"mocha": "mocha test",
+		"yuidoc": "yuidoc src -q -c yuidoc.json",
+		"prebuild": "npm run jshint",
+		"build": "mkdirp build && browserify src/stay.js -t babelify -s Stay -o build/stay.js",
+		"postbuild": "npm run uglify && node banner.js",
 		"pretest": "npm run build",
-		"test": "npm run mocha",
-		"posttest": "node banner.js"
+		"test": "npm run mocha"
   },
 
   "engines": {
