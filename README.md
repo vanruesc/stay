@@ -25,7 +25,7 @@ $ npm install @zayesh/stay
 ## Usage
 
 ```javascript
-var Stay = require("@zayesh/stay");
+import Stay from "@zayesh/stay";
 
 var stay = new Stay({
 

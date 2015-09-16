@@ -35,11 +35,12 @@
 		"jshint": "npm run jshint:banner && npm run jshint:test && npm run jshint:lib",
 		"prebuild": "npm run jshint",
 		"build": "mkdirp build && browserify src/stay.js -t babelify -s Stay -o build/stay.js",
+		"postbuild": "npm run uglify",
 		"uglify": "uglifyjs build/stay.js -c -m -o build/stay.min.js",
 		"mocha": "mocha test",
 		"pretest": "npm run build",
 		"test": "npm run mocha",
-		"posttest": "npm run uglify && node banner.js"
+		"posttest": "node banner.js"
   },
 
   "engines": {
