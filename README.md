@@ -25,42 +25,52 @@ $ npm install @zayesh/stay
 ## Usage
 
 ```javascript
-// Note: using require is not necessary with the browser bundle.
 var Stay = require("@zayesh/stay");
 
 var stay = new Stay({
- /* Default is ["main", "navigation", "footer"] */
- responseFields: ["myContent"],
- /* Default is "/json" */
- infix: "/urlPatternForAsyncRequests",
- /* Default is 60000ms, 0 means no timeout */
- timeoutPost: 0,
- /* Default is 5000ms */
- timeoutGet: 0,
- /* Default is true */
- autoUpdate: false
+
+	// Default is ["main", "navigation", "footer"]
+	responseFields: ["myContent"],
+
+	// Default is "/json"
+	infix: "/urlPatternForAsyncRequests",
+
+	// Default is 60000ms, 0 means no timeout
+	timeoutPost: 0,
+
+	// Default is 5000ms
+	timeoutGet: 0,
+
+	// Default is true
+	autoUpdate: false
+
 });
 
 // You can also add and remove response fields.
 stay.addResponseField("myContainer");
 stay.removeResponseField("main");
 
-stay.addEventListener("navigate", function()
-{
- alert("Page navigation has started.");
+stay.addEventListener("navigate", function() {
+
+	alert("Page navigation has started.");
+
 });
 
-stay.addEventListener("receive", function(event)
-{
- // If autoUpdate is set to false, the programmer can 
- // decide when to update the page content.
- // The response is the parsed JSON string from the server.
- stay.update(event.response);
+stay.addEventListener("receive", function(event) {
+
+	/* If autoUpdate is set to false, the programmer can 
+	 * decide when to update the page content.
+	 * The response is the parsed JSON string from the server.
+	 */
+
+	stay.update(event.response);
+
 });
 
-stay.addEventListener("load", function()
-{
- alert("The requested page has been loaded.");
+stay.addEventListener("load", function() {
+
+	alert("The requested page has been loaded.");
+
 });
 ```
 
@@ -72,7 +82,7 @@ Maintain the existing coding style. Add unit tests for any new or changed functi
 
 ## Release History
 _Version: 0.0.0 (28.06.2015)_
-> The module realizes a robust xhr-driven page navigation.
+> The module realises a robust xhr-driven page navigation.
 
 ## License
 Copyright (c) 2015 Raoul van Rüschen  

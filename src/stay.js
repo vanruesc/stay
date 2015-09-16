@@ -1,8 +1,4 @@
-"use strict";
-
-module.exports = Stay;
-
-var EventDispatcher = require("@zayesh/eventdispatcher");
+import EventDispatcher from "@zayesh/eventdispatcher";
 
 /**
  * Use the native browser url parsing mechanism
@@ -15,11 +11,12 @@ var EventDispatcher = require("@zayesh/eventdispatcher");
  * @return {HTMLAnchorElement} An object containing the url parts.
  */
 
-function getUrlParts(url)
-{
- var a = document.createElement("a");
- a.href = url;
- return a;
+function getUrlParts(url) {
+
+	var a = document.createElement("a");
+	a.href = url;
+	return a;
+
 }
 
 /**
@@ -43,282 +40,292 @@ function getUrlParts(url)
  * @param {Boolean} [options.autoUpdate=true] - Whether Stay should automatically update the page content.
  */
 
-function Stay(options)
-{
- var self = this;
+export default function Stay(options) {
 
- EventDispatcher.call(this);
+	var self = this;
 
- /**
-  * Regular expression to check if a url is local.
-  *
-  * @property local
-  * @type RegExp
-  * @private
-  */
+	EventDispatcher.call(this);
 
- this.local = new RegExp("^" + location.protocol + "//" + location.host);
+	/**
+	 * Regular expression to check if a url is local.
+	 *
+	 * @property local
+	 * @type RegExp
+	 * @private
+	 */
 
- /**
-  * The response fields are the IDs of the DOM elements
-  * that need to be filled with the server response fields.
-  *
-  * @property responseFields
-  * @type Array
-  */
+	this.local = new RegExp("^" + location.protocol + "//" + location.host);
 
- this.responseFields = ["main", "navigation", "footer"];
+	/**
+	 * The response fields are the IDs of the DOM elements
+	 * that need to be filled with the server response fields.
+	 *
+	 * @property responseFields
+	 * @type Array
+	 */
 
- /**
-  * The infix to use for the asynchronous requests.
-  *
-  * @property infix
-  * @type String
-  */
+	this.responseFields = ["main", "navigation", "footer"];
 
- this.infix = "/json";
+	/**
+	 * The infix to use for the asynchronous requests.
+	 *
+	 * @property infix
+	 * @type String
+	 */
 
- /**
-  * POST timeout.
-  *
-  * @property timeoutPost
-  * @type Number
-  */
+	this.infix = "/json";
 
- this.timeoutPost = 60000;
+	/**
+	 * POST timeout.
+	 *
+	 * @property timeoutPost
+	 * @type Number
+	 */
 
- /**
-  * GET timeout.
-  *
-  * @property timeoutGet
-  * @type Number
-  */
+	this.timeoutPost = 60000;
 
- this.timeoutGet = 5000;
+	/**
+	 * GET timeout.
+	 *
+	 * @property timeoutGet
+	 * @type Number
+	 */
 
- /**
-  * Auto update flag.
-  *
-  * @property autoUpdate
-  * @type Boolean
-  */
+	this.timeoutGet = 5000;
 
- this.autoUpdate = true;
+	/**
+	 * Auto update flag.
+	 *
+	 * @property autoUpdate
+	 * @type Boolean
+	 */
 
- // Overwrite default values.
- if(options !== undefined)
- {
-  if(options.responseFields !== undefined) { this.responseFields = options.responseFields; }
-  if(options.infix !== undefined) { this.infix = options.infix; }
-  if(options.timeoutPost !== undefined) { this.timeoutPost = options.timeoutPost; }
-  if(options.timeoutGet !== undefined) { this.timeoutGet = options.timeoutGet; }
-  if(options.autoUpdate !== undefined) { this.autoUpdate = options.autoUpdate; }
- }
+	this.autoUpdate = true;
 
- /**
-  * Lock flag.
-  *
-  * @property locked
-  * @type Boolean
-  * @private
-  */
+	// Overwrite default values.
+	if(options !== undefined) {
 
- this.locked = false;
+		if(options.responseFields !== undefined) { this.responseFields = options.responseFields; }
+		if(options.infix !== undefined) { this.infix = options.infix; }
+		if(options.timeoutPost !== undefined) { this.timeoutPost = options.timeoutPost; }
+		if(options.timeoutGet !== undefined) { this.timeoutGet = options.timeoutGet; }
+		if(options.autoUpdate !== undefined) { this.autoUpdate = options.autoUpdate; }
 
- /**
-  * Back-forward flag.
-  *
-  * @property backForward
-  * @type Boolean
-  * @private
-  */
+	}
 
- this.backForward = false;
+	/**
+	 * Lock flag.
+	 *
+	 * @property locked
+	 * @type Boolean
+	 * @private
+	 */
 
- /**
-  * The current absolute path.
-  *
-  * @property absolutePath
-  * @type String
-  * @private
-  */
+	this.locked = false;
 
- this.absolutePath = null;
+	/**
+	 * Back-forward flag.
+	 *
+	 * @property backForward
+	 * @type Boolean
+	 * @private
+	 */
 
- /**
-  * A list of references to the response field DOM elements.
-  *
-  * @property containers
-  * @type Array
-  * @private
-  */
+	this.backForward = false;
 
- this.containers = [];
+	/**
+	 * The current absolute path.
+	 *
+	 * @property absolutePath
+	 * @type String
+	 * @private
+	 */
 
- /**
-  * A container which is filled by setting its innerHTML.
-  * The created DOM elements are taken from this container
-  * and appended to the response fields.
-  *
-  * @property intermediateContainer
-  * @type HTMLDivElement
-  * @private
-  */
+	this.absolutePath = null;
 
- this.intermediateContainer = null;
+	/**
+	 * A list of references to the response field DOM elements.
+	 *
+	 * @property containers
+	 * @type Array
+	 * @private
+	 */
 
- /**
-  * A list of navigation listeners for unbinding.
-  *
-  * @property navigationListeners
-  * @type Array
-  * @private
-  */
+	this.containers = [];
 
- this.navigationListeners = [];
+	/**
+	 * A container which is filled by setting its innerHTML.
+	 * The created DOM elements are taken from this container
+	 * and appended to the response fields.
+	 *
+	 * @property intermediateContainer
+	 * @type HTMLDivElement
+	 * @private
+	 */
 
- /**
-  * Signalises that a page navigation has started.
-  *
-  * @event navigate
-  */
+	this.intermediateContainer = null;
 
- this.eventNavigate = {type: "navigate"};
+	/**
+	 * A list of navigation listeners for unbinding.
+	 *
+	 * @property navigationListeners
+	 * @type Array
+	 * @private
+	 */
 
- /**
-  * Returns the parsed server response.
-  *
-  * @event receive
-  * @param {Object} response - The server response, ready to be inserted into the respective response fields.
-  * @param {number} status - The status of the xhr response.
-  */
+	this.navigationListeners = [];
 
- this.eventReceive = {type: "receive", response: null, status: 0};
+	/**
+	 * Signalises that a page navigation has started.
+	 *
+	 * @event navigate
+	 */
 
- /**
-  * Signalises that a page update has finished.
-  *
-  * @event load
-  */
+	this.eventNavigate = {type: "navigate"};
 
- this.eventLoad = {type: "load"};
+	/**
+	 * Returns the parsed server response.
+	 *
+	 * @event receive
+	 * @param {Object} response - The server response, ready to be inserted into the respective response fields.
+	 * @param {number} status - The status of the xhr response.
+	 */
 
- /**
-  * The internal XMLHttpRequest instance.
-  *
-  * @property xhr
-  * @type XMLHttpRequest
-  * @private
-  */
+	this.eventReceive = {type: "receive", response: null, status: 0};
 
- if(XMLHttpRequest !== undefined)
- {
-  this.xhr = new XMLHttpRequest();
- }
- else
- {
-  throw new Error("XMLHttpRequest functionality not available.");
- }
+	/**
+	 * Signalises that a page update has finished.
+	 *
+	 * @event load
+	 */
 
- /**
-  * Triggers the internal response handler.
-  *
-  * @method handleResponse
-  * @private
-  * @param {Object} event - The event.
-  */
+	this.eventLoad = {type: "load"};
 
- this.xhr.addEventListener("readystatechange", function handleResponse(event) { self._handleResponse(this, event); });
+	/**
+	 * The internal XMLHttpRequest instance.
+	 *
+	 * @property xhr
+	 * @type XMLHttpRequest
+	 * @private
+	 */
 
- /**
-  * Handles xhr timeouts, ignores the event object.
-  *
-  * @method handleTimeout
-  * @private
-  */
+	if(XMLHttpRequest !== undefined) {
 
- this.xhr.addEventListener("timeout", function handleTimeout()
- {
-  var response = {};
+		this.xhr = new XMLHttpRequest();
 
-  if(self.responseFields.length)
-  {
-   response.title = "Timeout Error";
-   response[self.responseFields[0]] = Stay.Error.TIMEOUT;
-   self.locked = true;
-   self.update(response);
-  }
- });
+	} else {
 
- /**
-  * Support browser functionality "back" and "forward".
-  * Depends on the boolean variable "locked" in order to
-  * determine whether this navigation should be executed.
-  * The "backForward" flag tells the system that the next
-  * state mustn't be pushed.
-  *
-  * @method handleBackForward
-  * @private
-  * @param {Object} event - The event.
-  */
+		throw new Error("XMLHttpRequest functionality not available.");
 
- window.addEventListener("popstate", function handleBackForward(event)
- {
-  if(!self.locked && event.state !== null)
-  {
-   self.backForward = true;
-   self._navigate({href: event.state.url});
-  }
- });
+	}
 
- /**
-  * This function is bound to all links and forms
-  * and executes the desired page navigation on left clicks.
-  *
-  * @method _switchPage
-  * @private
-  * @param {Event} event - The event.
-  */
+	/**
+	 * Triggers the internal response handler.
+	 *
+	 * @method handleResponse
+	 * @private
+	 * @param {Object} event - The event.
+	 */
 
- this._switchPage = function(event)
- {
-  var preventable = (event.preventDefault !== undefined),
-   proceed = false;
+	this.xhr.addEventListener("readystatechange", function handleResponse(event) { self._handleResponse(this, event); });
 
-  if(event.type === "submit")
-  {
-   proceed = true;
-  }
-  else if(!event.metaKey && !event.shiftKey && !event.altKey && !event.ctrlKey)
-  {
-   if(event.which !== undefined)
-   {
-    proceed = event.which === 1;
-   }
-   else if(event.button !== undefined)
-   {
-    proceed = event.button === 0;
-   }
-  }
+	/**
+	 * Handles xhr timeouts, ignores the event object.
+	 *
+	 * @method handleTimeout
+	 * @private
+	 */
 
-  if(proceed)
-  {
-   if(preventable) { event.preventDefault(); }
-   if(!self.locked) { self._navigate(this); }
-  }
+	this.xhr.addEventListener("timeout", function handleTimeout() {
 
-  // Only return false if it was a left click and the default behaviour couldn't be prevented.
-  return !(proceed && !preventable);
- };
+		var response = {};
 
- // Indirectly push the initial state.
- this.update({
-  title: document.title,
-  url: window.location.href
- });
+		if(self.responseFields.length) {
 
- // Start the system by binding all event handlers.
- this._updateListeners();
+			response.title = "Timeout Error";
+			response[self.responseFields[0]] = Stay.Error.TIMEOUT;
+			self.locked = true;
+			self.update(response);
+
+		}
+
+	});
+
+	/**
+	 * Support browser functionality "back" and "forward".
+	 * Depends on the boolean variable "locked" in order to
+	 * determine whether this navigation should be executed.
+	 * The "backForward" flag tells the system that the next
+	 * state mustn't be pushed.
+	 *
+	 * @method handleBackForward
+	 * @private
+	 * @param {Object} event - The event.
+	 */
+
+	window.addEventListener("popstate", function handleBackForward(event) {
+
+		if(!self.locked && event.state !== null) {
+
+			self.backForward = true;
+			self._navigate({href: event.state.url});
+
+		}
+
+	});
+
+	/**
+	 * This function is bound to all links and forms
+	 * and executes the desired page navigation on left clicks.
+	 *
+	 * @method _switchPage
+	 * @private
+	 * @param {Event} event - The event.
+	 */
+
+	this._switchPage = function(event) {
+
+		var preventable = (event.preventDefault !== undefined),
+			proceed = false;
+
+		if(event.type === "submit") {
+
+			proceed = true;
+
+		} else if(!event.metaKey && !event.shiftKey && !event.altKey && !event.ctrlKey) {
+
+			if(event.which !== undefined) {
+
+				proceed = event.which === 1;
+
+			} else if(event.button !== undefined) {
+
+				proceed = event.button === 0;
+
+			}
+
+		}
+
+		if(proceed) {
+
+			if(preventable) { event.preventDefault(); }
+			if(!self.locked) { self._navigate(this); }
+
+		}
+
+		// Only return false if it was a left click and the default behaviour couldn't be prevented.
+		return !(proceed && !preventable);
+
+	};
+
+	// Indirectly push the initial state.
+	this.update({
+		title: document.title,
+		url: window.location.href
+	});
+
+	// Start the system by binding all event handlers.
+	this._updateListeners();
 }
 
 Stay.prototype = Object.create(EventDispatcher.prototype);
@@ -331,12 +338,14 @@ Stay.prototype.constructor = Stay;
  * @param {string} field - The field to add.
  */
 
-Stay.prototype.addResponseField = function(field)
-{
- if(this.responseFields.indexOf(field) === -1)
- {
-  this.responseFields.push(field);
- }
+Stay.prototype.addResponseField = function(field) {
+
+	if(this.responseFields.indexOf(field) === -1) {
+
+		this.responseFields.push(field);
+
+	}
+
 };
 
 /**
@@ -346,14 +355,16 @@ Stay.prototype.addResponseField = function(field)
  * @param {string} field - The field to remove.
  */
 
-Stay.prototype.removeResponseField = function(field)
-{
- var i = this.responseFields.indexOf(field);
+Stay.prototype.removeResponseField = function(field) {
 
- if(i !== -1)
- {
-  this.responseFields.splice(i, 1);
- }
+	var i = this.responseFields.indexOf(field);
+
+	if(i !== -1) {
+
+		this.responseFields.splice(i, 1);
+
+	}
+
 };
 
 /**
@@ -364,46 +375,49 @@ Stay.prototype.removeResponseField = function(field)
  * @param {HTMLElement} firingElement - The element on which the click event occured.
  */
 
-Stay.prototype._navigate = function(firingElement)
-{
- var formData, pathname, url, post = false;
+Stay.prototype._navigate = function(firingElement) {
 
- this.locked = true;
+	var formData, pathname, url, post = false;
 
- if(firingElement.action)
- {
-  // Collect form data if the firing element is a form.
-  this.absolutePath = firingElement.action;
-  formData = new FormData(firingElement);
-  post = true;
- }
- else
- {
-  this.absolutePath = firingElement.href;
- }
+	this.locked = true;
 
- pathname = getUrlParts(this.absolutePath).pathname;
- if(pathname.charAt(0) !== "/") { pathname = "/" + pathname; }
+	if(firingElement.action) {
 
- // Special treatment for the index page.
- url = (pathname === "/") ?
-  this.absolutePath.slice(0, this.absolutePath.length - 1) + this.infix + pathname :
-  this.absolutePath.replace(new RegExp(pathname), this.infix + pathname);
+		// Collect form data if the firing element is a form.
+		this.absolutePath = firingElement.action;
+		formData = new FormData(firingElement);
+		post = true;
 
- this.eventNavigate.method = post ? "POST" : "GET";
- this.dispatchEvent(this.eventNavigate);
- this.xhr.open(this.eventNavigate.method, url, true);
+	} else {
 
- if(post)
- {
-  this.xhr.timeout = this.timeoutPost;
-  this.xhr.send(formData);
- }
- else
- {
-  this.xhr.timeout = this.timeoutGet;
-  this.xhr.send();
- }
+		this.absolutePath = firingElement.href;
+
+	}
+
+	pathname = getUrlParts(this.absolutePath).pathname;
+	if(pathname.charAt(0) !== "/") { pathname = "/" + pathname; }
+
+	// Special treatment for the index page.
+	url = (pathname === "/") ?
+		this.absolutePath.slice(0, this.absolutePath.length - 1) + this.infix + pathname :
+		this.absolutePath.replace(new RegExp(pathname), this.infix + pathname);
+
+	this.eventNavigate.method = post ? "POST" : "GET";
+	this.dispatchEvent(this.eventNavigate);
+	this.xhr.open(this.eventNavigate.method, url, true);
+
+	if(post) {
+
+		this.xhr.timeout = this.timeoutPost;
+		this.xhr.send(formData);
+
+	} else {
+
+		this.xhr.timeout = this.timeoutGet;
+		this.xhr.send();
+
+	}
+
 };
 
 /**
@@ -414,59 +428,68 @@ Stay.prototype._navigate = function(firingElement)
  * @param {object} response - The response to display. Assumed to contain the data fields specified in "responseFields".
  */
 
-Stay.prototype._updateView = function(response)
-{
- var i, l, c, r, contentChanged = false;
+Stay.prototype._updateView = function(response) {
 
- if(this.intermediateContainer === null)
- {
-  this.intermediateContainer = document.createElement("div");
- }
- else
- {
-  // Clear the intermediate container.
-  while(this.intermediateContainer.children.length > 0)
-  {
-   this.intermediateContainer.removeChild(this.intermediateContainer.children[0]);
-  }
- }
+	var i, l, c, r, contentChanged = false;
 
- for(i = 0, l = this.responseFields.length; i < l; ++i)
- {
-  c = this.containers[this.responseFields[i]];
+	if(this.intermediateContainer === null) {
 
-  if(!c)
-  {
-   // No reference exists yet. Find the element and remember it.
-   c = this.containers[this.responseFields[i]] = document.getElementById(this.responseFields[i]);
-  }
+		this.intermediateContainer = document.createElement("div");
 
-  r = response[this.responseFields[i]];
+	} else {
 
-  if(r)
-  {
-   while(c.children.length > 0)
-   {
-    c.removeChild(c.children[0]);
-   }
+		// Clear the intermediate container.
+		while(this.intermediateContainer.children.length > 0) {
 
-   // Let the browser create the DOM elements from the html string.
-   this.intermediateContainer.innerHTML = r;
+			this.intermediateContainer.removeChild(this.intermediateContainer.children[0]);
 
-   // Add them one after another.
-   while(this.intermediateContainer.children.length > 0)
-   {
-    c.appendChild(this.intermediateContainer.children[0]);
-   }
+		}
 
-   contentChanged = true;
-  }
- }
+	}
 
- if(contentChanged)
- {
-  this._updateListeners();
- }
+	for(i = 0, l = this.responseFields.length; i < l; ++i) {
+
+		c = this.containers[this.responseFields[i]];
+
+		if(!c) {
+
+			// No reference exists yet. Find the element and remember it.
+			c = this.containers[this.responseFields[i]] = document.getElementById(this.responseFields[i]);
+
+		}
+
+		r = response[this.responseFields[i]];
+
+		if(r) {
+
+			while(c.children.length > 0) {
+
+				c.removeChild(c.children[0]);
+
+			}
+
+			// Let the browser create the DOM elements from the html string.
+			this.intermediateContainer.innerHTML = r;
+
+			// Add them one after another.
+			while(this.intermediateContainer.children.length > 0) {
+
+				c.appendChild(this.intermediateContainer.children[0]);
+
+			}
+
+			contentChanged = true;
+
+		}
+
+	}
+
+	if(contentChanged) {
+
+		this._updateListeners();
+
+	}
+
 };
 
 /**
@@ -478,34 +501,40 @@ Stay.prototype._updateView = function(response)
  * @private
  */
 
-Stay.prototype._updateListeners = function()
-{
- var self = this, i, l,
-  links = document.getElementsByTagName("a"),
-  forms = document.getElementsByTagName("form");
+Stay.prototype._updateListeners = function() {
 
- for(i = 0, l = this.navigationListeners.length; i < l; ++i)
- {
-  this.navigationListeners[i][0].removeEventListener(this.navigationListeners[i][1], self._switchPage);
- }
+	var self = this, i, l,
+		links = document.getElementsByTagName("a"),
+		forms = document.getElementsByTagName("form");
 
- for(i = 0, l = links.length; i < l; ++i)
- {
-  if(this.local.test(links[i].href))
-  {
-   links[i].addEventListener("click", self._switchPage);
-   this.navigationListeners.push([links[i], "click"]);
-  }
- }
+	for(i = 0, l = this.navigationListeners.length; i < l; ++i) {
 
- for(i = 0, l = forms.length; i < l; ++i)
- {
-  if(this.local.test(forms[i].action))
-  {
-   forms[i].addEventListener("submit", self._switchPage);
-   this.navigationListeners.push([forms[i], "submit"]);
-  }
- }
+		this.navigationListeners[i][0].removeEventListener(this.navigationListeners[i][1], self._switchPage);
+
+	}
+
+	for(i = 0, l = links.length; i < l; ++i) {
+
+		if(this.local.test(links[i].href)) {
+
+			links[i].addEventListener("click", self._switchPage);
+			this.navigationListeners.push([links[i], "click"]);
+
+		}
+
+	}
+
+	for(i = 0, l = forms.length; i < l; ++i) {
+
+		if(this.local.test(forms[i].action)) {
+
+			forms[i].addEventListener("submit", self._switchPage);
+			this.navigationListeners.push([forms[i], "submit"]);
+
+		}
+
+	}
+
 };
 
 /**
@@ -522,28 +551,31 @@ Stay.prototype._updateListeners = function()
  * @param {object} response - The response to display.
  */
 
-Stay.prototype.update = function(response)
-{
- this._updateView(response);
- document.title = response.title;
+Stay.prototype.update = function(response) {
 
- if(response.url)
- {
-  this.absolutePath = response.url.replace(this.infix, "");
- }
+	this._updateView(response);
+	document.title = response.title;
 
- if(!this.backForward)
- {
-  history.pushState({url: this.absolutePath}, response.title, this.absolutePath);
- }
- else
- {
-  this.backForward = false;
- }
+	if(response.url) {
 
- this.eventReceive.response = null;
- this.dispatchEvent(this.eventLoad);
- this.locked = false;
+		this.absolutePath = response.url.replace(this.infix, "");
+
+	}
+
+	if(!this.backForward) {
+
+		history.pushState({url: this.absolutePath}, response.title, this.absolutePath);
+
+	} else {
+
+		this.backForward = false;
+
+	}
+
+	this.eventReceive.response = null;
+	this.dispatchEvent(this.eventLoad);
+	this.locked = false;
+
 };
 
 /**
@@ -556,38 +588,42 @@ Stay.prototype.update = function(response)
  * @param {XMLHttpRequest} xhr - The xhr object that fired the event.
  */
 
-Stay.prototype._handleResponse = function(xhr)
-{
- var response = {};
+Stay.prototype._handleResponse = function(xhr) {
 
- if(this.responseFields.length === 0)
- {
-  response.title = "Setup Error";
-  response[this.responseFields[0]] = Stay.Error.NO_RESPONSE_FIELDS;
- }
- else if(xhr.readyState === 4)
- {
-  try
-  {
-   response = JSON.parse(xhr.responseText);
-  }
-  catch(e)
-  {
-   response.title = "Parse Error";
-   response[this.responseFields[0]] = Stay.Error.UNPARSABLE;
-   if(console !== undefined) { console.log(e); }
-  }
+	var response = {};
 
-  response.url = xhr.responseURL;
-  this.eventReceive.status = xhr.status;
-  this.eventReceive.response = response;
-  this.dispatchEvent(this.eventReceive);
+	if(this.responseFields.length === 0) {
 
-  if(this.autoUpdate)
-  {
-   this.update(response);
-  }
- }
+		response.title = "Setup Error";
+		response[this.responseFields[0]] = Stay.Error.NO_RESPONSE_FIELDS;
+
+ } else if(xhr.readyState === 4) {
+
+		try {
+
+			response = JSON.parse(xhr.responseText);
+
+		} catch(e) {
+
+			response.title = "Parse Error";
+			response[this.responseFields[0]] = Stay.Error.UNPARSABLE;
+			if(console !== undefined) { console.log(e); }
+
+		}
+
+		response.url = xhr.responseURL;
+		this.eventReceive.status = xhr.status;
+		this.eventReceive.response = response;
+		this.dispatchEvent(this.eventReceive);
+
+		if(this.autoUpdate) {
+
+			this.update(response);
+
+		}
+
+	}
+
 };
 
 /**
@@ -601,7 +637,7 @@ Stay.prototype._handleResponse = function(xhr)
  */
 
 Stay.Error = Object.freeze({
- TIMEOUT: "<p>The server didn't respond in time. Please try again later!</p>",
- UNPARSABLE: "<p>The received content could not be parsed.</p>",
- NO_RESPONSE_FIELDS: "<p>No response fields have been specified!</p>"
+	TIMEOUT: "<p>The server didn't respond in time. Please try again later!</p>",
+	UNPARSABLE: "<p>The received content could not be parsed.</p>",
+	NO_RESPONSE_FIELDS: "<p>No response fields have been specified!</p>"
 });
