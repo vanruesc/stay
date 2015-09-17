@@ -3,7 +3,8 @@
   "version": "0.1.0",
   "description": "Stay is a small but effective library for the creation of dynamic xhr-driven web applications.",
   "homepage": "https://github.com/vanruesc/stay",
-  "main": "src/stay",
+  "main": "build/stay",
+	"jsnext:main": "src/stay",
   "license": "Apache-2.0",
 
   "keywords": [
@@ -32,11 +33,12 @@
 		"jshint:test": "jshint test",
 		"jshint:lib": "jshint src",
 		"jshint": "npm run jshint:banner && npm run jshint:test && npm run jshint:lib",
+		"browserify": "mkdirp build && browserify src/stay.js -t babelify -s Stay -o build/stay.js",
 		"uglify": "uglifyjs build/stay.js -c -m -o build/stay.min.js",
 		"mocha": "mocha test",
 		"yuidoc": "yuidoc src -q -c yuidoc.json",
 		"prebuild": "npm run jshint",
-		"build": "mkdirp build && browserify src/stay.js -t babelify -s Stay -o build/stay.js",
+		"build": "npm run browserify",
 		"postbuild": "npm run uglify && node banner.js",
 		"pretest": "npm run build",
 		"test": "npm run mocha"
