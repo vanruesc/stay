@@ -1,34 +1,34 @@
 {
-  "name": "@zayesh/stay",
-  "version": "0.1.0",
-  "description": "Stay is a small but effective library for the creation of dynamic xhr-driven web applications.",
-  "homepage": "https://github.com/vanruesc/stay",
-  "main": "build/stay",
+	"name": "@zayesh/stay",
+	"version": "0.1.0",
+	"description": "Stay is a small but effective library for the creation of dynamic xhr-driven web applications.",
+	"homepage": "https://github.com/vanruesc/stay",
+	"main": "build/stay",
 	"jsnext:main": "src/stay",
-  "license": "Apache-2.0",
+	"license": "Apache-2.0",
 
-  "keywords": [
-    "xhr",
-    "xmlhttprequest",
-    "ajax",
-    "web application"
-  ],
+	"keywords": [
+		"xhr",
+		"xmlhttprequest",
+		"ajax",
+		"web application"
+	],
 
-  "author": {
-    "name": "Raoul van Rueschen",
-    "email": "vanruesc@fh-brandenburg.de"
-  },
+	"author": {
+		"name": "Raoul van Rueschen",
+		"email": "vanruesc@fh-brandenburg.de"
+	},
 
-  "repository": {
-    "type": "git",
-    "url": "https://github.com/vanruesc/stay.git"
-  },
+	"repository": {
+		"type": "git",
+		"url": "https://github.com/vanruesc/stay.git"
+	},
 
-  "bugs": {
-    "url": "https://github.com/vanruesc/stay/issues"
-  },
+	"bugs": {
+		"url": "https://github.com/vanruesc/stay/issues"
+	},
 
-  "scripts": {
+	"scripts": {
 		"jshint:banner": "jshint banner.js",
 		"jshint:test": "jshint test",
 		"jshint:lib": "jshint src",
@@ -42,17 +42,17 @@
 		"postbuild": "npm run uglify && node banner.js",
 		"pretest": "npm run build",
 		"test": "npm run mocha"
-  },
+	},
 
-  "engines": {
-    "node": ">= 0.10.0"
-  },
+	"engines": {
+		"node": ">= 0.10.0"
+	},
 
-  "dependencies": {
-    "@zayesh/eventdispatcher": "x.x.x"
-  },
+	"dependencies": {
+		"@zayesh/eventdispatcher": "x.x.x"
+	},
 
-  "devDependencies": {
+	"devDependencies": {
 		"babelify": "6.x.x",
 		"browserify": "11.x.x",
 		"mkdirp": "0.x.x",
@@ -61,6 +61,6 @@
 		"prepend-file": "1.x.x",
 		"uglify-js": "2.x.x",
 		"yuidocjs": "0.x.x"
-  }
+	}
 
 }

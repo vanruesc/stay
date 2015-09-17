@@ -153,13 +153,13 @@ loading times that are often deemed to fail anyways.</p>
 
                         <ul class="params-list">
                             <li class="param">
-                                    <code class="param-name optional">[responseFields=[&quot;main&quot;, &quot;navigation&quot;, &quot;footer&quot;]]</code>
+                                    <code class="param-name optional">[stderr=console]</code>
                                     <span class="type">Array</span>
                                     <span class="flag optional" title="This parameter is optional.">optional</span>
 
                                 <div class="param-description">
                                     <ul>
-<li>The content container IDs. These have to be the same as the data fields in the server response.</li>
+<li>The standard output for error messages.</li>
 </ul>
 
                                 </div>
@@ -273,10 +273,6 @@ loading times that are often deemed to fail anyways.</p>
                                 <a href="#method__updateView">_updateView</a>
 
                             </li>
-                            <li class="index-item method">
-                                <a href="#method_addResponseField">addResponseField</a>
-
-                            </li>
                             <li class="index-item method private">
                                 <a href="#method_getUrlParts">getUrlParts</a>
 
@@ -292,10 +288,6 @@ loading times that are often deemed to fail anyways.</p>
                             </li>
                             <li class="index-item method private">
                                 <a href="#method_handleTimeout">handleTimeout</a>
-
-                            </li>
-                            <li class="index-item method">
-                                <a href="#method_removeResponseField">removeResponseField</a>
 
                             </li>
                             <li class="index-item method">
@@ -351,7 +343,7 @@ loading times that are often deemed to fail anyways.</p>
 
                             </li>
                             <li class="index-item property">
-                                <a href="#property_responseFields">responseFields</a>
+                                <a href="#property_stderr">stderr</a>
 
                             </li>
                             <li class="index-item property">
@@ -415,7 +407,7 @@ loading times that are often deemed to fail anyways.</p>
     <div class="meta">
                 <p>
                 Defined in
-        <a href="../files/src_stay.js.html#l581"><code>src\stay.js:581</code></a>
+        <a href="../files/src_stay.js.html#l556"><code>src\stay.js:556</code></a>
         </p>
 
 
@@ -425,7 +417,7 @@ loading times that are often deemed to fail anyways.</p>
     <div class="description">
         <p>This function acts when the xhr object changes its readyState.
 The response will be a json object or an error page. Anything else will
-be caught as a json parse exception and announced in the first response field.</p>
+be caught as a json parse exception and announced in stderr.</p>
 
     </div>
 
@@ -474,7 +466,7 @@ be caught as a json parse exception and announced in the first response field.</
     <div class="meta">
                 <p>
                 Defined in
-        <a href="../files/src_stay.js.html#l370"><code>src\stay.js:370</code></a>
+        <a href="../files/src_stay.js.html#l344"><code>src\stay.js:344</code></a>
         </p>
 
 
@@ -531,7 +523,7 @@ be caught as a json parse exception and announced in the first response field.</
     <div class="meta">
                 <p>
                 Defined in
-        <a href="../files/src_stay.js.html#l277"><code>src\stay.js:277</code></a>
+        <a href="../files/src_stay.js.html#l287"><code>src\stay.js:287</code></a>
         </p>
 
 
@@ -583,7 +575,7 @@ and executes the desired page navigation on left clicks.</p>
     <div class="meta">
                 <p>
                 Defined in
-        <a href="../files/src_stay.js.html#l495"><code>src\stay.js:495</code></a>
+        <a href="../files/src_stay.js.html#l470"><code>src\stay.js:470</code></a>
         </p>
 
 
@@ -623,7 +615,7 @@ the navigation listeners.</p>
     <div class="meta">
                 <p>
                 Defined in
-        <a href="../files/src_stay.js.html#l423"><code>src\stay.js:423</code></a>
+        <a href="../files/src_stay.js.html#l397"><code>src\stay.js:397</code></a>
         </p>
 
 
@@ -646,63 +638,7 @@ the navigation listeners.</p>
 
                     <div class="param-description">
                         <ul>
-<li>The response to display. Assumed to contain the data fields specified in &quot;responseFields&quot;.</li>
-</ul>
-
-                    </div>
-
-                </li>
-            </ul>
-        </div>
-
-
-
-</div>
-<div id="method_addResponseField" class="method item">
-    <h3 class="name"><code>addResponseField</code></h3>
-
-        <div class="args">
-            <span class="paren">(</span><ul class="args-list inline commas">
-                <li class="arg">
-                        <code>field</code>
-                </li>
-            </ul><span class="paren">)</span>
-        </div>
-
-
-
-
-
-
-
-
-    <div class="meta">
-                <p>
-                Defined in
-        <a href="../files/src_stay.js.html#l334"><code>src\stay.js:334</code></a>
-        </p>
-
-
-
-    </div>
-
-    <div class="description">
-        <p>Adds a response field.</p>
-
-    </div>
-
-        <div class="params">
-            <h4>Parameters:</h4>
-
-            <ul class="params-list">
-                <li class="param">
-                        <code class="param-name">field</code>
-                        <span class="type">String</span>
-
-
-                    <div class="param-description">
-                        <ul>
-<li>The field to add.</li>
+<li>The properties of the response object correspond with the target DOM containers.</li>
 </ul>
 
                     </div>
@@ -807,7 +743,7 @@ to retrieve the parts of a url.</p>
     <div class="meta">
                 <p>
                 Defined in
-        <a href="../files/src_stay.js.html#l254"><code>src\stay.js:254</code></a>
+        <a href="../files/src_stay.js.html#l264"><code>src\stay.js:264</code></a>
         </p>
 
 
@@ -868,7 +804,7 @@ state mustn't be pushed.</p>
     <div class="meta">
                 <p>
                 Defined in
-        <a href="../files/src_stay.js.html#l222"><code>src\stay.js:222</code></a>
+        <a href="../files/src_stay.js.html#l226"><code>src\stay.js:226</code></a>
         </p>
 
 
@@ -919,7 +855,7 @@ state mustn't be pushed.</p>
     <div class="meta">
                 <p>
                 Defined in
-        <a href="../files/src_stay.js.html#l232"><code>src\stay.js:232</code></a>
+        <a href="../files/src_stay.js.html#l236"><code>src\stay.js:236</code></a>
         </p>
 
 
@@ -931,62 +867,6 @@ state mustn't be pushed.</p>
 
     </div>
 
-
-
-
-</div>
-<div id="method_removeResponseField" class="method item">
-    <h3 class="name"><code>removeResponseField</code></h3>
-
-        <div class="args">
-            <span class="paren">(</span><ul class="args-list inline commas">
-                <li class="arg">
-                        <code>field</code>
-                </li>
-            </ul><span class="paren">)</span>
-        </div>
-
-
-
-
-
-
-
-
-    <div class="meta">
-                <p>
-                Defined in
-        <a href="../files/src_stay.js.html#l351"><code>src\stay.js:351</code></a>
-        </p>
-
-
-
-    </div>
-
-    <div class="description">
-        <p>Removes a response field.</p>
-
-    </div>
-
-        <div class="params">
-            <h4>Parameters:</h4>
-
-            <ul class="params-list">
-                <li class="param">
-                        <code class="param-name">field</code>
-                        <span class="type">String</span>
-
-
-                    <div class="param-description">
-                        <ul>
-<li>The field to remove.</li>
-</ul>
-
-                    </div>
-
-                </li>
-            </ul>
-        </div>
 
 
 
@@ -1012,7 +892,7 @@ state mustn't be pushed.</p>
     <div class="meta">
                 <p>
                 Defined in
-        <a href="../files/src_stay.js.html#l540"><code>src\stay.js:540</code></a>
+        <a href="../files/src_stay.js.html#l515"><code>src\stay.js:515</code></a>
         </p>
 
 
@@ -1021,12 +901,12 @@ state mustn't be pushed.</p>
 
     <div class="description">
         <p>Updates the view, the navigation listeners and the history state.
-Also emits an event to signilize that the page has been loaded.</p>
+Also emits an event to signilise that the page has been loaded.</p>
 <p>The update function needs to be called after each navigation in
 order to unlock the system. This happens by default, but that
 behaviour can be disabled. It is then the responsibility of the
-programmer to call stay.update() with the response data provided
-by the &quot;receive&quot; event.</p>
+programmer to call stay.update(response) with the response data
+provided by the &quot;receive&quot; event.</p>
 
     </div>
 
@@ -1070,7 +950,7 @@ by the &quot;receive&quot; event.</p>
     <div class="meta">
                 <p>
                 Defined in
-        <a href="../files/src_stay.js.html#l136"><code>src\stay.js:136</code></a>
+        <a href="../files/src_stay.js.html#l140"><code>src\stay.js:140</code></a>
         </p>
 
 
@@ -1095,7 +975,7 @@ by the &quot;receive&quot; event.</p>
     <div class="meta">
                 <p>
                 Defined in
-        <a href="../files/src_stay.js.html#l96"><code>src\stay.js:96</code></a>
+        <a href="../files/src_stay.js.html#l100"><code>src\stay.js:100</code></a>
         </p>
 
 
@@ -1121,7 +1001,7 @@ by the &quot;receive&quot; event.</p>
     <div class="meta">
                 <p>
                 Defined in
-        <a href="../files/src_stay.js.html#l126"><code>src\stay.js:126</code></a>
+        <a href="../files/src_stay.js.html#l130"><code>src\stay.js:130</code></a>
         </p>
 
 
@@ -1147,7 +1027,7 @@ by the &quot;receive&quot; event.</p>
     <div class="meta">
                 <p>
                 Defined in
-        <a href="../files/src_stay.js.html#l146"><code>src\stay.js:146</code></a>
+        <a href="../files/src_stay.js.html#l150"><code>src\stay.js:150</code></a>
         </p>
 
 
@@ -1175,7 +1055,7 @@ by the &quot;receive&quot; event.</p>
     <div class="meta">
                 <p>
                 Defined in
-        <a href="../files/src_stay.js.html#l629"><code>src\stay.js:629</code></a>
+        <a href="../files/src_stay.js.html#l605"><code>src\stay.js:605</code></a>
         </p>
 
 
@@ -1200,7 +1080,7 @@ by the &quot;receive&quot; event.</p>
     <div class="meta">
                 <p>
                 Defined in
-        <a href="../files/src_stay.js.html#l69"><code>src\stay.js:69</code></a>
+        <a href="../files/src_stay.js.html#l73"><code>src\stay.js:73</code></a>
         </p>
 
 
@@ -1226,7 +1106,7 @@ by the &quot;receive&quot; event.</p>
     <div class="meta">
                 <p>
                 Defined in
-        <a href="../files/src_stay.js.html#l156"><code>src\stay.js:156</code></a>
+        <a href="../files/src_stay.js.html#l160"><code>src\stay.js:160</code></a>
         </p>
 
 
@@ -1280,7 +1160,7 @@ and appended to the response fields.</p>
     <div class="meta">
                 <p>
                 Defined in
-        <a href="../files/src_stay.js.html#l116"><code>src\stay.js:116</code></a>
+        <a href="../files/src_stay.js.html#l120"><code>src\stay.js:120</code></a>
         </p>
 
 
@@ -1306,7 +1186,7 @@ and appended to the response fields.</p>
     <div class="meta">
                 <p>
                 Defined in
-        <a href="../files/src_stay.js.html#l168"><code>src\stay.js:168</code></a>
+        <a href="../files/src_stay.js.html#l172"><code>src\stay.js:172</code></a>
         </p>
 
 
@@ -1320,9 +1200,9 @@ and appended to the response fields.</p>
 
 
 </div>
-<div id="property_responseFields" class="property item">
-    <h3 class="name"><code>responseFields</code></h3>
-    <span class="type">Array</span>
+<div id="property_stderr" class="property item">
+    <h3 class="name"><code>stderr</code></h3>
+    <span class="type">String</span>
 
 
 
@@ -1338,8 +1218,12 @@ and appended to the response fields.</p>
     </div>
 
     <div class="description">
-        <p>The response fields are the IDs of the DOM elements
-that need to be filled with the server response fields.</p>
+        <p>The standard error output.
+This string represents the ID of the target
+DOM container which should hold any error
+messages. If none is specified, errors will
+be logged to the console. A request timeout
+is considered an error, for example.</p>
 
     </div>
 
@@ -1357,7 +1241,7 @@ that need to be filled with the server response fields.</p>
     <div class="meta">
                 <p>
                 Defined in
-        <a href="../files/src_stay.js.html#l87"><code>src\stay.js:87</code></a>
+        <a href="../files/src_stay.js.html#l91"><code>src\stay.js:91</code></a>
         </p>
 
 
@@ -1382,7 +1266,7 @@ that need to be filled with the server response fields.</p>
     <div class="meta">
                 <p>
                 Defined in
-        <a href="../files/src_stay.js.html#l78"><code>src\stay.js:78</code></a>
+        <a href="../files/src_stay.js.html#l82"><code>src\stay.js:82</code></a>
         </p>
 
 
@@ -1408,7 +1292,7 @@ that need to be filled with the server response fields.</p>
     <div class="meta">
                 <p>
                 Defined in
-        <a href="../files/src_stay.js.html#l204"><code>src\stay.js:204</code></a>
+        <a href="../files/src_stay.js.html#l208"><code>src\stay.js:208</code></a>
         </p>
 
 
@@ -1439,7 +1323,7 @@ that need to be filled with the server response fields.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_stay.js.html#l196"><code>src\stay.js:196</code></a>
+                            <a href="../files/src_stay.js.html#l200"><code>src\stay.js:200</code></a>
                             </p>
                     
                     
@@ -1464,7 +1348,7 @@ that need to be filled with the server response fields.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_stay.js.html#l178"><code>src\stay.js:178</code></a>
+                            <a href="../files/src_stay.js.html#l182"><code>src\stay.js:182</code></a>
                             </p>
                     
                     
@@ -1489,7 +1373,7 @@ that need to be filled with the server response fields.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_stay.js.html#l186"><code>src\stay.js:186</code></a>
+                            <a href="../files/src_stay.js.html#l190"><code>src\stay.js:190</code></a>
                             </p>
                     
                     

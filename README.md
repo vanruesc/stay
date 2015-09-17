@@ -30,8 +30,8 @@ import Stay from "@zayesh/stay";
 
 var stay = new Stay({
 
-	// Default is ["main", "navigation", "footer"]
-	responseFields: ["myContent"],
+	// Logs to console by default
+	stderr: "myDomElement",
 
 	// Default is "/json"
 	infix: "/urlPatternForAsyncRequests",
@@ -46,10 +46,6 @@ var stay = new Stay({
 	autoUpdate: false
 
 });
-
-// You can also add and remove response fields.
-stay.addResponseField("myContainer");
-stay.removeResponseField("main");
 
 stay.addEventListener("navigate", function() {
 

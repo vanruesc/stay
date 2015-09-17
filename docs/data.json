@@ -43,11 +43,11 @@
                     "optional": true,
                     "props": [
                         {
-                            "name": "responseFields",
-                            "description": "- The content container IDs. These have to be the same as the data fields in the server response.",
+                            "name": "stderr",
+                            "description": "- The standard output for error messages.",
                             "type": "Array",
                             "optional": true,
-                            "optdefault": "[\"main\", \"navigation\", \"footer\"]"
+                            "optdefault": "console"
                         },
                         {
                             "name": "infix",
@@ -120,15 +120,15 @@
         {
             "file": "src\\stay.js",
             "line": 59,
-            "description": "The response fields are the IDs of the DOM elements\nthat need to be filled with the server response fields.",
+            "description": "The standard error output.\nThis string represents the ID of the target \nDOM container which should hold any error\nmessages. If none is specified, errors will \nbe logged to the console. A request timeout\nis considered an error, for example.",
             "itemtype": "property",
-            "name": "responseFields",
-            "type": "Array",
+            "name": "stderr",
+            "type": "String",
             "class": "Stay"
         },
         {
             "file": "src\\stay.js",
-            "line": 69,
+            "line": 73,
             "description": "The infix to use for the asynchronous requests.",
             "itemtype": "property",
             "name": "infix",
@@ -137,7 +137,7 @@
         },
         {
             "file": "src\\stay.js",
-            "line": 78,
+            "line": 82,
             "description": "POST timeout.",
             "itemtype": "property",
             "name": "timeoutPost",
@@ -146,7 +146,7 @@
         },
         {
             "file": "src\\stay.js",
-            "line": 87,
+            "line": 91,
             "description": "GET timeout.",
             "itemtype": "property",
             "name": "timeoutGet",
@@ -155,7 +155,7 @@
         },
         {
             "file": "src\\stay.js",
-            "line": 96,
+            "line": 100,
             "description": "Auto update flag.",
             "itemtype": "property",
             "name": "autoUpdate",
@@ -164,7 +164,7 @@
         },
         {
             "file": "src\\stay.js",
-            "line": 116,
+            "line": 120,
             "description": "Lock flag.",
             "itemtype": "property",
             "name": "locked",
@@ -175,7 +175,7 @@
         },
         {
             "file": "src\\stay.js",
-            "line": 126,
+            "line": 130,
             "description": "Back-forward flag.",
             "itemtype": "property",
             "name": "backForward",
@@ -186,7 +186,7 @@
         },
         {
             "file": "src\\stay.js",
-            "line": 136,
+            "line": 140,
             "description": "The current absolute path.",
             "itemtype": "property",
             "name": "absolutePath",
@@ -197,7 +197,7 @@
         },
         {
             "file": "src\\stay.js",
-            "line": 146,
+            "line": 150,
             "description": "A list of references to the response field DOM elements.",
             "itemtype": "property",
             "name": "containers",
@@ -208,7 +208,7 @@
         },
         {
             "file": "src\\stay.js",
-            "line": 156,
+            "line": 160,
             "description": "A container which is filled by setting its innerHTML.\nThe created DOM elements are taken from this container\nand appended to the response fields.",
             "itemtype": "property",
             "name": "intermediateContainer",
@@ -219,7 +219,7 @@
         },
         {
             "file": "src\\stay.js",
-            "line": 168,
+            "line": 172,
             "description": "A list of navigation listeners for unbinding.",
             "itemtype": "property",
             "name": "navigationListeners",
@@ -230,7 +230,7 @@
         },
         {
             "file": "src\\stay.js",
-            "line": 178,
+            "line": 182,
             "description": "Signalises that a page navigation has started.",
             "itemtype": "event",
             "name": "navigate",
@@ -238,7 +238,7 @@
         },
         {
             "file": "src\\stay.js",
-            "line": 186,
+            "line": 190,
             "description": "Returns the parsed server response.",
             "itemtype": "event",
             "name": "receive",
@@ -258,7 +258,7 @@
         },
         {
             "file": "src\\stay.js",
-            "line": 196,
+            "line": 200,
             "description": "Signalises that a page update has finished.",
             "itemtype": "event",
             "name": "load",
@@ -266,7 +266,7 @@
         },
         {
             "file": "src\\stay.js",
-            "line": 204,
+            "line": 208,
             "description": "The internal XMLHttpRequest instance.",
             "itemtype": "property",
             "name": "xhr",
@@ -277,7 +277,7 @@
         },
         {
             "file": "src\\stay.js",
-            "line": 222,
+            "line": 226,
             "description": "Triggers the internal response handler.",
             "itemtype": "method",
             "name": "handleResponse",
@@ -294,7 +294,7 @@
         },
         {
             "file": "src\\stay.js",
-            "line": 232,
+            "line": 236,
             "description": "Handles xhr timeouts, ignores the event object.",
             "itemtype": "method",
             "name": "handleTimeout",
@@ -304,7 +304,7 @@
         },
         {
             "file": "src\\stay.js",
-            "line": 254,
+            "line": 264,
             "description": "Support browser functionality \"back\" and \"forward\".\nDepends on the boolean variable \"locked\" in order to\ndetermine whether this navigation should be executed.\nThe \"backForward\" flag tells the system that the next\nstate mustn't be pushed.",
             "itemtype": "method",
             "name": "handleBackForward",
@@ -321,7 +321,7 @@
         },
         {
             "file": "src\\stay.js",
-            "line": 277,
+            "line": 287,
             "description": "This function is bound to all links and forms\nand executes the desired page navigation on left clicks.",
             "itemtype": "method",
             "name": "_switchPage",
@@ -338,37 +338,7 @@
         },
         {
             "file": "src\\stay.js",
-            "line": 334,
-            "description": "Adds a response field.",
-            "itemtype": "method",
-            "name": "addResponseField",
-            "params": [
-                {
-                    "name": "field",
-                    "description": "- The field to add.",
-                    "type": "String"
-                }
-            ],
-            "class": "Stay"
-        },
-        {
-            "file": "src\\stay.js",
-            "line": 351,
-            "description": "Removes a response field.",
-            "itemtype": "method",
-            "name": "removeResponseField",
-            "params": [
-                {
-                    "name": "field",
-                    "description": "- The field to remove.",
-                    "type": "String"
-                }
-            ],
-            "class": "Stay"
-        },
-        {
-            "file": "src\\stay.js",
-            "line": 370,
+            "line": 344,
             "description": "Navigates to the next target uri.",
             "itemtype": "method",
             "name": "_navigate",
@@ -385,7 +355,7 @@
         },
         {
             "file": "src\\stay.js",
-            "line": 423,
+            "line": 397,
             "description": "Updates the containers with the new data.",
             "itemtype": "method",
             "name": "_updateView",
@@ -394,7 +364,7 @@
             "params": [
                 {
                     "name": "response",
-                    "description": "- The response to display. Assumed to contain the data fields specified in \"responseFields\".",
+                    "description": "- The properties of the response object correspond with the target DOM containers.",
                     "type": "Object"
                 }
             ],
@@ -402,7 +372,7 @@
         },
         {
             "file": "src\\stay.js",
-            "line": 495,
+            "line": 470,
             "description": "Binds event listeners to all links and forms.\nThis method is combined with the cleanup and basically refreshes \nthe navigation listeners.",
             "itemtype": "method",
             "name": "_updateListeners",
@@ -412,8 +382,8 @@
         },
         {
             "file": "src\\stay.js",
-            "line": 540,
-            "description": "Updates the view, the navigation listeners and the history state.\nAlso emits an event to signilize that the page has been loaded.\n\nThe update function needs to be called after each navigation in \norder to unlock the system. This happens by default, but that\nbehaviour can be disabled. It is then the responsibility of the\nprogrammer to call stay.update() with the response data provided \nby the \"receive\" event.",
+            "line": 515,
+            "description": "Updates the view, the navigation listeners and the history state.\nAlso emits an event to signilise that the page has been loaded.\n\nThe update function needs to be called after each navigation in \norder to unlock the system. This happens by default, but that\nbehaviour can be disabled. It is then the responsibility of the\nprogrammer to call stay.update(response) with the response data\nprovided by the \"receive\" event.",
             "itemtype": "method",
             "name": "update",
             "params": [
@@ -427,8 +397,8 @@
         },
         {
             "file": "src\\stay.js",
-            "line": 581,
-            "description": "This function acts when the xhr object changes its readyState.\nThe response will be a json object or an error page. Anything else will \nbe caught as a json parse exception and announced in the first response field.",
+            "line": 556,
+            "description": "This function acts when the xhr object changes its readyState.\nThe response will be a json object or an error page. Anything else will \nbe caught as a json parse exception and announced in stderr.",
             "itemtype": "method",
             "name": "_handleResponse",
             "access": "private",
@@ -444,7 +414,7 @@
         },
         {
             "file": "src\\stay.js",
-            "line": 629,
+            "line": 605,
             "description": "Enumeration of Error Messages.",
             "itemtype": "property",
             "name": "Error",
