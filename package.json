@@ -29,12 +29,11 @@
 	},
 
 	"scripts": {
-		"jshint:build": "jshint build.js",
 		"jshint:banner": "jshint banner.js",
 		"jshint:test": "jshint test",
 		"jshint:lib": "jshint src",
-		"jshint": "npm run jshint:build && npm run jshint:banner && npm run jshint:test && npm run jshint:lib",
-		"rollup": "node build.js",
+		"jshint": "npm run jshint:banner && npm run jshint:test && npm run jshint:lib",
+		"rollup": "rollup -f umd -n Stay -i src/stay.js -o build/stay.js",
 		"uglify": "uglifyjs build/stay.js -c -m -o build/stay.min.js",
 		"mocha": "mocha test",
 		"yuidoc": "yuidoc src -q -c yuidoc.json",
