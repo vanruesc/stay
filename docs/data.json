@@ -2,7 +2,7 @@
     "project": {
         "name": "Stay API",
         "description": "Stay is a small but effective library for the creation of dynamic xhr-driven web applications.",
-        "version": "0.1.0",
+        "version": "0.1.1",
         "url": "https://github.com/vanruesc/stay"
     },
     "files": {

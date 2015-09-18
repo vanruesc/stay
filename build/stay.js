@@ -1,18 +1,12 @@
 /**
- * stay v0.1.0 build Sep 17 2015
+ * stay v0.1.1 build Sep 18 2015
  * https://github.com/vanruesc/stay
  * Copyright 2015 Raoul van Rueschen, Apache-2.0
- */
-(function(f){if(typeof exports==="object"&&typeof module!=="undefined"){module.exports=f()}else if(typeof define==="function"&&define.amd){define([],f)}else{var g;if(typeof window!=="undefined"){g=window}else if(typeof global!=="undefined"){g=global}else if(typeof self!=="undefined"){g=self}else{g=this}g.Stay = f()}})(function(){var define,module,exports;return (function e(t,n,r){function s(o,u){if(!n[o]){if(!t[o]){var a=typeof require=="function"&&require;if(!u&&a)return a(o,!0);if(i)return i(o,!0);var f=new Error("Cannot find module '"+o+"'");throw f.code="MODULE_NOT_FOUND",f}var l=n[o]={exports:{}};t[o][0].call(l.exports,function(e){var n=t[o][1][e];return s(n?n:e)},l,l.exports,e,t,n,r)}return n[o].exports}var i=typeof require=="function"&&require;for(var o=0;o<r.length;o++)s(r[o]);return s})({1:[function(require,module,exports){
-/**
- * eventdispatcher v0.1.5 build Sep 16 2015
- * https://github.com/vanruesc/eventdispatcher
- * Copyright 2015 Raoul van Rueschen, Zlib
  */
 (function (global, factory) {
 	typeof exports === 'object' && typeof module !== 'undefined' ? module.exports = factory() :
 	typeof define === 'function' && define.amd ? define(factory) :
-	global.EventDispatcher = factory();
+	global.Stay = factory();
 }(this, function () { 'use strict';
 
 	/**
@@ -148,618 +142,623 @@
 
 	};
 
-	return EventDispatcher;
-
-}));
-},{}],2:[function(require,module,exports){
-"use strict";
-
-Object.defineProperty(exports, "__esModule", {
-	value: true
-});
-exports["default"] = Stay;
-
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { "default": obj }; }
-
-var _zayeshEventdispatcher = require("@zayesh/eventdispatcher");
-
-var _zayeshEventdispatcher2 = _interopRequireDefault(_zayeshEventdispatcher);
-
-/**
- * Use the native browser url parsing mechanism
- * to retrieve the parts of a url.
- *
- * @method getUrlParts
- * @private
- * @static
- * @param {String} url - The URL to parse.
- * @return {HTMLAnchorElement} An object containing the url parts.
- */
-
-function getUrlParts(url) {
-
-	var a = document.createElement("a");
-	a.href = url;
-	return a;
-}
-
-/**
- * The Stay XHR System.
- *
- * Used for requesting page content asynchronously
- * while staying on the same page.
- *
- * Each request can have a hard timeout to avoid endless
- * loading times that are often deemed to fail anyways.
- *
- * @class Stay
- * @constructor
- * @extends EventDispatcher
- * @throws {Error} An error is thrown if asynchronous requests are not supported.
- * @param {Object} [options] - The options.
- * @param {Array} [options.stderr=console] - The standard output for error messages.
- * @param {String} [options.infix="/json"] - The special url pattern infix for the asynchronous content requests.
- * @param {Number} [options.timeoutPost=60000] - Hard timeout for POST. 0 means no timeout.
- * @param {Number} [options.timeoutGet=5000] - Hard timeout for GET. 0 means no timeout.
- * @param {Boolean} [options.autoUpdate=true] - Whether Stay should automatically update the page content.
- */
-
-function Stay(options) {
-
-	var self = this;
-
-	_zayeshEventdispatcher2["default"].call(this);
-
 	/**
-  * Regular expression to check if a url is local.
-  *
-  * @property local
-  * @type RegExp
-  * @private
-  */
+	 * Use the native browser url parsing mechanism
+	 * to retrieve the parts of a url.
+	 *
+	 * @method getUrlParts
+	 * @private
+	 * @static
+	 * @param {String} url - The URL to parse.
+	 * @return {HTMLAnchorElement} An object containing the url parts.
+	 */
 
-	this.local = new RegExp("^" + location.protocol + "//" + location.host);
+	function getUrlParts(url) {
 
-	/**
-  * The standard error output.
-  * This string represents the ID of the target 
-  * DOM container which should hold any error
-  * messages. If none is specified, errors will 
-  * be logged to the console. A request timeout
-  * is considered an error, for example.
-  *
-  * @property stderr
-  * @type String
-  */
+		var a = document.createElement("a");
+		a.href = url;
+		return a;
 
-	this.stderr = null;
-
-	/**
-  * The infix to use for the asynchronous requests.
-  *
-  * @property infix
-  * @type String
-  */
-
-	this.infix = "/json";
-
-	/**
-  * POST timeout.
-  *
-  * @property timeoutPost
-  * @type Number
-  */
-
-	this.timeoutPost = 60000;
-
-	/**
-  * GET timeout.
-  *
-  * @property timeoutGet
-  * @type Number
-  */
-
-	this.timeoutGet = 5000;
-
-	/**
-  * Auto update flag.
-  *
-  * @property autoUpdate
-  * @type Boolean
-  */
-
-	this.autoUpdate = true;
-
-	// Overwrite default values.
-	if (options !== undefined) {
-
-		if (options.stderr !== undefined) {
-			this.stderr = options.stderr;
-		}
-		if (options.infix !== undefined) {
-			this.infix = options.infix;
-		}
-		if (options.timeoutPost !== undefined) {
-			this.timeoutPost = options.timeoutPost;
-		}
-		if (options.timeoutGet !== undefined) {
-			this.timeoutGet = options.timeoutGet;
-		}
-		if (options.autoUpdate !== undefined) {
-			this.autoUpdate = options.autoUpdate;
-		}
 	}
 
 	/**
-  * Lock flag.
-  *
-  * @property locked
-  * @type Boolean
-  * @private
-  */
+	 * The Stay XHR System.
+	 *
+	 * Used for requesting page content asynchronously
+	 * while staying on the same page.
+	 *
+	 * Each request can have a hard timeout to avoid endless
+	 * loading times that are often deemed to fail anyways.
+	 *
+	 * @class Stay
+	 * @constructor
+	 * @extends EventDispatcher
+	 * @throws {Error} An error is thrown if asynchronous requests are not supported.
+	 * @param {Object} [options] - The options.
+	 * @param {Array} [options.stderr=console] - The standard output for error messages.
+	 * @param {String} [options.infix="/json"] - The special url pattern infix for the asynchronous content requests.
+	 * @param {Number} [options.timeoutPost=60000] - Hard timeout for POST. 0 means no timeout.
+	 * @param {Number} [options.timeoutGet=5000] - Hard timeout for GET. 0 means no timeout.
+	 * @param {Boolean} [options.autoUpdate=true] - Whether Stay should automatically update the page content.
+	 */
 
-	this.locked = false;
+	function Stay(options) {
 
-	/**
-  * Back-forward flag.
-  *
-  * @property backForward
-  * @type Boolean
-  * @private
-  */
+		var self = this;
 
-	this.backForward = false;
+		EventDispatcher.call(this);
 
-	/**
-  * The current absolute path.
-  *
-  * @property absolutePath
-  * @type String
-  * @private
-  */
+		/**
+		 * Regular expression to check if a url is local.
+		 *
+		 * @property local
+		 * @type RegExp
+		 * @private
+		 */
 
-	this.absolutePath = null;
+		this.local = new RegExp("^" + location.protocol + "//" + location.host);
 
-	/**
-  * A list of references to the response field DOM elements.
-  *
-  * @property containers
-  * @type Array
-  * @private
-  */
+		/**
+		 * The standard error output.
+		 * This string represents the ID of the target 
+		 * DOM container which should hold any error
+		 * messages. If none is specified, errors will 
+		 * be logged to the console. A request timeout
+		 * is considered an error, for example.
+		 *
+		 * @property stderr
+		 * @type String
+		 */
 
-	this.containers = [];
+		this.stderr = null;
 
-	/**
-  * A container which is filled by setting its innerHTML.
-  * The created DOM elements are taken from this container
-  * and appended to the response fields.
-  *
-  * @property intermediateContainer
-  * @type HTMLDivElement
-  * @private
-  */
+		/**
+		 * The infix to use for the asynchronous requests.
+		 *
+		 * @property infix
+		 * @type String
+		 */
 
-	this.intermediateContainer = null;
+		this.infix = "/json";
 
-	/**
-  * A list of navigation listeners for unbinding.
-  *
-  * @property navigationListeners
-  * @type Array
-  * @private
-  */
+		/**
+		 * POST timeout.
+		 *
+		 * @property timeoutPost
+		 * @type Number
+		 */
 
-	this.navigationListeners = [];
+		this.timeoutPost = 60000;
 
-	/**
-  * Signalises that a page navigation has started.
-  *
-  * @event navigate
-  */
+		/**
+		 * GET timeout.
+		 *
+		 * @property timeoutGet
+		 * @type Number
+		 */
 
-	this.eventNavigate = { type: "navigate" };
+		this.timeoutGet = 5000;
 
-	/**
-  * Returns the parsed server response.
-  *
-  * @event receive
-  * @param {Object} response - The server response, ready to be inserted into the respective response fields.
-  * @param {number} status - The status of the xhr response.
-  */
+		/**
+		 * Auto update flag.
+		 *
+		 * @property autoUpdate
+		 * @type Boolean
+		 */
 
-	this.eventReceive = { type: "receive", response: null, status: 0 };
+		this.autoUpdate = true;
 
-	/**
-  * Signalises that a page update has finished.
-  *
-  * @event load
-  */
+		// Overwrite default values.
+		if(options !== undefined) {
 
-	this.eventLoad = { type: "load" };
+			if(options.stderr !== undefined) { this.stderr = options.stderr; }
+			if(options.infix !== undefined) { this.infix = options.infix; }
+			if(options.timeoutPost !== undefined) { this.timeoutPost = options.timeoutPost; }
+			if(options.timeoutGet !== undefined) { this.timeoutGet = options.timeoutGet; }
+			if(options.autoUpdate !== undefined) { this.autoUpdate = options.autoUpdate; }
 
-	/**
-  * The internal XMLHttpRequest instance.
-  *
-  * @property xhr
-  * @type XMLHttpRequest
-  * @private
-  */
+		}
 
-	if (XMLHttpRequest !== undefined) {
+		/**
+		 * Lock flag.
+		 *
+		 * @property locked
+		 * @type Boolean
+		 * @private
+		 */
 
-		this.xhr = new XMLHttpRequest();
-	} else {
+		this.locked = false;
 
-		throw new Error("XMLHttpRequest functionality not available.");
+		/**
+		 * Back-forward flag.
+		 *
+		 * @property backForward
+		 * @type Boolean
+		 * @private
+		 */
+
+		this.backForward = false;
+
+		/**
+		 * The current absolute path.
+		 *
+		 * @property absolutePath
+		 * @type String
+		 * @private
+		 */
+
+		this.absolutePath = null;
+
+		/**
+		 * A list of references to the response field DOM elements.
+		 *
+		 * @property containers
+		 * @type Array
+		 * @private
+		 */
+
+		this.containers = [];
+
+		/**
+		 * A container which is filled by setting its innerHTML.
+		 * The created DOM elements are taken from this container
+		 * and appended to the response fields.
+		 *
+		 * @property intermediateContainer
+		 * @type HTMLDivElement
+		 * @private
+		 */
+
+		this.intermediateContainer = null;
+
+		/**
+		 * A list of navigation listeners for unbinding.
+		 *
+		 * @property navigationListeners
+		 * @type Array
+		 * @private
+		 */
+
+		this.navigationListeners = [];
+
+		/**
+		 * Signalises that a page navigation has started.
+		 *
+		 * @event navigate
+		 */
+
+		this.eventNavigate = {type: "navigate"};
+
+		/**
+		 * Returns the parsed server response.
+		 *
+		 * @event receive
+		 * @param {Object} response - The server response, ready to be inserted into the respective response fields.
+		 * @param {number} status - The status of the xhr response.
+		 */
+
+		this.eventReceive = {type: "receive", response: null, status: 0};
+
+		/**
+		 * Signalises that a page update has finished.
+		 *
+		 * @event load
+		 */
+
+		this.eventLoad = {type: "load"};
+
+		/**
+		 * The internal XMLHttpRequest instance.
+		 *
+		 * @property xhr
+		 * @type XMLHttpRequest
+		 * @private
+		 */
+
+		if(XMLHttpRequest !== undefined) {
+
+			this.xhr = new XMLHttpRequest();
+
+		} else {
+
+			throw new Error("XMLHttpRequest functionality not available.");
+
+		}
+
+		/**
+		 * Triggers the internal response handler.
+		 *
+		 * @method handleResponse
+		 * @private
+		 * @param {Object} event - The event.
+		 */
+
+		this.xhr.addEventListener("readystatechange", function handleResponse(event) { self._handleResponse(this, event); });
+
+		/**
+		 * Handles xhr timeouts, ignores the event object.
+		 *
+		 * @method handleTimeout
+		 * @private
+		 */
+
+		this.xhr.addEventListener("timeout", function handleTimeout() {
+
+			var response = {};
+
+			response.title = "Timeout Error";
+
+			if(self.stderr !== null) {
+
+				response[self.stderr] = Stay.Error.TIMEOUT;
+
+			} else {
+
+				console.error(Stay.Error.TIMEOUT);
+
+			}
+
+			self.locked = true;
+			self.update(response);
+
+		});
+
+		/**
+		 * Support browser functionality "back" and "forward".
+		 * Depends on the boolean variable "locked" in order to
+		 * determine whether this navigation should be executed.
+		 * The "backForward" flag tells the system that the next
+		 * state mustn't be pushed.
+		 *
+		 * @method handleBackForward
+		 * @private
+		 * @param {Object} event - The event.
+		 */
+
+		window.addEventListener("popstate", function handleBackForward(event) {
+
+			if(!self.locked && event.state !== null) {
+
+				self.backForward = true;
+				self._navigate({href: event.state.url});
+
+			}
+
+		});
+
+		/**
+		 * This function is bound to all links and forms
+		 * and executes the desired page navigation on left clicks.
+		 *
+		 * @method _switchPage
+		 * @private
+		 * @param {Event} event - The event.
+		 */
+
+		this._switchPage = function(event) {
+
+			var preventable = (event.preventDefault !== undefined),
+				proceed = false;
+
+			if(event.type === "submit") {
+
+				proceed = true;
+
+			} else if(!event.metaKey && !event.shiftKey && !event.altKey && !event.ctrlKey) {
+
+				if(event.which !== undefined) {
+
+					proceed = event.which === 1;
+
+				} else if(event.button !== undefined) {
+
+					proceed = event.button === 0;
+
+				}
+
+			}
+
+			if(proceed) {
+
+				if(preventable) { event.preventDefault(); }
+				if(!self.locked) { self._navigate(this); }
+
+			}
+
+			// Only return false if it was a left click and the default behaviour couldn't be prevented.
+			return !(proceed && !preventable);
+
+		};
+
+		// Indirectly push the initial state.
+		this.update({
+			title: document.title,
+			url: window.location.href
+		});
+
+		// Start the system by binding all event handlers.
+		this._updateListeners();
 	}
 
-	/**
-  * Triggers the internal response handler.
-  *
-  * @method handleResponse
-  * @private
-  * @param {Object} event - The event.
-  */
-
-	this.xhr.addEventListener("readystatechange", function handleResponse(event) {
-		self._handleResponse(this, event);
-	});
+	Stay.prototype = Object.create(EventDispatcher.prototype);
+	Stay.prototype.constructor = Stay;
 
 	/**
-  * Handles xhr timeouts, ignores the event object.
-  *
-  * @method handleTimeout
-  * @private
-  */
+	 * Navigates to the next target uri.
+	 *
+	 * @method _navigate
+	 * @private
+	 * @param {HTMLElement} firingElement - The element on which the click event occured.
+	 */
 
-	this.xhr.addEventListener("timeout", function handleTimeout() {
+	Stay.prototype._navigate = function(firingElement) {
+
+		var formData, pathname, url, post = false;
+
+		this.locked = true;
+
+		if(firingElement.action) {
+
+			// Collect form data if the firing element is a form.
+			this.absolutePath = firingElement.action;
+			formData = new FormData(firingElement);
+			post = true;
+
+		} else {
+
+			this.absolutePath = firingElement.href;
+
+		}
+
+		pathname = getUrlParts(this.absolutePath).pathname;
+		if(pathname.charAt(0) !== "/") { pathname = "/" + pathname; }
+
+		// Special treatment for the index page.
+		url = (pathname === "/") ?
+			this.absolutePath.slice(0, this.absolutePath.length - 1) + this.infix + pathname :
+			this.absolutePath.replace(new RegExp(pathname), this.infix + pathname);
+
+		this.eventNavigate.method = post ? "POST" : "GET";
+		this.dispatchEvent(this.eventNavigate);
+		this.xhr.open(this.eventNavigate.method, url, true);
+
+		if(post) {
+
+			this.xhr.timeout = this.timeoutPost;
+			this.xhr.send(formData);
+
+		} else {
+
+			this.xhr.timeout = this.timeoutGet;
+			this.xhr.send();
+
+		}
+
+	};
+
+	/**
+	 * Updates the containers with the new data.
+	 *
+	 * @method _updateView
+	 * @private
+	 * @param {object} response - The properties of the response object correspond with the target DOM containers.
+	 */
+
+	Stay.prototype._updateView = function(response) {
+
+		var responseField, c, r, contentChanged = false;
+
+		if(this.intermediateContainer === null) {
+
+			this.intermediateContainer = document.createElement("div");
+
+		} else {
+
+			// Clear the intermediate container.
+			while(this.intermediateContainer.children.length > 0) {
+
+				this.intermediateContainer.removeChild(this.intermediateContainer.children[0]);
+
+			}
+
+		}
+
+		for(responseField in response) {
+
+			c = this.containers[responseField];
+
+			if(c === undefined) {
+
+				// No reference exists yet. Find the DOM element and remember it.
+				c = this.containers[responseField] = document.getElementById(responseField);
+
+			}
+
+			r = response[responseField];
+
+			// Check if the field is empty.
+			if(!r) {
+
+				while(c.children.length > 0) {
+
+					c.removeChild(c.children[0]);
+
+				}
+
+				// Let the browser create the DOM elements from the html string.
+				this.intermediateContainer.innerHTML = r;
+
+				// Cut & paste them one after another.
+				while(this.intermediateContainer.children.length > 0) {
+
+					c.appendChild(this.intermediateContainer.children[0]);
+
+				}
+
+				contentChanged = true;
+
+			}
+
+		}
+
+		if(contentChanged) {
+
+			this._updateListeners();
+
+		}
+
+	};
+
+	/**
+	 * Binds event listeners to all links and forms.
+	 * This method is combined with the cleanup and basically refreshes 
+	 * the navigation listeners.
+	 *
+	 * @method _updateListeners
+	 * @private
+	 */
+
+	Stay.prototype._updateListeners = function() {
+
+		var self = this, i, l,
+			links = document.getElementsByTagName("a"),
+			forms = document.getElementsByTagName("form");
+
+		for(i = 0, l = this.navigationListeners.length; i < l; ++i) {
+
+			this.navigationListeners[i][0].removeEventListener(this.navigationListeners[i][1], self._switchPage);
+
+		}
+
+		for(i = 0, l = links.length; i < l; ++i) {
+
+			if(this.local.test(links[i].href)) {
+
+				links[i].addEventListener("click", self._switchPage);
+				this.navigationListeners.push([links[i], "click"]);
+
+			}
+
+		}
+
+		for(i = 0, l = forms.length; i < l; ++i) {
+
+			if(this.local.test(forms[i].action)) {
+
+				forms[i].addEventListener("submit", self._switchPage);
+				this.navigationListeners.push([forms[i], "submit"]);
+
+			}
+
+		}
+
+	};
+
+	/**
+	 * Updates the view, the navigation listeners and the history state.
+	 * Also emits an event to signilise that the page has been loaded.
+	 *
+	 * The update function needs to be called after each navigation in 
+	 * order to unlock the system. This happens by default, but that
+	 * behaviour can be disabled. It is then the responsibility of the
+	 * programmer to call stay.update(response) with the response data
+	 * provided by the "receive" event.
+	 *
+	 * @method update
+	 * @param {object} response - The response to display.
+	 */
+
+	Stay.prototype.update = function(response) {
+
+		this._updateView(response);
+		document.title = response.title;
+
+		if(response.url) {
+
+			this.absolutePath = response.url.replace(this.infix, "");
+
+		}
+
+		if(!this.backForward) {
+
+			history.pushState({url: this.absolutePath}, response.title, this.absolutePath);
+
+		} else {
+
+			this.backForward = false;
+
+		}
+
+		this.eventReceive.response = null;
+		this.dispatchEvent(this.eventLoad);
+		this.locked = false;
+
+	};
+
+	/**
+	 * This function acts when the xhr object changes its readyState.
+	 * The response will be a json object or an error page. Anything else will 
+	 * be caught as a json parse exception and announced in stderr.
+	 *
+	 * @method _handleResponse
+	 * @private
+	 * @param {XMLHttpRequest} xhr - The xhr object that fired the event.
+	 */
+
+	Stay.prototype._handleResponse = function(xhr) {
 
 		var response = {};
 
-		response.title = "Timeout Error";
+		if(xhr.readyState === 4) {
 
-		if (self.stderr !== null) {
+			try {
 
-			response[self.stderr] = Stay.Error.TIMEOUT;
-		} else {
+				response = JSON.parse(xhr.responseText);
 
-			console.error(Stay.Error.TIMEOUT);
-		}
+			} catch(e) {
 
-		self.locked = true;
-		self.update(response);
-	});
+				response.title = "Parse Error";
 
-	/**
-  * Support browser functionality "back" and "forward".
-  * Depends on the boolean variable "locked" in order to
-  * determine whether this navigation should be executed.
-  * The "backForward" flag tells the system that the next
-  * state mustn't be pushed.
-  *
-  * @method handleBackForward
-  * @private
-  * @param {Object} event - The event.
-  */
+				if(this.stderr !== null) {
 
-	window.addEventListener("popstate", function handleBackForward(event) {
+					response[this.stderr] = Stay.Error.UNPARSABLE;
 
-		if (!self.locked && event.state !== null) {
+				}
 
-			self.backForward = true;
-			self._navigate({ href: event.state.url });
-		}
-	});
+				console.error(Stay.Error.UNPARSABLE, e);
 
-	/**
-  * This function is bound to all links and forms
-  * and executes the desired page navigation on left clicks.
-  *
-  * @method _switchPage
-  * @private
-  * @param {Event} event - The event.
-  */
-
-	this._switchPage = function (event) {
-
-		var preventable = event.preventDefault !== undefined,
-		    proceed = false;
-
-		if (event.type === "submit") {
-
-			proceed = true;
-		} else if (!event.metaKey && !event.shiftKey && !event.altKey && !event.ctrlKey) {
-
-			if (event.which !== undefined) {
-
-				proceed = event.which === 1;
-			} else if (event.button !== undefined) {
-
-				proceed = event.button === 0;
 			}
+
+			response.url = xhr.responseURL;
+			this.eventReceive.status = xhr.status;
+			this.eventReceive.response = response;
+			this.dispatchEvent(this.eventReceive);
+
+			if(this.autoUpdate) {
+
+				this.update(response);
+
+			}
+
 		}
 
-		if (proceed) {
-
-			if (preventable) {
-				event.preventDefault();
-			}
-			if (!self.locked) {
-				self._navigate(this);
-			}
-		}
-
-		// Only return false if it was a left click and the default behaviour couldn't be prevented.
-		return !(proceed && !preventable);
 	};
 
-	// Indirectly push the initial state.
-	this.update({
-		title: document.title,
-		url: window.location.href
+	/**
+	 * Enumeration of Error Messages.
+	 *
+	 * @property Error
+	 * @type Object
+	 * @private
+	 * @static
+	 * @final
+	 */
+
+	Stay.Error = Object.freeze({
+		TIMEOUT: "<p>The server didn't respond in time. Please try again later!</p>",
+		UNPARSABLE: "<p>The received content could not be parsed.</p>"
 	});
 
-	// Start the system by binding all event handlers.
-	this._updateListeners();
-}
+	return Stay;
 
-Stay.prototype = Object.create(_zayeshEventdispatcher2["default"].prototype);
-Stay.prototype.constructor = Stay;
-
-/**
- * Navigates to the next target uri.
- *
- * @method _navigate
- * @private
- * @param {HTMLElement} firingElement - The element on which the click event occured.
- */
-
-Stay.prototype._navigate = function (firingElement) {
-
-	var formData,
-	    pathname,
-	    url,
-	    post = false;
-
-	this.locked = true;
-
-	if (firingElement.action) {
-
-		// Collect form data if the firing element is a form.
-		this.absolutePath = firingElement.action;
-		formData = new FormData(firingElement);
-		post = true;
-	} else {
-
-		this.absolutePath = firingElement.href;
-	}
-
-	pathname = getUrlParts(this.absolutePath).pathname;
-	if (pathname.charAt(0) !== "/") {
-		pathname = "/" + pathname;
-	}
-
-	// Special treatment for the index page.
-	url = pathname === "/" ? this.absolutePath.slice(0, this.absolutePath.length - 1) + this.infix + pathname : this.absolutePath.replace(new RegExp(pathname), this.infix + pathname);
-
-	this.eventNavigate.method = post ? "POST" : "GET";
-	this.dispatchEvent(this.eventNavigate);
-	this.xhr.open(this.eventNavigate.method, url, true);
-
-	if (post) {
-
-		this.xhr.timeout = this.timeoutPost;
-		this.xhr.send(formData);
-	} else {
-
-		this.xhr.timeout = this.timeoutGet;
-		this.xhr.send();
-	}
-};
-
-/**
- * Updates the containers with the new data.
- *
- * @method _updateView
- * @private
- * @param {object} response - The properties of the response object correspond with the target DOM containers.
- */
-
-Stay.prototype._updateView = function (response) {
-
-	var responseField,
-	    c,
-	    r,
-	    contentChanged = false;
-
-	if (this.intermediateContainer === null) {
-
-		this.intermediateContainer = document.createElement("div");
-	} else {
-
-		// Clear the intermediate container.
-		while (this.intermediateContainer.children.length > 0) {
-
-			this.intermediateContainer.removeChild(this.intermediateContainer.children[0]);
-		}
-	}
-
-	for (responseField in response) {
-
-		c = this.containers[responseField];
-
-		if (c === undefined) {
-
-			// No reference exists yet. Find the DOM element and remember it.
-			c = this.containers[responseField] = document.getElementById(responseField);
-		}
-
-		r = response[responseField];
-
-		// Check if the field is empty.
-		if (!r) {
-
-			while (c.children.length > 0) {
-
-				c.removeChild(c.children[0]);
-			}
-
-			// Let the browser create the DOM elements from the html string.
-			this.intermediateContainer.innerHTML = r;
-
-			// Cut & paste them one after another.
-			while (this.intermediateContainer.children.length > 0) {
-
-				c.appendChild(this.intermediateContainer.children[0]);
-			}
-
-			contentChanged = true;
-		}
-	}
-
-	if (contentChanged) {
-
-		this._updateListeners();
-	}
-};
-
-/**
- * Binds event listeners to all links and forms.
- * This method is combined with the cleanup and basically refreshes 
- * the navigation listeners.
- *
- * @method _updateListeners
- * @private
- */
-
-Stay.prototype._updateListeners = function () {
-
-	var self = this,
-	    i,
-	    l,
-	    links = document.getElementsByTagName("a"),
-	    forms = document.getElementsByTagName("form");
-
-	for (i = 0, l = this.navigationListeners.length; i < l; ++i) {
-
-		this.navigationListeners[i][0].removeEventListener(this.navigationListeners[i][1], self._switchPage);
-	}
-
-	for (i = 0, l = links.length; i < l; ++i) {
-
-		if (this.local.test(links[i].href)) {
-
-			links[i].addEventListener("click", self._switchPage);
-			this.navigationListeners.push([links[i], "click"]);
-		}
-	}
-
-	for (i = 0, l = forms.length; i < l; ++i) {
-
-		if (this.local.test(forms[i].action)) {
-
-			forms[i].addEventListener("submit", self._switchPage);
-			this.navigationListeners.push([forms[i], "submit"]);
-		}
-	}
-};
-
-/**
- * Updates the view, the navigation listeners and the history state.
- * Also emits an event to signilise that the page has been loaded.
- *
- * The update function needs to be called after each navigation in 
- * order to unlock the system. This happens by default, but that
- * behaviour can be disabled. It is then the responsibility of the
- * programmer to call stay.update(response) with the response data
- * provided by the "receive" event.
- *
- * @method update
- * @param {object} response - The response to display.
- */
-
-Stay.prototype.update = function (response) {
-
-	this._updateView(response);
-	document.title = response.title;
-
-	if (response.url) {
-
-		this.absolutePath = response.url.replace(this.infix, "");
-	}
-
-	if (!this.backForward) {
-
-		history.pushState({ url: this.absolutePath }, response.title, this.absolutePath);
-	} else {
-
-		this.backForward = false;
-	}
-
-	this.eventReceive.response = null;
-	this.dispatchEvent(this.eventLoad);
-	this.locked = false;
-};
-
-/**
- * This function acts when the xhr object changes its readyState.
- * The response will be a json object or an error page. Anything else will 
- * be caught as a json parse exception and announced in stderr.
- *
- * @method _handleResponse
- * @private
- * @param {XMLHttpRequest} xhr - The xhr object that fired the event.
- */
-
-Stay.prototype._handleResponse = function (xhr) {
-
-	var response = {};
-
-	if (xhr.readyState === 4) {
-
-		try {
-
-			response = JSON.parse(xhr.responseText);
-		} catch (e) {
-
-			response.title = "Parse Error";
-
-			if (this.stderr !== null) {
-
-				response[this.stderr] = Stay.Error.UNPARSABLE;
-			}
-
-			console.error(Stay.Error.UNPARSABLE, e);
-		}
-
-		response.url = xhr.responseURL;
-		this.eventReceive.status = xhr.status;
-		this.eventReceive.response = response;
-		this.dispatchEvent(this.eventReceive);
-
-		if (this.autoUpdate) {
-
-			this.update(response);
-		}
-	}
-};
-
-/**
- * Enumeration of Error Messages.
- *
- * @property Error
- * @type Object
- * @private
- * @static
- * @final
- */
-
-Stay.Error = Object.freeze({
-	TIMEOUT: "<p>The server didn't respond in time. Please try again later!</p>",
-	UNPARSABLE: "<p>The received content could not be parsed.</p>"
-});
-module.exports = exports["default"];
-
-},{"@zayesh/eventdispatcher":1}]},{},[2])(2)
-});
+}));
