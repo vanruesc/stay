@@ -242,13 +242,13 @@ export default function Stay(options) {
 
 	this.xhr.addEventListener("timeout", function handleTimeout() {
 
-		var response = {};
+		var response = {meta: {}};
 
-		response.title = "Timeout Error";
+		response.meta.title = "Timeout Error";
 
 		if(self.stderr !== null) {
 
-			response[self.stderr] = Stay.Error.TIMEOUT;
+			response[self.stderr] = "<p>" + Stay.Error.TIMEOUT + "</p>";
 
 		} else {
 
@@ -330,8 +330,10 @@ export default function Stay(options) {
 
 	// Indirectly push the initial state.
 	this.update({
-		title: document.title,
-		url: window.location.href
+		meta: {
+			title: document.title,
+			url: window.location.href
+		}
 	});
 
 	// Start the system by binding all event handlers.
@@ -423,37 +425,41 @@ Stay.prototype._updateView = function(response) {
 
 	for(responseField in response) {
 
-		c = this.containers[responseField];
-
-		if(c === undefined) {
-
-			// No reference exists yet. Find the DOM element and remember it.
-			c = this.containers[responseField] = document.getElementById(responseField);
-
-		}
-
 		r = response[responseField];
 
-		// Check if the field is empty.
-		if(!r) {
+		// Ignore deep structures.
+		if(typeof r !== "object") {
 
-			while(c.children.length > 0) {
+			c = this.containers[responseField];
 
-				c.removeChild(c.children[0]);
+			if(c === undefined) {
 
-			}
-
-			// Let the browser create the DOM elements from the html string.
-			this.intermediateContainer.innerHTML = r;
-
-			// Cut & paste them one after another.
-			while(this.intermediateContainer.children.length > 0) {
-
-				c.appendChild(this.intermediateContainer.children[0]);
+				// No reference exists yet. Find the DOM element and remember it.
+				c = this.containers[responseField] = document.getElementById(responseField);
 
 			}
 
-			contentChanged = true;
+			if(c !== null) {
+
+				while(c.children.length > 0) {
+
+					c.removeChild(c.children[0]);
+
+				}
+
+				// Let the browser create the DOM elements from the html string.
+				this.intermediateContainer.innerHTML = r;
+
+				// Cut & paste them one after another.
+				while(this.intermediateContainer.children.length > 0) {
+
+					c.appendChild(this.intermediateContainer.children[0]);
+
+				}
+
+				contentChanged = true;
+
+			}
 
 		}
 
@@ -529,17 +535,17 @@ Stay.prototype._updateListeners = function() {
 Stay.prototype.update = function(response) {
 
 	this._updateView(response);
-	document.title = response.title;
+	document.title = response.meta.title;
 
-	if(response.url) {
+	if(response.meta.url) {
 
-		this.absolutePath = response.url.replace(this.infix, "");
+		this.absolutePath = response.meta.url.replace(this.infix, "");
 
 	}
 
 	if(!this.backForward) {
 
-		history.pushState({url: this.absolutePath}, response.title, this.absolutePath);
+		history.pushState({url: this.absolutePath}, response.meta.title, this.absolutePath);
 
 	} else {
 
@@ -565,7 +571,7 @@ Stay.prototype.update = function(response) {
 
 Stay.prototype._handleResponse = function(xhr) {
 
-	var response = {};
+	var response = {meta: {}};
 
 	if(xhr.readyState === 4) {
 
@@ -575,11 +581,11 @@ Stay.prototype._handleResponse = function(xhr) {
 
 		} catch(e) {
 
-			response.title = "Parse Error";
+			response.meta.title = "Parse Error";
 
 			if(this.stderr !== null) {
 
-				response[this.stderr] = Stay.Error.UNPARSABLE;
+				response[this.stderr] = "<p>" + Stay.Error.UNPARSABLE + "</p>";
 
 			}
 
@@ -587,7 +593,7 @@ Stay.prototype._handleResponse = function(xhr) {
 
 		}
 
-		response.url = xhr.responseURL;
+		response.meta.url = xhr.responseURL;
 		this.eventReceive.status = xhr.status;
 		this.eventReceive.response = response;
 		this.dispatchEvent(this.eventReceive);
@@ -613,6 +619,6 @@ Stay.prototype._handleResponse = function(xhr) {
  */
 
 Stay.Error = Object.freeze({
-	TIMEOUT: "<p>The server didn't respond in time. Please try again later!</p>",
-	UNPARSABLE: "<p>The received content could not be parsed.</p>"
+	TIMEOUT: "The server didn't respond in time. Please try again later!",
+	UNPARSABLE: "The received content could not be parsed."
 });

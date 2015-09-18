@@ -17,7 +17,7 @@
                 <h1><img src="../assets/css/logo.png" title="Stay API" width="117" height="52"></h1>
         </div>
         <div class="yui3-u-1-4 version">
-            <em>API Docs for: 0.1.1</em>
+            <em>API Docs for: 0.1.2</em>
         </div>
     </div>
     <div id="bd" class="yui3-g">
@@ -324,13 +324,13 @@ export default function Stay(options) {
 
 	this.xhr.addEventListener(&quot;timeout&quot;, function handleTimeout() {
 
-		var response = {};
+		var response = {meta: {}};
 
-		response.title = &quot;Timeout Error&quot;;
+		response.meta.title = &quot;Timeout Error&quot;;
 
 		if(self.stderr !== null) {
 
-			response[self.stderr] = Stay.Error.TIMEOUT;
+			response[self.stderr] = &quot;&lt;p&gt;&quot; + Stay.Error.TIMEOUT + &quot;&lt;/p&gt;&quot;;
 
 		} else {
 
@@ -412,8 +412,10 @@ export default function Stay(options) {
 
 	// Indirectly push the initial state.
 	this.update({
-		title: document.title,
-		url: window.location.href
+		meta: {
+			title: document.title,
+			url: window.location.href
+		}
 	});
 
 	// Start the system by binding all event handlers.
@@ -505,37 +507,41 @@ Stay.prototype._updateView = function(response) {
 
 	for(responseField in response) {
 
-		c = this.containers[responseField];
-
-		if(c === undefined) {
-
-			// No reference exists yet. Find the DOM element and remember it.
-			c = this.containers[responseField] = document.getElementById(responseField);
-
-		}
-
 		r = response[responseField];
 
-		// Check if the field is empty.
-		if(!r) {
+		// Ignore deep structures.
+		if(typeof r !== &quot;object&quot;) {
 
-			while(c.children.length &gt; 0) {
+			c = this.containers[responseField];
 
-				c.removeChild(c.children[0]);
+			if(c === undefined) {
 
-			}
-
-			// Let the browser create the DOM elements from the html string.
-			this.intermediateContainer.innerHTML = r;
-
-			// Cut &amp; paste them one after another.
-			while(this.intermediateContainer.children.length &gt; 0) {
-
-				c.appendChild(this.intermediateContainer.children[0]);
+				// No reference exists yet. Find the DOM element and remember it.
+				c = this.containers[responseField] = document.getElementById(responseField);
 
 			}
 
-			contentChanged = true;
+			if(c !== null) {
+
+				while(c.children.length &gt; 0) {
+
+					c.removeChild(c.children[0]);
+
+				}
+
+				// Let the browser create the DOM elements from the html string.
+				this.intermediateContainer.innerHTML = r;
+
+				// Cut &amp; paste them one after another.
+				while(this.intermediateContainer.children.length &gt; 0) {
+
+					c.appendChild(this.intermediateContainer.children[0]);
+
+				}
+
+				contentChanged = true;
+
+			}
 
 		}
 
@@ -611,17 +617,17 @@ Stay.prototype._updateListeners = function() {
 Stay.prototype.update = function(response) {
 
 	this._updateView(response);
-	document.title = response.title;
+	document.title = response.meta.title;
 
-	if(response.url) {
+	if(response.meta.url) {
 
-		this.absolutePath = response.url.replace(this.infix, &quot;&quot;);
+		this.absolutePath = response.meta.url.replace(this.infix, &quot;&quot;);
 
 	}
 
 	if(!this.backForward) {
 
-		history.pushState({url: this.absolutePath}, response.title, this.absolutePath);
+		history.pushState({url: this.absolutePath}, response.meta.title, this.absolutePath);
 
 	} else {
 
@@ -647,7 +653,7 @@ Stay.prototype.update = function(response) {
 
 Stay.prototype._handleResponse = function(xhr) {
 
-	var response = {};
+	var response = {meta: {}};
 
 	if(xhr.readyState === 4) {
 
@@ -657,11 +663,11 @@ Stay.prototype._handleResponse = function(xhr) {
 
 		} catch(e) {
 
-			response.title = &quot;Parse Error&quot;;
+			response.meta.title = &quot;Parse Error&quot;;
 
 			if(this.stderr !== null) {
 
-				response[this.stderr] = Stay.Error.UNPARSABLE;
+				response[this.stderr] = &quot;&lt;p&gt;&quot; + Stay.Error.UNPARSABLE + &quot;&lt;/p&gt;&quot;;
 
 			}
 
@@ -669,7 +675,7 @@ Stay.prototype._handleResponse = function(xhr) {
 
 		}
 
-		response.url = xhr.responseURL;
+		response.meta.url = xhr.responseURL;
 		this.eventReceive.status = xhr.status;
 		this.eventReceive.response = response;
 		this.dispatchEvent(this.eventReceive);
@@ -695,8 +701,8 @@ Stay.prototype._handleResponse = function(xhr) {
  */
 
 Stay.Error = Object.freeze({
-	TIMEOUT: &quot;&lt;p&gt;The server didn&#x27;t respond in time. Please try again later!&lt;/p&gt;&quot;,
-	UNPARSABLE: &quot;&lt;p&gt;The received content could not be parsed.&lt;/p&gt;&quot;
+	TIMEOUT: &quot;The server didn&#x27;t respond in time. Please try again later!&quot;,
+	UNPARSABLE: &quot;The received content could not be parsed.&quot;
 });
 
     </pre>
