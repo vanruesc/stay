@@ -1,21 +1,22 @@
 import EventDispatcher from "@zayesh/eventdispatcher";
 
 /**
- * Use the native browser url parsing mechanism
- * to retrieve the parts of a url.
+ * Uses the native browser parsing mechanism
+ * to retrieve the pathname of a url.
  *
- * @method getUrlParts
+ * @method getPathname
  * @private
  * @static
  * @param {String} url - The URL to parse.
- * @return {HTMLAnchorElement} An object containing the url parts.
+ * @return {String} The pathname.
  */
 
-function getUrlParts(url) {
+function getPathname(url) {
 
 	var a = document.createElement("a");
 	a.href = url;
-	return a;
+
+	return a.pathname;
 
 }
 
@@ -219,9 +220,17 @@ export default function Stay(options) {
 
 	} else {
 
-		throw new Error("XMLHttpRequest functionality not available.");
+		throw new Error("XMLHttpRequest not supported.");
 
 	}
+
+	/**
+	 * Returns XmlHttpRequest errors.
+	 *
+	 * @event error
+	 */
+
+	this.xhr.addEventListener("error", function handleError(e) { self.dispatchEvent(e); });
 
 	/**
 	 * Triggers the internal response handler.
@@ -295,8 +304,8 @@ export default function Stay(options) {
 
 	this._switchPage = function(event) {
 
-		var preventable = (event.preventDefault !== undefined),
-			proceed = false;
+		var preventable = (event.preventDefault !== undefined);
+		var proceed = false;
 
 		if(event.type === "submit") {
 
@@ -332,7 +341,7 @@ export default function Stay(options) {
 	this.update({
 		meta: {
 			title: document.title,
-			url: window.location.href
+			url: location.href
 		}
 	});
 
@@ -370,7 +379,7 @@ Stay.prototype._navigate = function(firingElement) {
 
 	}
 
-	pathname = getUrlParts(this.absolutePath).pathname;
+	pathname = getPathname(this.absolutePath);
 	if(pathname.charAt(0) !== "/") { pathname = "/" + pathname; }
 
 	// Special treatment for the index page.
@@ -406,7 +415,8 @@ Stay.prototype._navigate = function(firingElement) {
 
 Stay.prototype._updateView = function(response) {
 
-	var responseField, c, r, contentChanged = false;
+	var responseField, c, r;
+	var contentChanged = false;
 
 	if(this.intermediateContainer === null) {
 
@@ -474,6 +484,26 @@ Stay.prototype._updateView = function(response) {
 };
 
 /**
+ * If you want to destroy Stay, you should call this method
+ * before you drop your reference to the Stay instance.
+ *
+ * @method unbindListeners
+ */
+
+Stay.prototype.unbindListeners = function() {
+
+	var self = this;
+	var i, l;
+
+	for(i = 0, l = this.navigationListeners.length; i < l; ++i) {
+
+		this.navigationListeners[i][0].removeEventListener(this.navigationListeners[i][1], self._switchPage);
+
+	}
+
+};
+
+/**
  * Binds event listeners to all links and forms.
  * This method is combined with the cleanup and basically refreshes 
  * the navigation listeners.
@@ -484,15 +514,12 @@ Stay.prototype._updateView = function(response) {
 
 Stay.prototype._updateListeners = function() {
 
-	var self = this, i, l,
-		links = document.getElementsByTagName("a"),
-		forms = document.getElementsByTagName("form");
+	var self = this;
+	var i, l;
+	var links = document.getElementsByTagName("a");
+	var forms = document.getElementsByTagName("form");
 
-	for(i = 0, l = this.navigationListeners.length; i < l; ++i) {
-
-		this.navigationListeners[i][0].removeEventListener(this.navigationListeners[i][1], self._switchPage);
-
-	}
+  this.unbindListeners();
 
 	for(i = 0, l = links.length; i < l; ++i) {
 
@@ -534,6 +561,8 @@ Stay.prototype._updateListeners = function() {
 
 Stay.prototype.update = function(response) {
 
+	var origin;
+
 	this._updateView(response);
 	document.title = response.meta.title;
 
@@ -545,7 +574,21 @@ Stay.prototype.update = function(response) {
 
 	if(!this.backForward) {
 
-		history.pushState({url: this.absolutePath}, response.meta.title, this.absolutePath);
+		try {
+
+			origin = document.origin ? document.origin : "null";
+
+			if(origin !== "null" && history.state && this.absolutePath !== history.state.url) {
+
+				history.pushState({url: this.absolutePath}, response.meta.title, this.absolutePath);
+
+			}
+
+		} catch(e) {
+
+			console.warn(e);
+
+		}
 
 	} else {
 
@@ -589,7 +632,7 @@ Stay.prototype._handleResponse = function(xhr) {
 
 			}
 
-			console.error(Stay.Error.UNPARSABLE, e);
+			console.error(Stay.Error.UNPARSABLE);
 
 		}
 

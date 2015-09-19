@@ -35,7 +35,7 @@
 		"jshint": "npm run jshint:banner && npm run jshint:test && npm run jshint:lib",
 		"rollup": "rollup -f umd -n Stay -i src/stay.js -o build/stay.js",
 		"uglify": "uglifyjs build/stay.js -c -m -o build/stay.min.js",
-		"mocha": "mocha test",
+		"mocha": "mocha-phantomjs --setting webSecurityEnabled=false test/index.html",
 		"yuidoc": "yuidoc src -q -c yuidoc.json",
 		"prebuild": "npm run jshint",
 		"build": "npm run rollup",
@@ -55,6 +55,7 @@
 	"devDependencies": {
 		"jshint": "2.x.x",
 		"mocha": "2.x.x",
+		"mocha-phantomjs": "3.6.x",
 		"prepend-file": "1.x.x",
 		"rollup": "0.x.x",
 		"uglify-js": "2.x.x",

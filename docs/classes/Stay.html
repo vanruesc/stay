@@ -84,7 +84,7 @@
         </div>
 
         <div class="foundat">
-            Defined in: <a href="../files/src_stay.js.html#l22"><code>src\stay.js:22</code></a>
+            Defined in: <a href="../files/src_stay.js.html#l23"><code>src\stay.js:23</code></a>
         </div>
 
 
@@ -123,7 +123,7 @@ loading times that are often deemed to fail anyways.</p>
     <div class="meta">
                 <p>
                 Defined in
-        <a href="../files/src_stay.js.html#l22"><code>src\stay.js:22</code></a>
+        <a href="../files/src_stay.js.html#l23"><code>src\stay.js:23</code></a>
         </p>
 
 
@@ -274,7 +274,7 @@ loading times that are often deemed to fail anyways.</p>
 
                             </li>
                             <li class="index-item method private">
-                                <a href="#method_getUrlParts">getUrlParts</a>
+                                <a href="#method_getPathname">getPathname</a>
 
                                     <span class="flag static">static</span>
                             </li>
@@ -288,6 +288,10 @@ loading times that are often deemed to fail anyways.</p>
                             </li>
                             <li class="index-item method private">
                                 <a href="#method_handleTimeout">handleTimeout</a>
+
+                            </li>
+                            <li class="index-item method">
+                                <a href="#method_unbindListeners">unbindListeners</a>
 
                             </li>
                             <li class="index-item method">
@@ -367,6 +371,10 @@ loading times that are often deemed to fail anyways.</p>
 
                     <ul class="index-list events extends">
                             <li class="index-item event">
+                                <a href="#event_error">error</a>
+
+                            </li>
+                            <li class="index-item event">
                                 <a href="#event_load">load</a>
 
                             </li>
@@ -407,7 +415,7 @@ loading times that are often deemed to fail anyways.</p>
     <div class="meta">
                 <p>
                 Defined in
-        <a href="../files/src_stay.js.html#l562"><code>src\stay.js:562</code></a>
+        <a href="../files/src_stay.js.html#l605"><code>src\stay.js:605</code></a>
         </p>
 
 
@@ -466,7 +474,7 @@ be caught as a json parse exception and announced in stderr.</p>
     <div class="meta">
                 <p>
                 Defined in
-        <a href="../files/src_stay.js.html#l346"><code>src\stay.js:346</code></a>
+        <a href="../files/src_stay.js.html#l355"><code>src\stay.js:355</code></a>
         </p>
 
 
@@ -523,7 +531,7 @@ be caught as a json parse exception and announced in stderr.</p>
     <div class="meta">
                 <p>
                 Defined in
-        <a href="../files/src_stay.js.html#l287"><code>src\stay.js:287</code></a>
+        <a href="../files/src_stay.js.html#l296"><code>src\stay.js:296</code></a>
         </p>
 
 
@@ -575,7 +583,7 @@ and executes the desired page navigation on left clicks.</p>
     <div class="meta">
                 <p>
                 Defined in
-        <a href="../files/src_stay.js.html#l476"><code>src\stay.js:476</code></a>
+        <a href="../files/src_stay.js.html#l506"><code>src\stay.js:506</code></a>
         </p>
 
 
@@ -615,7 +623,7 @@ the navigation listeners.</p>
     <div class="meta">
                 <p>
                 Defined in
-        <a href="../files/src_stay.js.html#l399"><code>src\stay.js:399</code></a>
+        <a href="../files/src_stay.js.html#l408"><code>src\stay.js:408</code></a>
         </p>
 
 
@@ -650,8 +658,8 @@ the navigation listeners.</p>
 
 
 </div>
-<div id="method_getUrlParts" class="method item private">
-    <h3 class="name"><code>getUrlParts</code></h3>
+<div id="method_getPathname" class="method item private">
+    <h3 class="name"><code>getPathname</code></h3>
 
         <div class="args">
             <span class="paren">(</span><ul class="args-list inline commas">
@@ -662,7 +670,7 @@ the navigation listeners.</p>
         </div>
 
         <span class="returns-inline">
-            <span class="type">HTMLAnchorElement</span>
+            <span class="type">String</span>
         </span>
 
 
@@ -684,8 +692,8 @@ the navigation listeners.</p>
     </div>
 
     <div class="description">
-        <p>Use the native browser url parsing mechanism
-to retrieve the parts of a url.</p>
+        <p>Uses the native browser parsing mechanism
+to retrieve the pathname of a url.</p>
 
     </div>
 
@@ -713,8 +721,8 @@ to retrieve the parts of a url.</p>
             <h4>Returns:</h4>
 
             <div class="returns-description">
-                        <span class="type">HTMLAnchorElement</span>:
-                    <p>An object containing the url parts.</p>
+                        <span class="type">String</span>:
+                    <p>The pathname.</p>
 
             </div>
         </div>
@@ -743,7 +751,7 @@ to retrieve the parts of a url.</p>
     <div class="meta">
                 <p>
                 Defined in
-        <a href="../files/src_stay.js.html#l264"><code>src\stay.js:264</code></a>
+        <a href="../files/src_stay.js.html#l273"><code>src\stay.js:273</code></a>
         </p>
 
 
@@ -804,7 +812,7 @@ state mustn't be pushed.</p>
     <div class="meta">
                 <p>
                 Defined in
-        <a href="../files/src_stay.js.html#l226"><code>src\stay.js:226</code></a>
+        <a href="../files/src_stay.js.html#l235"><code>src\stay.js:235</code></a>
         </p>
 
 
@@ -855,7 +863,7 @@ state mustn't be pushed.</p>
     <div class="meta">
                 <p>
                 Defined in
-        <a href="../files/src_stay.js.html#l236"><code>src\stay.js:236</code></a>
+        <a href="../files/src_stay.js.html#l245"><code>src\stay.js:245</code></a>
         </p>
 
 
@@ -864,6 +872,38 @@ state mustn't be pushed.</p>
 
     <div class="description">
         <p>Handles xhr timeouts, ignores the event object.</p>
+
+    </div>
+
+
+
+
+</div>
+<div id="method_unbindListeners" class="method item">
+    <h3 class="name"><code>unbindListeners</code></h3>
+
+        <span class="paren">()</span>
+
+
+
+
+
+
+
+
+    <div class="meta">
+                <p>
+                Defined in
+        <a href="../files/src_stay.js.html#l486"><code>src\stay.js:486</code></a>
+        </p>
+
+
+
+    </div>
+
+    <div class="description">
+        <p>If you want to destroy Stay, you should call this method
+before you drop your reference to the Stay instance.</p>
 
     </div>
 
@@ -892,7 +932,7 @@ state mustn't be pushed.</p>
     <div class="meta">
                 <p>
                 Defined in
-        <a href="../files/src_stay.js.html#l521"><code>src\stay.js:521</code></a>
+        <a href="../files/src_stay.js.html#l548"><code>src\stay.js:548</code></a>
         </p>
 
 
@@ -950,7 +990,7 @@ provided by the &quot;receive&quot; event.</p>
     <div class="meta">
                 <p>
                 Defined in
-        <a href="../files/src_stay.js.html#l140"><code>src\stay.js:140</code></a>
+        <a href="../files/src_stay.js.html#l141"><code>src\stay.js:141</code></a>
         </p>
 
 
@@ -975,7 +1015,7 @@ provided by the &quot;receive&quot; event.</p>
     <div class="meta">
                 <p>
                 Defined in
-        <a href="../files/src_stay.js.html#l100"><code>src\stay.js:100</code></a>
+        <a href="../files/src_stay.js.html#l101"><code>src\stay.js:101</code></a>
         </p>
 
 
@@ -1001,7 +1041,7 @@ provided by the &quot;receive&quot; event.</p>
     <div class="meta">
                 <p>
                 Defined in
-        <a href="../files/src_stay.js.html#l130"><code>src\stay.js:130</code></a>
+        <a href="../files/src_stay.js.html#l131"><code>src\stay.js:131</code></a>
         </p>
 
 
@@ -1027,7 +1067,7 @@ provided by the &quot;receive&quot; event.</p>
     <div class="meta">
                 <p>
                 Defined in
-        <a href="../files/src_stay.js.html#l150"><code>src\stay.js:150</code></a>
+        <a href="../files/src_stay.js.html#l151"><code>src\stay.js:151</code></a>
         </p>
 
 
@@ -1055,7 +1095,7 @@ provided by the &quot;receive&quot; event.</p>
     <div class="meta">
                 <p>
                 Defined in
-        <a href="../files/src_stay.js.html#l611"><code>src\stay.js:611</code></a>
+        <a href="../files/src_stay.js.html#l654"><code>src\stay.js:654</code></a>
         </p>
 
 
@@ -1080,7 +1120,7 @@ provided by the &quot;receive&quot; event.</p>
     <div class="meta">
                 <p>
                 Defined in
-        <a href="../files/src_stay.js.html#l73"><code>src\stay.js:73</code></a>
+        <a href="../files/src_stay.js.html#l74"><code>src\stay.js:74</code></a>
         </p>
 
 
@@ -1106,7 +1146,7 @@ provided by the &quot;receive&quot; event.</p>
     <div class="meta">
                 <p>
                 Defined in
-        <a href="../files/src_stay.js.html#l160"><code>src\stay.js:160</code></a>
+        <a href="../files/src_stay.js.html#l161"><code>src\stay.js:161</code></a>
         </p>
 
 
@@ -1134,7 +1174,7 @@ and appended to the response fields.</p>
     <div class="meta">
                 <p>
                 Defined in
-        <a href="../files/src_stay.js.html#l49"><code>src\stay.js:49</code></a>
+        <a href="../files/src_stay.js.html#l50"><code>src\stay.js:50</code></a>
         </p>
 
 
@@ -1160,7 +1200,7 @@ and appended to the response fields.</p>
     <div class="meta">
                 <p>
                 Defined in
-        <a href="../files/src_stay.js.html#l120"><code>src\stay.js:120</code></a>
+        <a href="../files/src_stay.js.html#l121"><code>src\stay.js:121</code></a>
         </p>
 
 
@@ -1186,7 +1226,7 @@ and appended to the response fields.</p>
     <div class="meta">
                 <p>
                 Defined in
-        <a href="../files/src_stay.js.html#l172"><code>src\stay.js:172</code></a>
+        <a href="../files/src_stay.js.html#l173"><code>src\stay.js:173</code></a>
         </p>
 
 
@@ -1211,7 +1251,7 @@ and appended to the response fields.</p>
     <div class="meta">
                 <p>
                 Defined in
-        <a href="../files/src_stay.js.html#l59"><code>src\stay.js:59</code></a>
+        <a href="../files/src_stay.js.html#l60"><code>src\stay.js:60</code></a>
         </p>
 
 
@@ -1241,7 +1281,7 @@ is considered an error, for example.</p>
     <div class="meta">
                 <p>
                 Defined in
-        <a href="../files/src_stay.js.html#l91"><code>src\stay.js:91</code></a>
+        <a href="../files/src_stay.js.html#l92"><code>src\stay.js:92</code></a>
         </p>
 
 
@@ -1266,7 +1306,7 @@ is considered an error, for example.</p>
     <div class="meta">
                 <p>
                 Defined in
-        <a href="../files/src_stay.js.html#l82"><code>src\stay.js:82</code></a>
+        <a href="../files/src_stay.js.html#l83"><code>src\stay.js:83</code></a>
         </p>
 
 
@@ -1292,7 +1332,7 @@ is considered an error, for example.</p>
     <div class="meta">
                 <p>
                 Defined in
-        <a href="../files/src_stay.js.html#l208"><code>src\stay.js:208</code></a>
+        <a href="../files/src_stay.js.html#l209"><code>src\stay.js:209</code></a>
         </p>
 
 
@@ -1312,6 +1352,31 @@ is considered an error, for example.</p>
             <div id="events" class="api-class-tabpanel">
                 <h2 class="off-left">Events</h2>
 
+                    <div id="event_error" class="events item">
+                        <h3 class="name"><code>error</code></h3>
+                        <span class="type"></span>
+                    
+                    
+                    
+                    
+                    
+                        <div class="meta">
+                                    <p>
+                                    Defined in
+                            <a href="../files/src_stay.js.html#l227"><code>src\stay.js:227</code></a>
+                            </p>
+                    
+                    
+                        </div>
+                    
+                        <div class="description">
+                            <p>Returns XmlHttpRequest errors.</p>
+                    
+                        </div>
+                    
+                    
+                    
+                    </div>
                     <div id="event_load" class="events item">
                         <h3 class="name"><code>load</code></h3>
                         <span class="type"></span>
@@ -1323,7 +1388,7 @@ is considered an error, for example.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_stay.js.html#l200"><code>src\stay.js:200</code></a>
+                            <a href="../files/src_stay.js.html#l201"><code>src\stay.js:201</code></a>
                             </p>
                     
                     
@@ -1348,7 +1413,7 @@ is considered an error, for example.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_stay.js.html#l182"><code>src\stay.js:182</code></a>
+                            <a href="../files/src_stay.js.html#l183"><code>src\stay.js:183</code></a>
                             </p>
                     
                     
@@ -1373,7 +1438,7 @@ is considered an error, for example.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_stay.js.html#l190"><code>src\stay.js:190</code></a>
+                            <a href="../files/src_stay.js.html#l191"><code>src\stay.js:191</code></a>
                             </p>
                     
                     
