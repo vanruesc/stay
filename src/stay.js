@@ -347,6 +347,7 @@ export default function Stay(options) {
 
 	// Start the system by binding all event handlers.
 	this._updateListeners();
+
 }
 
 Stay.prototype = Object.create(EventDispatcher.prototype);

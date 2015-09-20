@@ -25,6 +25,8 @@ $ npm install @zayesh/stay
 
 ## Usage
 
+### The client part
+
 ```javascript
 import Stay from "@zayesh/stay";
 
@@ -71,16 +73,54 @@ stay.addEventListener("load", function() {
 });
 ```
 
-## Documentation
-[API](http://vanruesc.github.io/stay/docs)
+### The server part
 
-## Contributing
-Maintain the existing coding style. Add unit tests for any new or changed functionality. Lint and test your code.
+> Any resource that your web application serves has to be available as a condensed json resource for Stay to work. This includes all kinds of error pages. If your URIs are well organised, this will be easy. If not, be prepared for a big cleanup!
 
-## Release History
-_Version: 0.0.0 (28.06.2015)_
-> The module realises a robust xhr-driven page navigation.
+Take a look at some best practices for URI design first, if you haven't already. [These guidelines](https://css-tricks.com/guidelines-for-uri-design/) are a good start.
 
-## License
-Copyright (c) 2015 Raoul van Rüschen  
-Licensed under the Zlib license.
+Stay is rather tolerant when it comes to different URI patterns, but to illustrate what's going on behind the scenes let's take a look at the following example. Stay will grab a URI like this one:
+
+```html
+<a href="/fish/salmon">Salmon</a>
+```
+
+and internally convert it to:
+
+```javascript
+"http://www.your-domain.com:port/json/fish/salmon"
+```
+
+This URI won't be seen by the user and the infix can freely be chosen by you. However, "/json" makes the most sense here since the server will have to respond with a json resource after all.
+
+If we assume that the original URI points to a simple html page which looks like this:
+
+```html
+<html>
+	<head>
+		<meta charset="utf-8">
+		<title>Salmon</title>
+	</head>
+	<body>
+		<div id="main">Fishy!</div>
+	</body>
+</html>
+```
+
+then the the server response to the request made by Stay has to look like this:
+
+```javascript
+{
+    "meta": {
+        "title": "Salmon"
+    },
+    "main": "Fishy!"
+}
+```
+
+Stay will then replace the children of ```#main``` with the received content which is the simple text node ```"Fishy!"``` in this case. Stay will adjust the current page's title and manage the browser history for you to support the back and forward user actions. Although the above example html is minimal, you can already see the advantage of asynchronous (and well organised) web applications; only the essential page content travels through the nether! The most important benefits are:
+
+1. Less bandwidth usage
+2. Better performance
+3. More control over navigation
+4. Backwards compatibility for users that block JavaScript
