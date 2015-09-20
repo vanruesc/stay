@@ -127,13 +127,13 @@ then the json equivalent must look like this:
 Stay will replace the current children of ```#main``` with the received content which is a simple text 
 node in this case. The current page's title will also be adjusted and the browser history will be 
 managed for you to support the back and forward browser controls. 
-Although the above example html is minimal, it highlights the main aspects of asynchronous web applications.
+Although the above example html is minimal, it highlights the main aspects of asynchronous web applications:
 
 - More efficient bandwidth usage
-- Better performance and loading feel
+- Better loading performance
 - More control over the navigation process
 - Consolidation of a main page structure
-- Still highly customisable
+- Still highly customisable!
 
 
 ## External Resources
