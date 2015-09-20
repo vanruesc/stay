@@ -107,7 +107,7 @@ If we assume that the original URI points to a simple html page which looks like
 </html>
 ```
 
-then the the server response to the request made by Stay has to look like this:
+then the server response to the request made by Stay has to look like this:
 
 ```javascript
 {
@@ -124,3 +124,13 @@ Stay will then replace the children of ```#main``` with the received content whi
 2. Better performance
 3. More control over navigation
 4. Backwards compatibility for users that block JavaScript
+
+## Documentation
+[API](http://vanruesc.github.io/stay/docs)
+
+## Contributing
+Maintain the existing coding style. Add unit tests for any new or changed functionality. Lint and test your code.
+
+## License
+Copyright (c) 2015 Raoul van Rüschen  
+Licensed under the Apache 2.0 license.
