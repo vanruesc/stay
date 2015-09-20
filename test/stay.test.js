@@ -1,6 +1,6 @@
 describe("Stay", function() {
 
-	describe("Basics", function() {
+	describe("Sanity checks", function() {
 
 		var stay;
 
