@@ -82,8 +82,7 @@ stay.addEventListener("load", function() {
 > resource should only be served additionally to a traditional system to support users 
 > who block JavaScript.
 
-KEeping your URIs well structured is very important. 
-Take a look at some best practices for URI design if you haven't already. 
+Take a look at some recommendations for URI design if you haven't already. 
 [These guidelines](https://css-tricks.com/guidelines-for-uri-design/) are a good starting point.
 
 Stay is rather tolerant when it comes to different variations of URIs. Take a look at the following 
