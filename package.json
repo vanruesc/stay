@@ -55,7 +55,8 @@
 	"devDependencies": {
 		"jshint": "2.x.x",
 		"mocha": "2.x.x",
-		"mocha-phantomjs": "3.6.x",
+		"mocha-phantomjs": "3.6.0",
+		"phantomjs": "1.9.1",
 		"prepend-file": "1.x.x",
 		"rollup": "0.x.x",
 		"uglify-js": "2.x.x",
