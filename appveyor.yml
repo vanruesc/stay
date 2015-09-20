@@ -17,6 +17,7 @@ environment:
 
 install:
   - ps: Install-Product node $env:nodejs_version
+  - ps: if($env:nodejs_version -ne 1) { npm install -g npm@latest }
   - npm install
 
 build: off
