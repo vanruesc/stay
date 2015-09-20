@@ -17,7 +17,8 @@ environment:
 
 install:
   - ps: Install-Product node $env:nodejs_version
-  - npm install -g npm@latest
+  - IF %nodejs_version% LSS 1 npm -g install npm
+  - IF %nodejs_version% LSS 1 set PATH=%APPDATA%\npm;%PATH%
   - npm install
 
 build: off
