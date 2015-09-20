@@ -1,5 +1,5 @@
 /**
- * stay v0.1.2 build Sep 19 2015
+ * stay v0.1.3 build Sep 20 2015
  * https://github.com/vanruesc/stay
  * Copyright 2015 Raoul van Rueschen, Apache-2.0
  */
@@ -489,6 +489,7 @@
 
 		// Start the system by binding all event handlers.
 		this._updateListeners();
+
 	}
 
 	Stay.prototype = Object.create(EventDispatcher.prototype);

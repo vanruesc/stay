@@ -9,6 +9,7 @@ Stay is a small but effective module for the creation of dynamic xhr-driven web 
 It expects the server to be able to send the page content as a JSON string in which the key names 
 correspond with the IDs of the target DOM containers.
 
+
 ## Installation
 
 Download the [minified library](http://vanruesc.github.io/stay/build/stay.min.js) and include it in your project:
@@ -22,6 +23,7 @@ You can also install this module with [npm](https://www.npmjs.com).
 ```sh
 $ npm install @zayesh/stay
 ``` 
+
 
 ## Usage
 
@@ -75,61 +77,85 @@ stay.addEventListener("load", function() {
 
 ### The server part
 
-> Any resource that your web application serves has to be available as a condensed json resource for Stay to work. This includes all kinds of error pages. If your URIs are well organised, this will be easy. If not, be prepared for a big cleanup!
+> Every page needs to be available as a condensed json resource for Stay to work. 
+> This includes dynamically generated pages and error pages. The json version of each
+> resource should only be served additionally to a traditional system to support users 
+> who block JavaScript.
 
-Take a look at some best practices for URI design first, if you haven't already. [These guidelines](https://css-tricks.com/guidelines-for-uri-design/) are a good start.
+KEeping your URIs well structured is very important. 
+Take a look at some best practices for URI design if you haven't already. 
+[These guidelines](https://css-tricks.com/guidelines-for-uri-design/) are a good starting point.
 
-Stay is rather tolerant when it comes to different URI patterns, but to illustrate what's going on behind the scenes let's take a look at the following example. Stay will grab a URI like this one:
+Stay is rather tolerant when it comes to different variations of URIs. Take a look at the following 
+example to see what's going on behind the scenes:
 
 ```html
 <a href="/fish/salmon">Salmon</a>
 ```
 
-and internally convert it to:
+This link will internally be converted to:
 
 ```javascript
-"http://www.your-domain.com:port/json/fish/salmon"
+"http[s]://www.your-domain.com[:port]/json/fish/salmon"
 ```
 
-This URI won't be seen by the user and the infix can freely be chosen by you. However, "/json" makes the most sense here since the server will have to respond with a json resource after all.
-
+The modified URI won't be seen by the user and the infix can freely be chosen by you. 
 If we assume that the original URI points to a simple html page which looks like this:
 
 ```html
 <html>
 	<head>
 		<meta charset="utf-8">
-		<title>Salmon</title>
+		<title>Foo</title>
 	</head>
 	<body>
-		<div id="main">Fishy!</div>
+		<div id="main">Bar!</div>
 	</body>
 </html>
 ```
 
-then the server response to the request made by Stay has to look like this:
+then the json equivalent must look like this:
 
 ```javascript
 {
     "meta": {
-        "title": "Salmon"
+        "title": "Foo"
     },
-    "main": "Fishy!"
+    "main": "Bar!"
 }
 ```
 
-Stay will then replace the children of ```#main``` with the received content which is the simple text node ```"Fishy!"``` in this case. Stay will adjust the current page's title and manage the browser history for you to support the back and forward user actions. Although the above example html is minimal, you can already see the advantage of asynchronous (and well organised) web applications; only the essential page content travels through the nether! The most important benefits are:
+Stay will replace the current children of ```#main``` with the received content which is a simple text 
+node in this case. The current page's title will also be adjusted and the browser history will be 
+managed for you to support the back and forward browser controls. 
+Although the above example html is minimal, it highlights the main aspects of asynchronous web applications.
 
-1. Less bandwidth usage
-2. Better performance
-3. More control over navigation
-4. Backwards compatibility for users that block JavaScript
+- More efficient bandwidth usage
+- Better performance and loading feel
+- More control over the navigation process
+- Consolidation of a main page structure
+- Still highly customisable
+
+
+## External Resources
+
+Stay detects external resources and doesn't touch them.
+
+
+## Other Resources
+
+Resources like images or executable files are problematic because they can't be identified as such by their URI alone. 
+When linking a resource that can't be represented in json format, you should consider moving it on a dedicated file server. 
+Since Stay ignores external resources, the file will open as expected.
+
 
 ## Documentation
 [API](http://vanruesc.github.io/stay/docs)
 
+
 ## Contributing
 Maintain the existing coding style. Add unit tests for any new or changed functionality. Lint and test your code.
+
 
 ## License
 Copyright (c) 2015 Raoul van Rüschen  
