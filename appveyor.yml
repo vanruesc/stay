@@ -17,7 +17,7 @@ environment:
 
 install:
   - ps: Install-Product node $env:nodejs_version
-  - ps: If($env:nodejs_version -eq "0.10") { Install-Product npm 2 }
+  - ps: If($env:nodejs_version -eq "0.10") { Install-Product npm MAJOR }
   - npm install
 
 build: off
