@@ -1,5 +1,5 @@
 /**
- * Recursively adds a banner to the specified files.
+ * Banner.
  */
 
 var prependFile = require("prepend-file"),

@@ -17,7 +17,7 @@
                 <h1><img src="../assets/css/logo.png" title="Stay API" width="117" height="52"></h1>
         </div>
         <div class="yui3-u-1-4 version">
-            <em>API Docs for: 0.1.0</em>
+            <em>API Docs for: 0.1.3</em>
         </div>
     </div>
     <div id="bd" class="yui3-g">
@@ -83,21 +83,22 @@
 import EventDispatcher from &quot;@zayesh/eventdispatcher&quot;;
 
 /**
- * Use the native browser url parsing mechanism
- * to retrieve the parts of a url.
+ * Uses the native browser parsing mechanism
+ * to retrieve the pathname of a url.
  *
- * @method getUrlParts
+ * @method getPathname
  * @private
  * @static
  * @param {String} url - The URL to parse.
- * @return {HTMLAnchorElement} An object containing the url parts.
+ * @return {String} The pathname.
  */
 
-function getUrlParts(url) {
+function getPathname(url) {
 
 	var a = document.createElement(&quot;a&quot;);
 	a.href = url;
-	return a;
+
+	return a.pathname;
 
 }
 
@@ -115,7 +116,7 @@ function getUrlParts(url) {
  * @extends EventDispatcher
  * @throws {Error} An error is thrown if asynchronous requests are not supported.
  * @param {Object} [options] - The options.
- * @param {Array} [options.responseFields=[&quot;main&quot;, &quot;navigation&quot;, &quot;footer&quot;]] - The content container IDs. These have to be the same as the data fields in the server response.
+ * @param {Array} [options.stderr=console] - The standard output for error messages.
  * @param {String} [options.infix=&quot;/json&quot;] - The special url pattern infix for the asynchronous content requests.
  * @param {Number} [options.timeoutPost=60000] - Hard timeout for POST. 0 means no timeout.
  * @param {Number} [options.timeoutGet=5000] - Hard timeout for GET. 0 means no timeout.
@@ -139,14 +140,18 @@ export default function Stay(options) {
 	this.local = new RegExp(&quot;^&quot; + location.protocol + &quot;//&quot; + location.host);
 
 	/**
-	 * The response fields are the IDs of the DOM elements
-	 * that need to be filled with the server response fields.
+	 * The standard error output.
+	 * This string represents the ID of the target 
+	 * DOM container which should hold any error
+	 * messages. If none is specified, errors will 
+	 * be logged to the console. A request timeout
+	 * is considered an error, for example.
 	 *
-	 * @property responseFields
-	 * @type Array
+	 * @property stderr
+	 * @type String
 	 */
 
-	this.responseFields = [&quot;main&quot;, &quot;navigation&quot;, &quot;footer&quot;];
+	this.stderr = null;
 
 	/**
 	 * The infix to use for the asynchronous requests.
@@ -187,7 +192,7 @@ export default function Stay(options) {
 	// Overwrite default values.
 	if(options !== undefined) {
 
-		if(options.responseFields !== undefined) { this.responseFields = options.responseFields; }
+		if(options.stderr !== undefined) { this.stderr = options.stderr; }
 		if(options.infix !== undefined) { this.infix = options.infix; }
 		if(options.timeoutPost !== undefined) { this.timeoutPost = options.timeoutPost; }
 		if(options.timeoutGet !== undefined) { this.timeoutGet = options.timeoutGet; }
@@ -297,9 +302,17 @@ export default function Stay(options) {
 
 	} else {
 
-		throw new Error(&quot;XMLHttpRequest functionality not available.&quot;);
+		throw new Error(&quot;XMLHttpRequest not supported.&quot;);
 
 	}
+
+	/**
+	 * Returns XmlHttpRequest errors.
+	 *
+	 * @event error
+	 */
+
+	this.xhr.addEventListener(&quot;error&quot;, function handleError(e) { self.dispatchEvent(e); });
 
 	/**
 	 * Triggers the internal response handler.
@@ -320,16 +333,22 @@ export default function Stay(options) {
 
 	this.xhr.addEventListener(&quot;timeout&quot;, function handleTimeout() {
 
-		var response = {};
+		var response = {meta: {}};
 
-		if(self.responseFields.length) {
+		response.meta.title = &quot;Timeout Error&quot;;
 
-			response.title = &quot;Timeout Error&quot;;
-			response[self.responseFields[0]] = Stay.Error.TIMEOUT;
-			self.locked = true;
-			self.update(response);
+		if(self.stderr !== null) {
+
+			response[self.stderr] = &quot;&lt;p&gt;&quot; + Stay.Error.TIMEOUT + &quot;&lt;/p&gt;&quot;;
+
+		} else {
+
+			console.error(Stay.Error.TIMEOUT);
 
 		}
+
+		self.locked = true;
+		self.update(response);
 
 	});
 
@@ -367,8 +386,8 @@ export default function Stay(options) {
 
 	this._switchPage = function(event) {
 
-		var preventable = (event.preventDefault !== undefined),
-			proceed = false;
+		var preventable = (event.preventDefault !== undefined);
+		var proceed = false;
 
 		if(event.type === &quot;submit&quot;) {
 
@@ -402,52 +421,19 @@ export default function Stay(options) {
 
 	// Indirectly push the initial state.
 	this.update({
-		title: document.title,
-		url: window.location.href
+		meta: {
+			title: document.title,
+			url: location.href
+		}
 	});
 
 	// Start the system by binding all event handlers.
 	this._updateListeners();
+
 }
 
 Stay.prototype = Object.create(EventDispatcher.prototype);
 Stay.prototype.constructor = Stay;
-
-/**
- * Adds a response field.
- *
- * @method addResponseField
- * @param {string} field - The field to add.
- */
-
-Stay.prototype.addResponseField = function(field) {
-
-	if(this.responseFields.indexOf(field) === -1) {
-
-		this.responseFields.push(field);
-
-	}
-
-};
-
-/**
- * Removes a response field.
- *
- * @method removeResponseField
- * @param {string} field - The field to remove.
- */
-
-Stay.prototype.removeResponseField = function(field) {
-
-	var i = this.responseFields.indexOf(field);
-
-	if(i !== -1) {
-
-		this.responseFields.splice(i, 1);
-
-	}
-
-};
 
 /**
  * Navigates to the next target uri.
@@ -476,7 +462,7 @@ Stay.prototype._navigate = function(firingElement) {
 
 	}
 
-	pathname = getUrlParts(this.absolutePath).pathname;
+	pathname = getPathname(this.absolutePath);
 	if(pathname.charAt(0) !== &quot;/&quot;) { pathname = &quot;/&quot; + pathname; }
 
 	// Special treatment for the index page.
@@ -507,12 +493,13 @@ Stay.prototype._navigate = function(firingElement) {
  *
  * @method _updateView
  * @private
- * @param {object} response - The response to display. Assumed to contain the data fields specified in &quot;responseFields&quot;.
+ * @param {object} response - The properties of the response object correspond with the target DOM containers.
  */
 
 Stay.prototype._updateView = function(response) {
 
-	var i, l, c, r, contentChanged = false;
+	var responseField, c, r;
+	var contentChanged = false;
 
 	if(this.intermediateContainer === null) {
 
@@ -529,38 +516,43 @@ Stay.prototype._updateView = function(response) {
 
 	}
 
-	for(i = 0, l = this.responseFields.length; i &lt; l; ++i) {
+	for(responseField in response) {
 
-		c = this.containers[this.responseFields[i]];
+		r = response[responseField];
 
-		if(!c) {
+		// Ignore deep structures.
+		if(typeof r !== &quot;object&quot;) {
 
-			// No reference exists yet. Find the element and remember it.
-			c = this.containers[this.responseFields[i]] = document.getElementById(this.responseFields[i]);
+			c = this.containers[responseField];
 
-		}
+			if(c === undefined) {
 
-		r = response[this.responseFields[i]];
-
-		if(r) {
-
-			while(c.children.length &gt; 0) {
-
-				c.removeChild(c.children[0]);
+				// No reference exists yet. Find the DOM element and remember it.
+				c = this.containers[responseField] = document.getElementById(responseField);
 
 			}
 
-			// Let the browser create the DOM elements from the html string.
-			this.intermediateContainer.innerHTML = r;
+			if(c !== null) {
 
-			// Add them one after another.
-			while(this.intermediateContainer.children.length &gt; 0) {
+				while(c.children.length &gt; 0) {
 
-				c.appendChild(this.intermediateContainer.children[0]);
+					c.removeChild(c.children[0]);
+
+				}
+
+				// Let the browser create the DOM elements from the html string.
+				this.intermediateContainer.innerHTML = r;
+
+				// Cut &amp; paste them one after another.
+				while(this.intermediateContainer.children.length &gt; 0) {
+
+					c.appendChild(this.intermediateContainer.children[0]);
+
+				}
+
+				contentChanged = true;
 
 			}
-
-			contentChanged = true;
 
 		}
 
@@ -569,6 +561,26 @@ Stay.prototype._updateView = function(response) {
 	if(contentChanged) {
 
 		this._updateListeners();
+
+	}
+
+};
+
+/**
+ * If you want to destroy Stay, you should call this method
+ * before you drop your reference to the Stay instance.
+ *
+ * @method unbindListeners
+ */
+
+Stay.prototype.unbindListeners = function() {
+
+	var self = this;
+	var i, l;
+
+	for(i = 0, l = this.navigationListeners.length; i &lt; l; ++i) {
+
+		this.navigationListeners[i][0].removeEventListener(this.navigationListeners[i][1], self._switchPage);
 
 	}
 
@@ -585,15 +597,12 @@ Stay.prototype._updateView = function(response) {
 
 Stay.prototype._updateListeners = function() {
 
-	var self = this, i, l,
-		links = document.getElementsByTagName(&quot;a&quot;),
-		forms = document.getElementsByTagName(&quot;form&quot;);
+	var self = this;
+	var i, l;
+	var links = document.getElementsByTagName(&quot;a&quot;);
+	var forms = document.getElementsByTagName(&quot;form&quot;);
 
-	for(i = 0, l = this.navigationListeners.length; i &lt; l; ++i) {
-
-		this.navigationListeners[i][0].removeEventListener(this.navigationListeners[i][1], self._switchPage);
-
-	}
+  this.unbindListeners();
 
 	for(i = 0, l = links.length; i &lt; l; ++i) {
 
@@ -621,13 +630,13 @@ Stay.prototype._updateListeners = function() {
 
 /**
  * Updates the view, the navigation listeners and the history state.
- * Also emits an event to signilize that the page has been loaded.
+ * Also emits an event to signilise that the page has been loaded.
  *
  * The update function needs to be called after each navigation in 
  * order to unlock the system. This happens by default, but that
  * behaviour can be disabled. It is then the responsibility of the
- * programmer to call stay.update() with the response data provided 
- * by the &quot;receive&quot; event.
+ * programmer to call stay.update(response) with the response data
+ * provided by the &quot;receive&quot; event.
  *
  * @method update
  * @param {object} response - The response to display.
@@ -635,18 +644,34 @@ Stay.prototype._updateListeners = function() {
 
 Stay.prototype.update = function(response) {
 
+	var origin;
+
 	this._updateView(response);
-	document.title = response.title;
+	document.title = response.meta.title;
 
-	if(response.url) {
+	if(response.meta.url) {
 
-		this.absolutePath = response.url.replace(this.infix, &quot;&quot;);
+		this.absolutePath = response.meta.url.replace(this.infix, &quot;&quot;);
 
 	}
 
 	if(!this.backForward) {
 
-		history.pushState({url: this.absolutePath}, response.title, this.absolutePath);
+		try {
+
+			origin = document.origin ? document.origin : &quot;null&quot;;
+
+			if(origin !== &quot;null&quot; &amp;&amp; history.state &amp;&amp; this.absolutePath !== history.state.url) {
+
+				history.pushState({url: this.absolutePath}, response.meta.title, this.absolutePath);
+
+			}
+
+		} catch(e) {
+
+			console.warn(e);
+
+		}
 
 	} else {
 
@@ -663,7 +688,7 @@ Stay.prototype.update = function(response) {
 /**
  * This function acts when the xhr object changes its readyState.
  * The response will be a json object or an error page. Anything else will 
- * be caught as a json parse exception and announced in the first response field.
+ * be caught as a json parse exception and announced in stderr.
  *
  * @method _handleResponse
  * @private
@@ -672,14 +697,9 @@ Stay.prototype.update = function(response) {
 
 Stay.prototype._handleResponse = function(xhr) {
 
-	var response = {};
+	var response = {meta: {}};
 
-	if(this.responseFields.length === 0) {
-
-		response.title = &quot;Setup Error&quot;;
-		response[this.responseFields[0]] = Stay.Error.NO_RESPONSE_FIELDS;
-
- } else if(xhr.readyState === 4) {
+	if(xhr.readyState === 4) {
 
 		try {
 
@@ -687,13 +707,19 @@ Stay.prototype._handleResponse = function(xhr) {
 
 		} catch(e) {
 
-			response.title = &quot;Parse Error&quot;;
-			response[this.responseFields[0]] = Stay.Error.UNPARSABLE;
-			if(console !== undefined) { console.log(e); }
+			response.meta.title = &quot;Parse Error&quot;;
+
+			if(this.stderr !== null) {
+
+				response[this.stderr] = &quot;&lt;p&gt;&quot; + Stay.Error.UNPARSABLE + &quot;&lt;/p&gt;&quot;;
+
+			}
+
+			console.error(Stay.Error.UNPARSABLE);
 
 		}
 
-		response.url = xhr.responseURL;
+		response.meta.url = xhr.responseURL;
 		this.eventReceive.status = xhr.status;
 		this.eventReceive.response = response;
 		this.dispatchEvent(this.eventReceive);
@@ -719,9 +745,8 @@ Stay.prototype._handleResponse = function(xhr) {
  */
 
 Stay.Error = Object.freeze({
-	TIMEOUT: &quot;&lt;p&gt;The server didn&#x27;t respond in time. Please try again later!&lt;/p&gt;&quot;,
-	UNPARSABLE: &quot;&lt;p&gt;The received content could not be parsed.&lt;/p&gt;&quot;,
-	NO_RESPONSE_FIELDS: &quot;&lt;p&gt;No response fields have been specified!&lt;/p&gt;&quot;
+	TIMEOUT: &quot;The server didn&#x27;t respond in time. Please try again later!&quot;,
+	UNPARSABLE: &quot;The received content could not be parsed.&quot;
 });
 
     </pre>

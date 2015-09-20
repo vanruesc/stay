@@ -1,21 +1,22 @@
 import EventDispatcher from "@zayesh/eventdispatcher";
 
 /**
- * Use the native browser url parsing mechanism
- * to retrieve the parts of a url.
+ * Uses the native browser parsing mechanism
+ * to retrieve the pathname of a url.
  *
- * @method getUrlParts
+ * @method getPathname
  * @private
  * @static
  * @param {String} url - The URL to parse.
- * @return {HTMLAnchorElement} An object containing the url parts.
+ * @return {String} The pathname.
  */
 
-function getUrlParts(url) {
+function getPathname(url) {
 
 	var a = document.createElement("a");
 	a.href = url;
-	return a;
+
+	return a.pathname;
 
 }
 
@@ -33,7 +34,7 @@ function getUrlParts(url) {
  * @extends EventDispatcher
  * @throws {Error} An error is thrown if asynchronous requests are not supported.
  * @param {Object} [options] - The options.
- * @param {Array} [options.responseFields=["main", "navigation", "footer"]] - The content container IDs. These have to be the same as the data fields in the server response.
+ * @param {Array} [options.stderr=console] - The standard output for error messages.
  * @param {String} [options.infix="/json"] - The special url pattern infix for the asynchronous content requests.
  * @param {Number} [options.timeoutPost=60000] - Hard timeout for POST. 0 means no timeout.
  * @param {Number} [options.timeoutGet=5000] - Hard timeout for GET. 0 means no timeout.
@@ -57,14 +58,18 @@ export default function Stay(options) {
 	this.local = new RegExp("^" + location.protocol + "//" + location.host);
 
 	/**
-	 * The response fields are the IDs of the DOM elements
-	 * that need to be filled with the server response fields.
+	 * The standard error output.
+	 * This string represents the ID of the target 
+	 * DOM container which should hold any error
+	 * messages. If none is specified, errors will 
+	 * be logged to the console. A request timeout
+	 * is considered an error, for example.
 	 *
-	 * @property responseFields
-	 * @type Array
+	 * @property stderr
+	 * @type String
 	 */
 
-	this.responseFields = ["main", "navigation", "footer"];
+	this.stderr = null;
 
 	/**
 	 * The infix to use for the asynchronous requests.
@@ -105,7 +110,7 @@ export default function Stay(options) {
 	// Overwrite default values.
 	if(options !== undefined) {
 
-		if(options.responseFields !== undefined) { this.responseFields = options.responseFields; }
+		if(options.stderr !== undefined) { this.stderr = options.stderr; }
 		if(options.infix !== undefined) { this.infix = options.infix; }
 		if(options.timeoutPost !== undefined) { this.timeoutPost = options.timeoutPost; }
 		if(options.timeoutGet !== undefined) { this.timeoutGet = options.timeoutGet; }
@@ -215,9 +220,17 @@ export default function Stay(options) {
 
 	} else {
 
-		throw new Error("XMLHttpRequest functionality not available.");
+		throw new Error("XMLHttpRequest not supported.");
 
 	}
+
+	/**
+	 * Returns XmlHttpRequest errors.
+	 *
+	 * @event error
+	 */
+
+	this.xhr.addEventListener("error", function handleError(e) { self.dispatchEvent(e); });
 
 	/**
 	 * Triggers the internal response handler.
@@ -238,16 +251,22 @@ export default function Stay(options) {
 
 	this.xhr.addEventListener("timeout", function handleTimeout() {
 
-		var response = {};
+		var response = {meta: {}};
 
-		if(self.responseFields.length) {
+		response.meta.title = "Timeout Error";
 
-			response.title = "Timeout Error";
-			response[self.responseFields[0]] = Stay.Error.TIMEOUT;
-			self.locked = true;
-			self.update(response);
+		if(self.stderr !== null) {
+
+			response[self.stderr] = "<p>" + Stay.Error.TIMEOUT + "</p>";
+
+		} else {
+
+			console.error(Stay.Error.TIMEOUT);
 
 		}
+
+		self.locked = true;
+		self.update(response);
 
 	});
 
@@ -285,8 +304,8 @@ export default function Stay(options) {
 
 	this._switchPage = function(event) {
 
-		var preventable = (event.preventDefault !== undefined),
-			proceed = false;
+		var preventable = (event.preventDefault !== undefined);
+		var proceed = false;
 
 		if(event.type === "submit") {
 
@@ -320,52 +339,19 @@ export default function Stay(options) {
 
 	// Indirectly push the initial state.
 	this.update({
-		title: document.title,
-		url: window.location.href
+		meta: {
+			title: document.title,
+			url: location.href
+		}
 	});
 
 	// Start the system by binding all event handlers.
 	this._updateListeners();
+
 }
 
 Stay.prototype = Object.create(EventDispatcher.prototype);
 Stay.prototype.constructor = Stay;
-
-/**
- * Adds a response field.
- *
- * @method addResponseField
- * @param {string} field - The field to add.
- */
-
-Stay.prototype.addResponseField = function(field) {
-
-	if(this.responseFields.indexOf(field) === -1) {
-
-		this.responseFields.push(field);
-
-	}
-
-};
-
-/**
- * Removes a response field.
- *
- * @method removeResponseField
- * @param {string} field - The field to remove.
- */
-
-Stay.prototype.removeResponseField = function(field) {
-
-	var i = this.responseFields.indexOf(field);
-
-	if(i !== -1) {
-
-		this.responseFields.splice(i, 1);
-
-	}
-
-};
 
 /**
  * Navigates to the next target uri.
@@ -394,7 +380,7 @@ Stay.prototype._navigate = function(firingElement) {
 
 	}
 
-	pathname = getUrlParts(this.absolutePath).pathname;
+	pathname = getPathname(this.absolutePath);
 	if(pathname.charAt(0) !== "/") { pathname = "/" + pathname; }
 
 	// Special treatment for the index page.
@@ -425,12 +411,13 @@ Stay.prototype._navigate = function(firingElement) {
  *
  * @method _updateView
  * @private
- * @param {object} response - The response to display. Assumed to contain the data fields specified in "responseFields".
+ * @param {object} response - The properties of the response object correspond with the target DOM containers.
  */
 
 Stay.prototype._updateView = function(response) {
 
-	var i, l, c, r, contentChanged = false;
+	var responseField, c, r;
+	var contentChanged = false;
 
 	if(this.intermediateContainer === null) {
 
@@ -447,38 +434,43 @@ Stay.prototype._updateView = function(response) {
 
 	}
 
-	for(i = 0, l = this.responseFields.length; i < l; ++i) {
+	for(responseField in response) {
 
-		c = this.containers[this.responseFields[i]];
+		r = response[responseField];
 
-		if(!c) {
+		// Ignore deep structures.
+		if(typeof r !== "object") {
 
-			// No reference exists yet. Find the element and remember it.
-			c = this.containers[this.responseFields[i]] = document.getElementById(this.responseFields[i]);
+			c = this.containers[responseField];
 
-		}
+			if(c === undefined) {
 
-		r = response[this.responseFields[i]];
-
-		if(r) {
-
-			while(c.children.length > 0) {
-
-				c.removeChild(c.children[0]);
+				// No reference exists yet. Find the DOM element and remember it.
+				c = this.containers[responseField] = document.getElementById(responseField);
 
 			}
 
-			// Let the browser create the DOM elements from the html string.
-			this.intermediateContainer.innerHTML = r;
+			if(c !== null) {
 
-			// Add them one after another.
-			while(this.intermediateContainer.children.length > 0) {
+				while(c.children.length > 0) {
 
-				c.appendChild(this.intermediateContainer.children[0]);
+					c.removeChild(c.children[0]);
+
+				}
+
+				// Let the browser create the DOM elements from the html string.
+				this.intermediateContainer.innerHTML = r;
+
+				// Cut & paste them one after another.
+				while(this.intermediateContainer.children.length > 0) {
+
+					c.appendChild(this.intermediateContainer.children[0]);
+
+				}
+
+				contentChanged = true;
 
 			}
-
-			contentChanged = true;
 
 		}
 
@@ -487,6 +479,26 @@ Stay.prototype._updateView = function(response) {
 	if(contentChanged) {
 
 		this._updateListeners();
+
+	}
+
+};
+
+/**
+ * If you want to destroy Stay, you should call this method
+ * before you drop your reference to the Stay instance.
+ *
+ * @method unbindListeners
+ */
+
+Stay.prototype.unbindListeners = function() {
+
+	var self = this;
+	var i, l;
+
+	for(i = 0, l = this.navigationListeners.length; i < l; ++i) {
+
+		this.navigationListeners[i][0].removeEventListener(this.navigationListeners[i][1], self._switchPage);
 
 	}
 
@@ -503,15 +515,12 @@ Stay.prototype._updateView = function(response) {
 
 Stay.prototype._updateListeners = function() {
 
-	var self = this, i, l,
-		links = document.getElementsByTagName("a"),
-		forms = document.getElementsByTagName("form");
+	var self = this;
+	var i, l;
+	var links = document.getElementsByTagName("a");
+	var forms = document.getElementsByTagName("form");
 
-	for(i = 0, l = this.navigationListeners.length; i < l; ++i) {
-
-		this.navigationListeners[i][0].removeEventListener(this.navigationListeners[i][1], self._switchPage);
-
-	}
+  this.unbindListeners();
 
 	for(i = 0, l = links.length; i < l; ++i) {
 
@@ -539,13 +548,13 @@ Stay.prototype._updateListeners = function() {
 
 /**
  * Updates the view, the navigation listeners and the history state.
- * Also emits an event to signilize that the page has been loaded.
+ * Also emits an event to signilise that the page has been loaded.
  *
  * The update function needs to be called after each navigation in 
  * order to unlock the system. This happens by default, but that
  * behaviour can be disabled. It is then the responsibility of the
- * programmer to call stay.update() with the response data provided 
- * by the "receive" event.
+ * programmer to call stay.update(response) with the response data
+ * provided by the "receive" event.
  *
  * @method update
  * @param {object} response - The response to display.
@@ -553,18 +562,34 @@ Stay.prototype._updateListeners = function() {
 
 Stay.prototype.update = function(response) {
 
+	var origin;
+
 	this._updateView(response);
-	document.title = response.title;
+	document.title = response.meta.title;
 
-	if(response.url) {
+	if(response.meta.url) {
 
-		this.absolutePath = response.url.replace(this.infix, "");
+		this.absolutePath = response.meta.url.replace(this.infix, "");
 
 	}
 
 	if(!this.backForward) {
 
-		history.pushState({url: this.absolutePath}, response.title, this.absolutePath);
+		try {
+
+			origin = document.origin ? document.origin : "null";
+
+			if(origin !== "null" && history.state && this.absolutePath !== history.state.url) {
+
+				history.pushState({url: this.absolutePath}, response.meta.title, this.absolutePath);
+
+			}
+
+		} catch(e) {
+
+			console.warn(e);
+
+		}
 
 	} else {
 
@@ -581,7 +606,7 @@ Stay.prototype.update = function(response) {
 /**
  * This function acts when the xhr object changes its readyState.
  * The response will be a json object or an error page. Anything else will 
- * be caught as a json parse exception and announced in the first response field.
+ * be caught as a json parse exception and announced in stderr.
  *
  * @method _handleResponse
  * @private
@@ -590,14 +615,9 @@ Stay.prototype.update = function(response) {
 
 Stay.prototype._handleResponse = function(xhr) {
 
-	var response = {};
+	var response = {meta: {}};
 
-	if(this.responseFields.length === 0) {
-
-		response.title = "Setup Error";
-		response[this.responseFields[0]] = Stay.Error.NO_RESPONSE_FIELDS;
-
- } else if(xhr.readyState === 4) {
+	if(xhr.readyState === 4) {
 
 		try {
 
@@ -605,13 +625,19 @@ Stay.prototype._handleResponse = function(xhr) {
 
 		} catch(e) {
 
-			response.title = "Parse Error";
-			response[this.responseFields[0]] = Stay.Error.UNPARSABLE;
-			if(console !== undefined) { console.log(e); }
+			response.meta.title = "Parse Error";
+
+			if(this.stderr !== null) {
+
+				response[this.stderr] = "<p>" + Stay.Error.UNPARSABLE + "</p>";
+
+			}
+
+			console.error(Stay.Error.UNPARSABLE);
 
 		}
 
-		response.url = xhr.responseURL;
+		response.meta.url = xhr.responseURL;
 		this.eventReceive.status = xhr.status;
 		this.eventReceive.response = response;
 		this.dispatchEvent(this.eventReceive);
@@ -637,7 +663,6 @@ Stay.prototype._handleResponse = function(xhr) {
  */
 
 Stay.Error = Object.freeze({
-	TIMEOUT: "<p>The server didn't respond in time. Please try again later!</p>",
-	UNPARSABLE: "<p>The received content could not be parsed.</p>",
-	NO_RESPONSE_FIELDS: "<p>No response fields have been specified!</p>"
+	TIMEOUT: "The server didn't respond in time. Please try again later!",
+	UNPARSABLE: "The received content could not be parsed."
 });
