@@ -6,4 +6,4 @@ node_js:
 before_install:
  - npm install -g npm@latest
  - npm uninstall phantomjs
- - npm install -g phantomjs
+ - npm install phantomjs
