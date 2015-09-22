@@ -1,6 +1,6 @@
 {
 	"name": "@zayesh/stay",
-	"version": "0.1.3",
+	"version": "0.1.4",
 	"description": "Stay is a small but effective library for the creation of dynamic xhr-driven web applications.",
 	"homepage": "https://github.com/vanruesc/stay",
 	"main": "build/stay",
@@ -29,19 +29,23 @@
 	},
 
 	"scripts": {
-		"jshint:banner": "jshint banner.js",
+
 		"jshint:test": "jshint test",
 		"jshint:lib": "jshint src",
-		"jshint": "npm run jshint:banner && npm run jshint:test && npm run jshint:lib",
-		"rollup": "rollup -f umd -n Stay -i src/stay.js -o build/stay.js",
+		"jshint": "npm run jshint:test && npm run jshint:lib",
+
+		"rollup": "rollup -f iife -n Stay -i src/stay.js -o build/stay.js",
 		"uglify": "uglifyjs build/stay.js -c -m -o build/stay.min.js",
+
 		"mocha": "mocha-phantomjs --setting webSecurityEnabled=false test/index.html",
 		"yuidoc": "yuidoc src -q -c yuidoc.json",
+
 		"prebuild": "npm run jshint",
-		"build": "npm run rollup",
-		"postbuild": "npm run uglify && node banner.js",
+		"build": "npm run rollup && npm run uglify",
+		"postbuild": "node banner.js",
 		"pretest": "npm run build",
 		"test": "npm run mocha"
+
 	},
 
 	"engines": {

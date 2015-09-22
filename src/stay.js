@@ -149,6 +149,17 @@ export default function Stay(options) {
 	this.absolutePath = null;
 
 	/**
+	 * The current history state.
+	 * Can't rely on history.state right now.
+	 *
+	 * @property historyState
+	 * @type Object
+	 * @private
+	 */
+
+	this.historyState = null;
+
+	/**
 	 * A list of references to the response field DOM elements.
 	 *
 	 * @property containers
@@ -390,17 +401,26 @@ Stay.prototype._navigate = function(firingElement) {
 
 	this.eventNavigate.method = post ? "POST" : "GET";
 	this.dispatchEvent(this.eventNavigate);
-	this.xhr.open(this.eventNavigate.method, url, true);
 
-	if(post) {
+	try {
 
-		this.xhr.timeout = this.timeoutPost;
-		this.xhr.send(formData);
+		this.xhr.open(this.eventNavigate.method, url, true);
 
-	} else {
+		if(post) {
 
-		this.xhr.timeout = this.timeoutGet;
-		this.xhr.send();
+			this.xhr.timeout = this.timeoutPost;
+			this.xhr.send(formData);
+
+		} else {
+
+			this.xhr.timeout = this.timeoutGet;
+			this.xhr.send();
+
+		}
+
+	} catch(error) {
+
+		this.dispatchEvent(error);
 
 	}
 
@@ -551,7 +571,7 @@ Stay.prototype._updateListeners = function() {
  * Also emits an event to signilise that the page has been loaded.
  *
  * The update function needs to be called after each navigation in 
- * order to unlock the system. This happens by default, but that
+ * order to unlock the system! This happens by default, but that
  * behaviour can be disabled. It is then the responsibility of the
  * programmer to call stay.update(response) with the response data
  * provided by the "receive" event.
@@ -575,19 +595,43 @@ Stay.prototype.update = function(response) {
 
 	if(!this.backForward) {
 
-		try {
+		if(this.historyState === null || this.absolutePath !== this.historyState.url) {
 
-			origin = document.origin ? document.origin : "null";
+			this.historyState = {
+				url: this.absolutePath,
+				time: Date.now(),
+				changed: true
+			};
 
-			if(origin !== "null" && history.state && this.absolutePath !== history.state.url) {
+		} else {
 
-				history.pushState({url: this.absolutePath}, response.meta.title, this.absolutePath);
+			this.historyState.changed = false;
+
+		}
+
+		origin = document.origin ? document.origin : "null";
+
+		// Only try to push in a server environment.
+		if(origin !== "null") {
+
+			try {
+
+				if(this.historyState.changed) {
+
+					history.pushState(this.historyState, response.meta.title, this.absolutePath);
+
+				} else {
+
+					history.replaceState(this.historyState, response.meta.title, this.absolutePath);
+
+				}
+
+			} catch(e) {
+
+				// Browser-specific history error.
+				console.warn(e);
 
 			}
-
-		} catch(e) {
-
-			console.warn(e);
 
 		}
 
