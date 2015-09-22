@@ -77,14 +77,15 @@ stay.addEventListener("load", function() {
 
 ### The server part
 
-> Every page has to be available in the form of a condensed JSON resource. 
-> This includes dynamically generated pages and error pages. The JSON version of each
-> resource should be served additionally to support users who disable JavaScript. 
-> A traditional server system could be seen as your last bulwark.
+> Every REST endpoint (at least GET, POST) has to be available as a condensed JSON resource. 
+> This includes dynamically generated pages and error pages. Serving a JSON version of each
+> resource should always be seen as an additional feature and nothing more. You should make 
+> good use of JavaScript, but you shouldn't depend on it. Don't lock out users who disable 
+> JavaScript.
 
 Stay is rather tolerant when it comes to different URI patterns, but a well-structured 
-URI configuration is of paramount importance. Take a look at some recommendations for 
-good URI design if you haven't already. 
+URI configuration is the foundation of a good web application. Take a look at some 
+recommendations for good URI design if you haven't already! 
 [These guidelines](https://css-tricks.com/guidelines-for-uri-design/) are a good starting point.
 
 The following example shows what's going on behind the scenes of Stay:
@@ -99,7 +100,7 @@ This link will internally be converted to:
 "http[s]://www.your-domain.com[:port]/json/foo/bar"
 ```
 
-The modified URI won't be seen by the user and the infix can be freely chosen. 
+The modified URI won't be seen by the user and the infix can be freely chosen by you. 
 If we assume that the original URI points to a simple HTML page which looks like this:
 
 ```html
@@ -126,8 +127,8 @@ then the JSON equivalent must look like this:
 ```
 
 Stay will replace the current children of ```#main``` with the received content which is a simple text 
-node in this case. The current page's title will also be adjusted and the browser history will be 
-managed for you to support the back and forward browser controls. 
+node in this case, but could be any HTML content. The current page's title will also be adjusted and 
+the browser history will be managed for you to support the back and forward browser controls. 
 Although the above example HTML is minimal, it highlights the main aspects of asynchronous web applications:
 
 - More efficient bandwidth usage
