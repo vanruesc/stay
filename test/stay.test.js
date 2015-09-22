@@ -89,4 +89,67 @@ describe("Stay", function() {
 
 	});
 
+	describe("History", function() {
+
+		var stay;
+
+		before(function() {
+
+			stay = new Stay();
+
+		});
+
+		it("pushes history states", function(done) {
+
+			var previousState = stay.historyState;
+
+			stay.addEventListener("load", function handleLoad() {
+
+				stay.removeEventListener("load", handleLoad);
+				assert(previousState !== stay.historyState, "the history state hasn't been updated");
+				done();
+
+			});
+
+			stay._navigate({href: "./mock.json"});
+
+		});
+
+		it("doesn't push the same state consecutively", function(done) {
+
+			var phase = 1;
+
+			// Artificially reset the current state.
+			stay.historyState = null;
+
+			stay.addEventListener("load", function handleLoad() {
+
+				if(phase++ === 1) {
+
+					assert(stay.historyState.changed === true, "state should change for the first navigation");
+					stay._navigate({href: "./mock.json"});
+
+				} else {
+
+					stay.removeEventListener("load", handleLoad);
+					assert(stay.historyState.changed === false, "state shouldn't change for the second navigation");
+					done();
+
+				}
+
+			});
+
+			stay._navigate({href: "./mock.json"});
+
+		});
+
+		after(function() {
+
+			stay.unbindListeners();
+			stay = null;
+
+		});
+
+	});
+
 });

@@ -1,13 +1,9 @@
 /**
- * stay v0.1.3 build Sep 20 2015
+ * stay v0.1.4 build Sep 23 2015
  * https://github.com/vanruesc/stay
  * Copyright 2015 Raoul van Rueschen, Apache-2.0
  */
-(function (global, factory) {
-	typeof exports === 'object' && typeof module !== 'undefined' ? module.exports = factory() :
-	typeof define === 'function' && define.amd ? define(factory) :
-	global.Stay = factory();
-}(this, function () { 'use strict';
+var Stay = (function () { 'use strict';
 
 	/**
 	 * A base class for adding and removing event listeners and dispatching events.
@@ -291,6 +287,17 @@
 		this.absolutePath = null;
 
 		/**
+		 * The current history state.
+		 * Can't rely on history.state right now.
+		 *
+		 * @property historyState
+		 * @type Object
+		 * @private
+		 */
+
+		this.historyState = null;
+
+		/**
 		 * A list of references to the response field DOM elements.
 		 *
 		 * @property containers
@@ -532,17 +539,26 @@
 
 		this.eventNavigate.method = post ? "POST" : "GET";
 		this.dispatchEvent(this.eventNavigate);
-		this.xhr.open(this.eventNavigate.method, url, true);
 
-		if(post) {
+		try {
 
-			this.xhr.timeout = this.timeoutPost;
-			this.xhr.send(formData);
+			this.xhr.open(this.eventNavigate.method, url, true);
 
-		} else {
+			if(post) {
 
-			this.xhr.timeout = this.timeoutGet;
-			this.xhr.send();
+				this.xhr.timeout = this.timeoutPost;
+				this.xhr.send(formData);
+
+			} else {
+
+				this.xhr.timeout = this.timeoutGet;
+				this.xhr.send();
+
+			}
+
+		} catch(error) {
+
+			this.dispatchEvent(error);
 
 		}
 
@@ -693,7 +709,7 @@
 	 * Also emits an event to signilise that the page has been loaded.
 	 *
 	 * The update function needs to be called after each navigation in 
-	 * order to unlock the system. This happens by default, but that
+	 * order to unlock the system! This happens by default, but that
 	 * behaviour can be disabled. It is then the responsibility of the
 	 * programmer to call stay.update(response) with the response data
 	 * provided by the "receive" event.
@@ -717,19 +733,43 @@
 
 		if(!this.backForward) {
 
-			try {
+			if(this.historyState === null || this.absolutePath !== this.historyState.url) {
 
-				origin = document.origin ? document.origin : "null";
+				this.historyState = {
+					url: this.absolutePath,
+					time: Date.now(),
+					changed: true
+				};
 
-				if(origin !== "null" && history.state && this.absolutePath !== history.state.url) {
+			} else {
 
-					history.pushState({url: this.absolutePath}, response.meta.title, this.absolutePath);
+				this.historyState.changed = false;
+
+			}
+
+			origin = document.origin ? document.origin : "null";
+
+			// Only try to push in a server environment.
+			if(origin !== "null") {
+
+				try {
+
+					if(this.historyState.changed) {
+
+						history.pushState(this.historyState, response.meta.title, this.absolutePath);
+
+					} else {
+
+						history.replaceState(this.historyState, response.meta.title, this.absolutePath);
+
+					}
+
+				} catch(e) {
+
+					// Browser-specific history error.
+					console.warn(e);
 
 				}
-
-			} catch(e) {
-
-				console.warn(e);
 
 			}
 
@@ -811,4 +851,4 @@
 
 	return Stay;
 
-}));
+})();

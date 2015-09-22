@@ -2,7 +2,7 @@
     "project": {
         "name": "Stay API",
         "description": "Stay is a small but effective library for the creation of dynamic xhr-driven web applications.",
-        "version": "0.1.3",
+        "version": "0.1.4",
         "url": "https://github.com/vanruesc/stay"
     },
     "files": {
@@ -198,6 +198,17 @@
         {
             "file": "src\\stay.js",
             "line": 151,
+            "description": "The current history state.\nCan't rely on history.state right now.",
+            "itemtype": "property",
+            "name": "historyState",
+            "type": "Object",
+            "access": "private",
+            "tagname": "",
+            "class": "Stay"
+        },
+        {
+            "file": "src\\stay.js",
+            "line": 162,
             "description": "A list of references to the response field DOM elements.",
             "itemtype": "property",
             "name": "containers",
@@ -208,7 +219,7 @@
         },
         {
             "file": "src\\stay.js",
-            "line": 161,
+            "line": 172,
             "description": "A container which is filled by setting its innerHTML.\nThe created DOM elements are taken from this container\nand appended to the response fields.",
             "itemtype": "property",
             "name": "intermediateContainer",
@@ -219,7 +230,7 @@
         },
         {
             "file": "src\\stay.js",
-            "line": 173,
+            "line": 184,
             "description": "A list of navigation listeners for unbinding.",
             "itemtype": "property",
             "name": "navigationListeners",
@@ -230,7 +241,7 @@
         },
         {
             "file": "src\\stay.js",
-            "line": 183,
+            "line": 194,
             "description": "Signalises that a page navigation has started.",
             "itemtype": "event",
             "name": "navigate",
@@ -238,7 +249,7 @@
         },
         {
             "file": "src\\stay.js",
-            "line": 191,
+            "line": 202,
             "description": "Returns the parsed server response.",
             "itemtype": "event",
             "name": "receive",
@@ -258,7 +269,7 @@
         },
         {
             "file": "src\\stay.js",
-            "line": 201,
+            "line": 212,
             "description": "Signalises that a page update has finished.",
             "itemtype": "event",
             "name": "load",
@@ -266,7 +277,7 @@
         },
         {
             "file": "src\\stay.js",
-            "line": 209,
+            "line": 220,
             "description": "The internal XMLHttpRequest instance.",
             "itemtype": "property",
             "name": "xhr",
@@ -277,7 +288,7 @@
         },
         {
             "file": "src\\stay.js",
-            "line": 227,
+            "line": 238,
             "description": "Returns XmlHttpRequest errors.",
             "itemtype": "event",
             "name": "error",
@@ -285,7 +296,7 @@
         },
         {
             "file": "src\\stay.js",
-            "line": 235,
+            "line": 246,
             "description": "Triggers the internal response handler.",
             "itemtype": "method",
             "name": "handleResponse",
@@ -302,7 +313,7 @@
         },
         {
             "file": "src\\stay.js",
-            "line": 245,
+            "line": 256,
             "description": "Handles xhr timeouts, ignores the event object.",
             "itemtype": "method",
             "name": "handleTimeout",
@@ -312,7 +323,7 @@
         },
         {
             "file": "src\\stay.js",
-            "line": 273,
+            "line": 284,
             "description": "Support browser functionality \"back\" and \"forward\".\nDepends on the boolean variable \"locked\" in order to\ndetermine whether this navigation should be executed.\nThe \"backForward\" flag tells the system that the next\nstate mustn't be pushed.",
             "itemtype": "method",
             "name": "handleBackForward",
@@ -329,7 +340,7 @@
         },
         {
             "file": "src\\stay.js",
-            "line": 296,
+            "line": 307,
             "description": "This function is bound to all links and forms\nand executes the desired page navigation on left clicks.",
             "itemtype": "method",
             "name": "_switchPage",
@@ -346,7 +357,7 @@
         },
         {
             "file": "src\\stay.js",
-            "line": 356,
+            "line": 367,
             "description": "Navigates to the next target uri.",
             "itemtype": "method",
             "name": "_navigate",
@@ -363,7 +374,7 @@
         },
         {
             "file": "src\\stay.js",
-            "line": 409,
+            "line": 429,
             "description": "Updates the containers with the new data.",
             "itemtype": "method",
             "name": "_updateView",
@@ -380,7 +391,7 @@
         },
         {
             "file": "src\\stay.js",
-            "line": 487,
+            "line": 507,
             "description": "If you want to destroy Stay, you should call this method\nbefore you drop your reference to the Stay instance.",
             "itemtype": "method",
             "name": "unbindListeners",
@@ -388,7 +399,7 @@
         },
         {
             "file": "src\\stay.js",
-            "line": 507,
+            "line": 527,
             "description": "Binds event listeners to all links and forms.\nThis method is combined with the cleanup and basically refreshes \nthe navigation listeners.",
             "itemtype": "method",
             "name": "_updateListeners",
@@ -398,8 +409,8 @@
         },
         {
             "file": "src\\stay.js",
-            "line": 549,
-            "description": "Updates the view, the navigation listeners and the history state.\nAlso emits an event to signilise that the page has been loaded.\n\nThe update function needs to be called after each navigation in \norder to unlock the system. This happens by default, but that\nbehaviour can be disabled. It is then the responsibility of the\nprogrammer to call stay.update(response) with the response data\nprovided by the \"receive\" event.",
+            "line": 569,
+            "description": "Updates the view, the navigation listeners and the history state.\nAlso emits an event to signilise that the page has been loaded.\n\nThe update function needs to be called after each navigation in \norder to unlock the system! This happens by default, but that\nbehaviour can be disabled. It is then the responsibility of the\nprogrammer to call stay.update(response) with the response data\nprovided by the \"receive\" event.",
             "itemtype": "method",
             "name": "update",
             "params": [
@@ -413,7 +424,7 @@
         },
         {
             "file": "src\\stay.js",
-            "line": 606,
+            "line": 650,
             "description": "This function acts when the xhr object changes its readyState.\nThe response will be a json object or an error page. Anything else will \nbe caught as a json parse exception and announced in stderr.",
             "itemtype": "method",
             "name": "_handleResponse",
@@ -430,7 +441,7 @@
         },
         {
             "file": "src\\stay.js",
-            "line": 655,
+            "line": 699,
             "description": "Enumeration of Error Messages.",
             "itemtype": "property",
             "name": "Error",

@@ -38,7 +38,7 @@ var stay = new Stay({
 	stderr: "myDomElement",
 
 	// Default is "/json"
-	infix: "/urlPatternForAsyncRequests",
+	infix: "/asyncRequests",
 
 	// Default is 60000ms, 0 means no timeout
 	timeoutPost: 0,
@@ -53,15 +53,15 @@ var stay = new Stay({
 
 stay.addEventListener("navigate", function() {
 
-	alert("Page navigation has started.");
+	console.log("Page navigation has started.");
 
 });
 
 stay.addEventListener("receive", function(event) {
 
-	/* If autoUpdate is set to false, the programmer can 
-	 * decide when to update the page content.
-	 * The response is the parsed JSON string from the server.
+	/* If autoUpdate is disabled, the programmer has to decide 
+	 * when to update the page content. The update() method MUST 
+	 * be called at some point to unlock the system!
 	 */
 
 	stay.update(event.response);
@@ -70,37 +70,37 @@ stay.addEventListener("receive", function(event) {
 
 stay.addEventListener("load", function() {
 
-	alert("The requested page has been loaded.");
+	console.log("The requested page has been loaded.");
 
 });
 ```
 
 ### The server part
 
-> Every page needs to be available as a condensed json resource for Stay to work. 
-> This includes dynamically generated pages and error pages. The json version of each
-> resource should only be served additionally to a traditional system to support users 
-> who block JavaScript.
+> Every REST endpoint (at least GET, POST) has to be available as a condensed JSON resource. 
+> This includes dynamically generated pages and error pages. Serving a JSON version of each resource
+> should always be seen as an additional feature and nothing more. You should make good use of
+> JavaScript, but you shouldn't depend on it. Don't lock out users who disable JavaScript.
 
-KEeping your URIs well structured is very important. 
-Take a look at some best practices for URI design if you haven't already. 
+Stay is rather tolerant when it comes to different URI patterns, but a well-structured 
+URI configuration is the foundation of a good web application. Take a look at some 
+recommendations for good URI design if you haven't already! 
 [These guidelines](https://css-tricks.com/guidelines-for-uri-design/) are a good starting point.
 
-Stay is rather tolerant when it comes to different variations of URIs. Take a look at the following 
-example to see what's going on behind the scenes:
+The following example shows what's going on behind the scenes of Stay:
 
 ```html
-<a href="/fish/salmon">Salmon</a>
+<a href="/foo/bar">Hyperlink</a>
 ```
 
 This link will internally be converted to:
 
 ```javascript
-"http[s]://www.your-domain.com[:port]/json/fish/salmon"
+"http[s]://www.your-domain.com[:port]/json/foo/bar"
 ```
 
-The modified URI won't be seen by the user and the infix can freely be chosen by you. 
-If we assume that the original URI points to a simple html page which looks like this:
+The modified URI won't be seen by the user and the infix can be freely chosen by you. 
+If we assume that the original URI points to a simple HTML page which looks like this:
 
 ```html
 <html>
@@ -114,7 +114,7 @@ If we assume that the original URI points to a simple html page which looks like
 </html>
 ```
 
-then the json equivalent must look like this:
+then the JSON equivalent must look like this:
 
 ```javascript
 {
@@ -126,15 +126,15 @@ then the json equivalent must look like this:
 ```
 
 Stay will replace the current children of ```#main``` with the received content which is a simple text 
-node in this case. The current page's title will also be adjusted and the browser history will be 
-managed for you to support the back and forward browser controls. 
-Although the above example html is minimal, it highlights the main aspects of asynchronous web applications.
+node in this case, but could be any HTML content. The current page's title will also be adjusted and 
+the browser history will be managed for you to support the back and forward browser controls. 
+Although the above example HTML is minimal, it highlights the main aspects of asynchronous web applications:
 
 - More efficient bandwidth usage
-- Better performance and loading feel
+- Better loading performance
 - More control over the navigation process
 - Consolidation of a main page structure
-- Still highly customisable
+- Still highly customisable!
 
 
 ## External Resources
@@ -145,7 +145,7 @@ Stay detects external resources and doesn't touch them.
 ## Other Resources
 
 Resources like images or executable files are problematic because they can't be identified as such by their URI alone. 
-When linking a resource that can't be represented in json format, you should consider moving it on a dedicated file server. 
+When linking a resource that can't be represented in JSON format, you should consider moving it on a dedicated file server. 
 Since Stay ignores external resources, the file will open as expected.
 
 
