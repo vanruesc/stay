@@ -78,10 +78,9 @@ stay.addEventListener("load", function() {
 ### The server part
 
 > Every REST endpoint (at least GET, POST) has to be available as a condensed JSON resource. 
-> This includes dynamically generated pages and error pages. Serving a JSON version of each
-> resource should always be seen as an additional feature and nothing more. You should make 
-> good use of JavaScript, but you shouldn't depend on it. Don't lock out users who disable 
-> JavaScript.
+> This includes dynamically generated pages and error pages. Serving a JSON version of each resource
+> should always be seen as an additional feature and nothing more. You should make good use of
+> JavaScript, but you shouldn't depend on it. Don't lock out users who disable JavaScript.
 
 Stay is rather tolerant when it comes to different URI patterns, but a well-structured 
 URI configuration is the foundation of a good web application. Take a look at some 
@@ -146,7 +145,7 @@ Stay detects external resources and doesn't touch them.
 ## Other Resources
 
 Resources like images or executable files are problematic because they can't be identified as such by their URI alone. 
-When linking a resource that can't be represented in json format, you should consider moving it on a dedicated file server. 
+When linking a resource that can't be represented in JSON format, you should consider moving it on a dedicated file server. 
 Since Stay ignores external resources, the file will open as expected.
 
 
