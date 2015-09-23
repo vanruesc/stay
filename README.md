@@ -77,10 +77,10 @@ stay.addEventListener("load", function() {
 
 ### The server part
 
-> Every REST endpoint (at least GET, POST) has to be available as a condensed JSON resource. 
+> Every GET and POST endpoint has to be available as a condensed JSON resource. 
 > This includes dynamically generated pages and error pages. Serving a JSON version of each resource
 > should always be seen as an additional feature and nothing more. You should make good use of
-> JavaScript, but you shouldn't depend on it. Don't lock out users who disable JavaScript.
+> JavaScript, but you shouldn't depend on it.
 
 Stay is rather tolerant when it comes to different URI patterns, but a well-structured 
 URI configuration is the foundation of a good web application. Take a look at some 
