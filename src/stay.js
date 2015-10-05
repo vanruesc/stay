@@ -58,6 +58,15 @@ export default function Stay(options) {
 	this.local = new RegExp("^" + location.protocol + "//" + location.host);
 
 	/**
+	 * Regular expressions for excluded URIs.
+	 *
+	 * @property exclusions
+	 * @type Array
+	 */
+
+	this.exclusions = [];
+
+	/**
 	 * The standard error output.
 	 * This string represents the ID of the target 
 	 * DOM container which should hold any error
@@ -514,11 +523,12 @@ Stay.prototype._updateView = function(response) {
 Stay.prototype.unbindListeners = function() {
 
 	var self = this;
-	var i, l;
+	var signature;
 
-	for(i = 0, l = this.navigationListeners.length; i < l; ++i) {
+	for(; this.navigationListeners.length > 0;) {
 
-		this.navigationListeners[i][0].removeEventListener(this.navigationListeners[i][1], self._switchPage);
+		signature = this.navigationListeners.pop();
+		signature[0].removeEventListener(signature[1], self._switchPage);
 
 	}
 
@@ -536,29 +546,50 @@ Stay.prototype.unbindListeners = function() {
 Stay.prototype._updateListeners = function() {
 
 	var self = this;
-	var i, l;
 	var links = document.getElementsByTagName("a");
 	var forms = document.getElementsByTagName("form");
+	var i, j, li, lj;
+	var exclude;
 
-  this.unbindListeners();
+	this.unbindListeners();
 
-	for(i = 0, l = links.length; i < l; ++i) {
+	for(i = 0, li = links.length; i < li; ++i) {
 
 		if(this.local.test(links[i].href)) {
 
-			links[i].addEventListener("click", self._switchPage);
-			this.navigationListeners.push([links[i], "click"]);
+			for(j = 0, lj = this.exclusions.length, exclude = false; !exclude && j < lj; ++j) {
+
+				if(this.exclusions[j].test(links[i].href)) { exclude = true; }
+
+			}
+
+			if(!exclude) {
+
+				links[i].addEventListener("click", self._switchPage);
+				this.navigationListeners.push([links[i], "click"]);
+
+			}
 
 		}
 
 	}
 
-	for(i = 0, l = forms.length; i < l; ++i) {
+	for(i = 0, li = forms.length; i < li; ++i) {
 
 		if(this.local.test(forms[i].action)) {
 
-			forms[i].addEventListener("submit", self._switchPage);
-			this.navigationListeners.push([forms[i], "submit"]);
+			for(j = 0, lj = this.exclusions.length, exclude = false; !exclude && j < lj; ++j) {
+
+				if(this.exclusions[j].test(forms[i].action)) { exclude = true; }
+
+			}
+
+			if(!exclude) {
+
+				forms[i].addEventListener("submit", self._switchPage);
+				this.navigationListeners.push([forms[i], "submit"]);
+
+			}
 
 		}
 

@@ -137,16 +137,18 @@ Although the above example HTML is minimal, it highlights the main aspects of as
 - Still highly customisable!
 
 
-## External Resources
+## External Resources and Media
 
-Stay detects external resources and doesn't touch them.
-
-
-## Other Resources
-
+Stay detects external resources and doesn't touch them. The user will experience a synchronous navigation. 
 Resources like images or executable files are problematic because they can't be identified as such by their URI alone. 
+You may, however, define an arbitrary number of regular expressions to exclude specific URIs. 
+
+```javascript
+stay.exclusions.push(/\/nonJSON\//);
+```
+
 When linking a resource that can't be represented in JSON format, you should consider moving it on a dedicated file server. 
-Since Stay ignores external resources, the file will open as expected.
+Since Stay ignores external resources by default, the file would just open as expected.
 
 
 ## Documentation
