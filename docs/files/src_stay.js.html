@@ -17,7 +17,7 @@
                 <h1><img src="../assets/css/logo.png" title="Stay API" width="117" height="52"></h1>
         </div>
         <div class="yui3-u-1-4 version">
-            <em>API Docs for: 0.1.5</em>
+            <em>API Docs for: 0.1.6</em>
         </div>
     </div>
     <div id="bd" class="yui3-g">
@@ -581,6 +581,10 @@ Stay.prototype._updateView = function(response) {
 
 				contentChanged = true;
 
+			} else {
+
+				console.warn(Stay.Error.NO_CONTAINER, responseField);
+
 			}
 
 		}
@@ -821,7 +825,8 @@ Stay.prototype._handleResponse = function(xhr) {
 
 Stay.Error = Object.freeze({
 	TIMEOUT: &quot;The server didn&#x27;t respond in time. Please try again later!&quot;,
-	UNPARSABLE: &quot;The received content could not be parsed.&quot;
+	UNPARSABLE: &quot;The received content could not be parsed.&quot;,
+	NO_CONTAINER: &quot;Couldn&#x27;t find a container for:&quot;
 });
 
     </pre>

@@ -499,6 +499,10 @@ Stay.prototype._updateView = function(response) {
 
 				contentChanged = true;
 
+			} else {
+
+				console.warn(Stay.Error.NO_CONTAINER, responseField);
+
 			}
 
 		}
@@ -739,5 +743,6 @@ Stay.prototype._handleResponse = function(xhr) {
 
 Stay.Error = Object.freeze({
 	TIMEOUT: "The server didn't respond in time. Please try again later!",
-	UNPARSABLE: "The received content could not be parsed."
+	UNPARSABLE: "The received content could not be parsed.",
+	NO_CONTAINER: "Couldn't find a container for:"
 });

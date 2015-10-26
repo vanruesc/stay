@@ -77,10 +77,9 @@ stay.addEventListener("load", function() {
 
 ### The server part
 
-> Every GET and POST endpoint has to be available as a condensed JSON resource. 
-> This includes dynamically generated pages and error pages. Serving a JSON version of each resource
-> should always be seen as an additional feature and nothing more. You should make good use of
-> JavaScript, but you shouldn't depend on it.
+> Every GET and POST endpoint needs to be available as a condensed JSON resource. 
+> This includes dynamically generated pages and error pages. Serving a JSON version of each 
+> resource should be seen as an additional feature and nothing more. 
 
 Stay is rather tolerant when it comes to different URI patterns, but a well-structured 
 URI configuration is the foundation of a good web application. Take a look at some 
@@ -137,11 +136,12 @@ Although the above example HTML is minimal, it highlights the main aspects of as
 - Still highly customisable!
 
 
-## External Resources and Media
+## Linked Media and External Resources
 
 Stay detects external resources and doesn't touch them. The user will experience a synchronous navigation. 
-Resources like images or executable files are problematic because they can't be identified as such by their URI alone. 
-You may, however, define an arbitrary number of regular expressions to exclude specific URIs. 
+Hyperlinks to internal resources like images or executable files are problematic because they can't be 
+identified as such by their URI alone. You may, however, define an arbitrary number of regular expressions 
+to exclude specific URIs. 
 
 ```javascript
 stay.exclusions.push(/\/nonJSON\//);
@@ -160,5 +160,5 @@ Maintain the existing coding style. Add unit tests for any new or changed functi
 
 
 ## License
-Copyright (c) 2015 Raoul van Rüschen  
+Copyright (c) 2015 Raoul van Rueschen  
 Licensed under the Apache 2.0 license.

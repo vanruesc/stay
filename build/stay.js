@@ -1,5 +1,5 @@
 /**
- * stay v0.1.5 build Oct 05 2015
+ * stay v0.1.6 build Oct 26 2015
  * https://github.com/vanruesc/stay
  * Copyright 2015 Raoul van Rueschen, Apache-2.0
  */
@@ -637,6 +637,10 @@ var Stay = (function () { 'use strict';
 
 					contentChanged = true;
 
+				} else {
+
+					console.warn(Stay.Error.NO_CONTAINER, responseField);
+
 				}
 
 			}
@@ -877,7 +881,8 @@ var Stay = (function () { 'use strict';
 
 	Stay.Error = Object.freeze({
 		TIMEOUT: "The server didn't respond in time. Please try again later!",
-		UNPARSABLE: "The received content could not be parsed."
+		UNPARSABLE: "The received content could not be parsed.",
+		NO_CONTAINER: "Couldn't find a container for:"
 	});
 
 	return Stay;
