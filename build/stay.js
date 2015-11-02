@@ -1,7 +1,7 @@
 /**
- * stay v0.1.6 build Oct 26 2015
+ * stay v0.1.7 build Nov 02 2015
  * https://github.com/vanruesc/stay
- * Copyright 2015 Raoul van Rueschen, Apache-2.0
+ * Copyright 2015 Raoul van Rüschen, Apache-2.0
  */
 var Stay = (function () { 'use strict';
 
@@ -782,7 +782,7 @@ var Stay = (function () { 'use strict';
 
 			}
 
-			origin = document.origin ? document.origin : "null";
+			origin = document.origin ? document.origin : document.defaultView.location.origin ? document.defaultView.location.origin : "null";
 
 			// Only try to push in a server environment.
 			if(origin !== "null") {

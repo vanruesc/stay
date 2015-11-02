@@ -644,7 +644,7 @@ Stay.prototype.update = function(response) {
 
 		}
 
-		origin = document.origin ? document.origin : "null";
+		origin = document.origin ? document.origin : document.defaultView.location.origin ? document.defaultView.location.origin : "null";
 
 		// Only try to push in a server environment.
 		if(origin !== "null") {
