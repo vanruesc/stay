@@ -1,6 +1,6 @@
 {
 	"name": "@vanruesc/stay",
-	"version": "0.1.8",
+	"version": "0.1.9",
 	"description": "Stay is a small but effective library for the creation of dynamic xhr-driven web applications.",
 	"homepage": "https://github.com/vanruesc/stay",
 	"main": "build/stay",

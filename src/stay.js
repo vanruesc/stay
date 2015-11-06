@@ -1,4 +1,4 @@
-import EventDispatcher from "@zayesh/eventdispatcher";
+import EventDispatcher from "@vanruesc/eventdispatcher";
 
 /**
  * Uses the native browser parsing mechanism
