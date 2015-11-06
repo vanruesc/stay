@@ -1,6 +1,6 @@
 {
-	"name": "@zayesh/stay",
-	"version": "0.1.7",
+	"name": "@vanruesc/stay",
+	"version": "0.1.8",
 	"description": "Stay is a small but effective library for the creation of dynamic xhr-driven web applications.",
 	"homepage": "https://github.com/vanruesc/stay",
 	"main": "build/stay",
@@ -34,7 +34,7 @@
 		"jshint:lib": "jshint src",
 		"jshint": "npm run jshint:test && npm run jshint:lib",
 
-		"rollup": "rollup -f iife -n Stay -i src/stay.js -o build/stay.js",
+		"rollup": "node build -n Stay",
 		"uglify": "uglifyjs build/stay.js -c -m -o build/stay.min.js",
 
 		"mocha": "mocha-phantomjs --setting webSecurityEnabled=false test/index.html",
@@ -53,16 +53,19 @@
 	},
 
 	"dependencies": {
-		"@zayesh/eventdispatcher": "x.x.x"
+		"@vanruesc/eventdispatcher": "x.x.x"
 	},
 
 	"devDependencies": {
 		"jshint": "2.x.x",
+		"minimist": "1.x.x",
 		"mocha": "2.x.x",
 		"mocha-phantomjs": "3.6.0",
 		"phantomjs": "1.9.7-15",
 		"prepend-file": "1.x.x",
-		"rollup": "0.19.x",
+		"rollup": "0.x.x",
+		"rollup-plugin-commonjs": "x.x.x",
+		"rollup-plugin-npm": "x.x.x",
 		"uglify-js": "2.x.x",
 		"yuidocjs": "0.x.x"
 	}
