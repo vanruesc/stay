@@ -33,7 +33,7 @@ rollup({
 		npm({
 			jsnext: true,
 			main: true,
-			skip: argv.e ? argv.e : null
+			skip: argv.e ? argv.e.split(",") : null
 		}),
 
 		cjs({
