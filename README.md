@@ -27,9 +27,9 @@ $ npm install @vanruesc/stay
 
 ## Usage
 
-### The Client Part
+### The client part
 
-Usually, creating an instance of Stay should suffice. 
+Creating an instance of Stay usually suffices. 
 
 ```javascript
 import Stay from "@vanruesc/stay";
@@ -48,7 +48,7 @@ try {
 }
 ```
 
-You may, of course, configure Stay's behaviour and take full control of the navigation flow.
+You may also configure Stay's behaviour and take full control of the navigation flow.
 
 ```javascript
 import Stay from "@vanruesc/stay";
@@ -116,7 +116,7 @@ try {
 }
 ```
 
-### The Server Part
+### The server part
 
 > Every GET and POST endpoint needs to be available as a condensed JSON resource. 
 > This includes dynamically generated pages and error pages. Serving a JSON version of each 
@@ -165,7 +165,10 @@ then the JSON equivalent must look like this:
 }
 ```
 
-Stay would look at this JSON response and then try to replace the children of ```#main``` with the received content which is a simple text node in this case, but could be any HTML content. The ```meta``` object's ```title``` property is used to adjust the current page's title. Furthermore, the browser history will be managed for you to support the back and forward browser controls. 
+Stay would look at this JSON response and then try to replace the children of ```#main``` with the received 
+content which is a simple text node in this case, but could be any HTML content. The ```meta``` object's 
+```title``` property is used to adjust the current page's title. Furthermore, the browser history will be 
+managed for you to support the back and forward browser controls. 
 
 Although the above example HTML is minimal, it highlights the main aspects of asynchronous web applications:
 
@@ -176,7 +179,7 @@ Although the above example HTML is minimal, it highlights the main aspects of as
 - Still highly customisable!
 
 
-## Linked Media & External Resources
+## Media and External Resources
 
 Stay detects external resources and doesn't touch them. The user will experience a synchronous navigation. 
 Hyperlinks to internal resources such as images or executable files are problematic because they can't be 
@@ -187,7 +190,8 @@ to exclude specific URIs.
 stay.exclusions.push(/\/nonJSON\//);
 ```
 
-When linking a resource that can't be represented in JSON format, you could also consider moving it on a dedicated file server. Since Stay ignores external resources by default, the file would just open as expected.
+When linking a resource that can't be represented in JSON format, you should consider moving it to a dedicated 
+file server. Since Stay ignores external resources by default, the file would just open as expected.
 
 
 ## Documentation
