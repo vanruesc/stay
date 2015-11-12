@@ -17,7 +17,7 @@
                 <h1><img src="../assets/css/logo.png" title="Stay API" width="117" height="52"></h1>
         </div>
         <div class="yui3-u-1-4 version">
-            <em>API Docs for: 0.1.9</em>
+            <em>API Docs for: 0.1.10</em>
         </div>
     </div>
     <div id="bd" class="yui3-g">
@@ -322,7 +322,7 @@ export default function Stay(options) {
 
 	} else {
 
-		throw new Error(&quot;XMLHttpRequest not supported.&quot;);
+		throw new Error(&quot;XMLHttpRequest is not supported.&quot;);
 
 	}
 
@@ -448,7 +448,23 @@ export default function Stay(options) {
 	});
 
 	// Start the system by binding all event handlers.
-	this._updateListeners();
+	switch(document.readyState) {
+
+		case &quot;loading&quot;:
+			document.addEventListener(&quot;DOMContentLoaded&quot;, function init() {
+
+				document.removeEventListener(&quot;DOMContentLoaded&quot;, init);
+				self._updateListeners();
+
+			});
+			break;
+	
+		case &quot;interactive&quot;:
+		case &quot;complete&quot;:
+			this._updateListeners();
+			break;
+
+	}
 
 }
 

@@ -240,7 +240,7 @@ export default function Stay(options) {
 
 	} else {
 
-		throw new Error("XMLHttpRequest not supported.");
+		throw new Error("XMLHttpRequest is not supported.");
 
 	}
 
@@ -366,7 +366,23 @@ export default function Stay(options) {
 	});
 
 	// Start the system by binding all event handlers.
-	this._updateListeners();
+	switch(document.readyState) {
+
+		case "loading":
+			document.addEventListener("DOMContentLoaded", function init() {
+
+				document.removeEventListener("DOMContentLoaded", init);
+				self._updateListeners();
+
+			});
+			break;
+	
+		case "interactive":
+		case "complete":
+			this._updateListeners();
+			break;
+
+	}
 
 }
 

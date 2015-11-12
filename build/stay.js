@@ -1,5 +1,5 @@
 /**
- * stay v0.1.9 build Nov 06 2015
+ * stay v0.1.10 build Nov 12 2015
  * https://github.com/vanruesc/stay
  * Copyright 2015 Raoul van Rüschen, Apache-2.0
  */
@@ -378,7 +378,7 @@ var Stay = (function () { 'use strict';
 
 		} else {
 
-			throw new Error("XMLHttpRequest not supported.");
+			throw new Error("XMLHttpRequest is not supported.");
 
 		}
 
@@ -504,7 +504,23 @@ var Stay = (function () { 'use strict';
 		});
 
 		// Start the system by binding all event handlers.
-		this._updateListeners();
+		switch(document.readyState) {
+
+			case "loading":
+				document.addEventListener("DOMContentLoaded", function init() {
+
+					document.removeEventListener("DOMContentLoaded", init);
+					self._updateListeners();
+
+				});
+				break;
+		
+			case "interactive":
+			case "complete":
+				this._updateListeners();
+				break;
+
+		}
 
 	}
 

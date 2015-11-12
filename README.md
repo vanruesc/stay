@@ -5,8 +5,8 @@
 [![npm version](https://badge.fury.io/js/%40vanruesc%2Fstay.svg)](http://badge.fury.io/js/%40vanruesc%2Fstay) 
 [![Dependencies](https://david-dm.org/vanruesc/stay.svg?branch=master)](https://david-dm.org/vanruesc/stay)
 
-Stay is a small but effective module for the creation of dynamic xhr-driven web applications. 
-It expects the server to be able to send the page content as a JSON string in which the key names 
+Stay is a slim and effective module for the creation of dynamic xhr-driven web applications. 
+It expects the server to be able to send a page's content as a simple JSON string in which the key names 
 correspond with the IDs of the target DOM containers.
 
 
@@ -18,7 +18,7 @@ Download the [minified library](http://vanruesc.github.io/stay/build/stay.min.js
 <script src="/js/stay.min.js"></script>
 ```
 
-You can also install this module with [npm](https://www.npmjs.com).
+You can also install this module from [npm](https://www.npmjs.com).
 
 ```sh
 $ npm install @vanruesc/stay
@@ -27,55 +27,96 @@ $ npm install @vanruesc/stay
 
 ## Usage
 
-### The client part
+### The Client Part
+
+Usually, creating an instance of Stay should suffice. 
 
 ```javascript
 import Stay from "@vanruesc/stay";
 
-var stay = new Stay({
+var stay;
 
-	// Logs to console by default
-	stderr: "myDomElement",
+try {
 
-	// Default is "/json"
-	infix: "/asyncRequests",
+    stay = new Stay();
 
-	// Default is 60000ms, 0 means no timeout
-	timeoutPost: 0,
+} catch(error) {
 
-	// Default is 5000ms
-	timeoutGet: 0,
+    // XHR not supported.
+    console.warn(error);
 
-	// Default is true
-	autoUpdate: false
-
-});
-
-stay.addEventListener("navigate", function() {
-
-	console.log("Page navigation has started.");
-
-});
-
-stay.addEventListener("receive", function(event) {
-
-	/* If autoUpdate is disabled, the programmer has to decide 
-	 * when to update the page content. The update() method MUST 
-	 * be called at some point to unlock the system!
-	 */
-
-	stay.update(event.response);
-
-});
-
-stay.addEventListener("load", function() {
-
-	console.log("The requested page has been loaded.");
-
-});
+}
 ```
 
-### The server part
+You may, of course, configure Stay's behaviour and take full control of the navigation flow.
+
+```javascript
+import Stay from "@vanruesc/stay";
+
+var stay;
+
+try {
+
+    stay = new Stay({
+
+	    // Logs to console by default
+	    stderr: "myDomElement",
+
+    	// Default is "/json"
+    	infix: "/asyncRequests",
+
+	    // Default is 60000ms, 0 means no timeout
+    	timeoutPost: 0,
+
+    	// Default is 5000ms
+    	timeoutGet: 0,
+
+	    // Default is true
+    	autoUpdate: false
+
+    });
+
+    stay.addEventListener("navigate", function() {
+
+    	console.log("Page navigation has started.");
+        startMyFancyLoadingAnimation();
+
+    });
+
+    stay.addEventListener("receive", function(event) {
+
+        maybeDoSomethingWithThe(event.response);
+
+    	/* If autoUpdate is disabled, the programmer has to decide 
+	     * when to update the page content. The update() method MUST 
+    	 * be called at some point to unlock the system!
+    	 *
+    	 * This event will always be dispatched. See the docs for 
+    	 * payload information if you intend to process the server 
+    	 * response.
+    	 *
+    	 * Please note: do not make your users wait artificially!
+	     */
+
+    	stay.update(event.response);
+
+    });
+
+    stay.addEventListener("load", function() {
+
+        stopMyFancyLoadingAnimation();
+    	console.log("The requested page has been loaded.");
+
+    });
+
+} catch(error) {
+
+    console.warn(error);
+
+}
+```
+
+### The Server Part
 
 > Every GET and POST endpoint needs to be available as a condensed JSON resource. 
 > This includes dynamically generated pages and error pages. Serving a JSON version of each 
@@ -124,9 +165,8 @@ then the JSON equivalent must look like this:
 }
 ```
 
-Stay will replace the current children of ```#main``` with the received content which is a simple text 
-node in this case, but could be any HTML content. The current page's title will also be adjusted and 
-the browser history will be managed for you to support the back and forward browser controls. 
+Stay would look at this JSON response and then try to replace the children of ```#main``` with the received content which is a simple text node in this case, but could be any HTML content. The ```meta``` object's ```title``` property is used to adjust the current page's title. Furthermore, the browser history will be managed for you to support the back and forward browser controls. 
+
 Although the above example HTML is minimal, it highlights the main aspects of asynchronous web applications:
 
 - More efficient bandwidth usage
@@ -136,10 +176,10 @@ Although the above example HTML is minimal, it highlights the main aspects of as
 - Still highly customisable!
 
 
-## Linked Media and External Resources
+## Linked Media & External Resources
 
 Stay detects external resources and doesn't touch them. The user will experience a synchronous navigation. 
-Hyperlinks to internal resources like images or executable files are problematic because they can't be 
+Hyperlinks to internal resources such as images or executable files are problematic because they can't be 
 identified as such by their URI alone. You may, however, define an arbitrary number of regular expressions 
 to exclude specific URIs. 
 
@@ -147,8 +187,7 @@ to exclude specific URIs.
 stay.exclusions.push(/\/nonJSON\//);
 ```
 
-When linking a resource that can't be represented in JSON format, you should consider moving it on a dedicated file server. 
-Since Stay ignores external resources by default, the file would just open as expected.
+When linking a resource that can't be represented in JSON format, you could also consider moving it on a dedicated file server. Since Stay ignores external resources by default, the file would just open as expected.
 
 
 ## Documentation

@@ -2,7 +2,7 @@
     "project": {
         "name": "Stay API",
         "description": "Stay is a small but effective library for the creation of dynamic xhr-driven web applications.",
-        "version": "0.1.9",
+        "version": "0.1.10",
         "url": "https://github.com/vanruesc/stay"
     },
     "files": {
@@ -366,7 +366,7 @@
         },
         {
             "file": "src\\stay.js",
-            "line": 376,
+            "line": 392,
             "description": "Navigates to the next target uri.",
             "itemtype": "method",
             "name": "_navigate",
@@ -383,7 +383,7 @@
         },
         {
             "file": "src\\stay.js",
-            "line": 438,
+            "line": 454,
             "description": "Updates the containers with the new data.",
             "itemtype": "method",
             "name": "_updateView",
@@ -400,7 +400,7 @@
         },
         {
             "file": "src\\stay.js",
-            "line": 520,
+            "line": 536,
             "description": "If you want to destroy Stay, you should call this method\nbefore you drop your reference to the Stay instance.",
             "itemtype": "method",
             "name": "unbindListeners",
@@ -408,7 +408,7 @@
         },
         {
             "file": "src\\stay.js",
-            "line": 541,
+            "line": 557,
             "description": "Binds event listeners to all links and forms.\nThis method is combined with the cleanup and basically refreshes \nthe navigation listeners.",
             "itemtype": "method",
             "name": "_updateListeners",
@@ -418,7 +418,7 @@
         },
         {
             "file": "src\\stay.js",
-            "line": 604,
+            "line": 620,
             "description": "Updates the view, the navigation listeners and the history state.\nAlso emits an event to signilise that the page has been loaded.\n\nThe update function needs to be called after each navigation in \norder to unlock the system! This happens by default, but that\nbehaviour can be disabled. It is then the responsibility of the\nprogrammer to call stay.update(response) with the response data\nprovided by the \"receive\" event.",
             "itemtype": "method",
             "name": "update",
@@ -433,7 +433,7 @@
         },
         {
             "file": "src\\stay.js",
-            "line": 685,
+            "line": 701,
             "description": "This function acts when the xhr object changes its readyState.\nThe response will be a json object or an error page. Anything else will \nbe caught as a json parse exception and announced in stderr.",
             "itemtype": "method",
             "name": "_handleResponse",
@@ -450,7 +450,7 @@
         },
         {
             "file": "src\\stay.js",
-            "line": 734,
+            "line": 750,
             "description": "Enumeration of Error Messages.",
             "itemtype": "property",
             "name": "Error",
