@@ -1,7 +1,7 @@
 /**
- * stay v0.1.4 build Sep 23 2015
+ * stay v0.1.10 build Nov 12 2015
  * https://github.com/vanruesc/stay
- * Copyright 2015 Raoul van Rueschen, Apache-2.0
+ * Copyright 2015 Raoul van Rüschen, Apache-2.0
  */
 var Stay = (function () { 'use strict';
 
@@ -196,6 +196,15 @@ var Stay = (function () { 'use strict';
 		this.local = new RegExp("^" + location.protocol + "//" + location.host);
 
 		/**
+		 * Regular expressions for excluded URIs.
+		 *
+		 * @property exclusions
+		 * @type Array
+		 */
+
+		this.exclusions = [];
+
+		/**
 		 * The standard error output.
 		 * This string represents the ID of the target 
 		 * DOM container which should hold any error
@@ -369,7 +378,7 @@ var Stay = (function () { 'use strict';
 
 		} else {
 
-			throw new Error("XMLHttpRequest not supported.");
+			throw new Error("XMLHttpRequest is not supported.");
 
 		}
 
@@ -495,7 +504,23 @@ var Stay = (function () { 'use strict';
 		});
 
 		// Start the system by binding all event handlers.
-		this._updateListeners();
+		switch(document.readyState) {
+
+			case "loading":
+				document.addEventListener("DOMContentLoaded", function init() {
+
+					document.removeEventListener("DOMContentLoaded", init);
+					self._updateListeners();
+
+				});
+				break;
+		
+			case "interactive":
+			case "complete":
+				this._updateListeners();
+				break;
+
+		}
 
 	}
 
@@ -628,6 +653,10 @@ var Stay = (function () { 'use strict';
 
 					contentChanged = true;
 
+				} else {
+
+					console.warn(Stay.Error.NO_CONTAINER, responseField);
+
 				}
 
 			}
@@ -652,11 +681,12 @@ var Stay = (function () { 'use strict';
 	Stay.prototype.unbindListeners = function() {
 
 		var self = this;
-		var i, l;
+		var signature;
 
-		for(i = 0, l = this.navigationListeners.length; i < l; ++i) {
+		for(; this.navigationListeners.length > 0;) {
 
-			this.navigationListeners[i][0].removeEventListener(this.navigationListeners[i][1], self._switchPage);
+			signature = this.navigationListeners.pop();
+			signature[0].removeEventListener(signature[1], self._switchPage);
 
 		}
 
@@ -674,29 +704,50 @@ var Stay = (function () { 'use strict';
 	Stay.prototype._updateListeners = function() {
 
 		var self = this;
-		var i, l;
 		var links = document.getElementsByTagName("a");
 		var forms = document.getElementsByTagName("form");
+		var i, j, li, lj;
+		var exclude;
 
-	  this.unbindListeners();
+		this.unbindListeners();
 
-		for(i = 0, l = links.length; i < l; ++i) {
+		for(i = 0, li = links.length; i < li; ++i) {
 
 			if(this.local.test(links[i].href)) {
 
-				links[i].addEventListener("click", self._switchPage);
-				this.navigationListeners.push([links[i], "click"]);
+				for(j = 0, lj = this.exclusions.length, exclude = false; !exclude && j < lj; ++j) {
+
+					if(this.exclusions[j].test(links[i].href)) { exclude = true; }
+
+				}
+
+				if(!exclude) {
+
+					links[i].addEventListener("click", self._switchPage);
+					this.navigationListeners.push([links[i], "click"]);
+
+				}
 
 			}
 
 		}
 
-		for(i = 0, l = forms.length; i < l; ++i) {
+		for(i = 0, li = forms.length; i < li; ++i) {
 
 			if(this.local.test(forms[i].action)) {
 
-				forms[i].addEventListener("submit", self._switchPage);
-				this.navigationListeners.push([forms[i], "submit"]);
+				for(j = 0, lj = this.exclusions.length, exclude = false; !exclude && j < lj; ++j) {
+
+					if(this.exclusions[j].test(forms[i].action)) { exclude = true; }
+
+				}
+
+				if(!exclude) {
+
+					forms[i].addEventListener("submit", self._switchPage);
+					this.navigationListeners.push([forms[i], "submit"]);
+
+				}
 
 			}
 
@@ -747,7 +798,7 @@ var Stay = (function () { 'use strict';
 
 			}
 
-			origin = document.origin ? document.origin : "null";
+			origin = document.origin ? document.origin : document.defaultView.location.origin ? document.defaultView.location.origin : "null";
 
 			// Only try to push in a server environment.
 			if(origin !== "null") {
@@ -846,7 +897,8 @@ var Stay = (function () { 'use strict';
 
 	Stay.Error = Object.freeze({
 		TIMEOUT: "The server didn't respond in time. Please try again later!",
-		UNPARSABLE: "The received content could not be parsed."
+		UNPARSABLE: "The received content could not be parsed.",
+		NO_CONTAINER: "Couldn't find a container for:"
 	});
 
 	return Stay;

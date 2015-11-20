@@ -41,6 +41,20 @@ describe("Stay", function() {
 
 		});
 
+		it("should automatically bind a listener", function() {
+
+			assert(stay.navigationListeners.length > 0);
+
+		});
+
+		it("should ignore excluded URIs", function() {
+
+			stay.exclusions.push(/\//);
+			stay._updateListeners();
+			assert(stay.navigationListeners.length === 0);
+
+		});
+
 		it("should fire a navigate event", function(done) {
 
 			stay.addEventListener("navigate", function handleNavigate() {

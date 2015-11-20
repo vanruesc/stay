@@ -17,7 +17,7 @@
                 <h1><img src="../assets/css/logo.png" title="Stay API" width="117" height="52"></h1>
         </div>
         <div class="yui3-u-1-4 version">
-            <em>API Docs for: 0.1.4</em>
+            <em>API Docs for: 0.1.10</em>
         </div>
     </div>
     <div id="bd" class="yui3-g">
@@ -80,7 +80,7 @@
 
 <div class="file">
     <pre class="code prettyprint linenums">
-import EventDispatcher from &quot;@zayesh/eventdispatcher&quot;;
+import EventDispatcher from &quot;@vanruesc/eventdispatcher&quot;;
 
 /**
  * Uses the native browser parsing mechanism
@@ -138,6 +138,15 @@ export default function Stay(options) {
 	 */
 
 	this.local = new RegExp(&quot;^&quot; + location.protocol + &quot;//&quot; + location.host);
+
+	/**
+	 * Regular expressions for excluded URIs.
+	 *
+	 * @property exclusions
+	 * @type Array
+	 */
+
+	this.exclusions = [];
 
 	/**
 	 * The standard error output.
@@ -313,7 +322,7 @@ export default function Stay(options) {
 
 	} else {
 
-		throw new Error(&quot;XMLHttpRequest not supported.&quot;);
+		throw new Error(&quot;XMLHttpRequest is not supported.&quot;);
 
 	}
 
@@ -439,7 +448,23 @@ export default function Stay(options) {
 	});
 
 	// Start the system by binding all event handlers.
-	this._updateListeners();
+	switch(document.readyState) {
+
+		case &quot;loading&quot;:
+			document.addEventListener(&quot;DOMContentLoaded&quot;, function init() {
+
+				document.removeEventListener(&quot;DOMContentLoaded&quot;, init);
+				self._updateListeners();
+
+			});
+			break;
+	
+		case &quot;interactive&quot;:
+		case &quot;complete&quot;:
+			this._updateListeners();
+			break;
+
+	}
 
 }
 
@@ -572,6 +597,10 @@ Stay.prototype._updateView = function(response) {
 
 				contentChanged = true;
 
+			} else {
+
+				console.warn(Stay.Error.NO_CONTAINER, responseField);
+
 			}
 
 		}
@@ -596,11 +625,12 @@ Stay.prototype._updateView = function(response) {
 Stay.prototype.unbindListeners = function() {
 
 	var self = this;
-	var i, l;
+	var signature;
 
-	for(i = 0, l = this.navigationListeners.length; i &lt; l; ++i) {
+	for(; this.navigationListeners.length &gt; 0;) {
 
-		this.navigationListeners[i][0].removeEventListener(this.navigationListeners[i][1], self._switchPage);
+		signature = this.navigationListeners.pop();
+		signature[0].removeEventListener(signature[1], self._switchPage);
 
 	}
 
@@ -618,29 +648,50 @@ Stay.prototype.unbindListeners = function() {
 Stay.prototype._updateListeners = function() {
 
 	var self = this;
-	var i, l;
 	var links = document.getElementsByTagName(&quot;a&quot;);
 	var forms = document.getElementsByTagName(&quot;form&quot;);
+	var i, j, li, lj;
+	var exclude;
 
-  this.unbindListeners();
+	this.unbindListeners();
 
-	for(i = 0, l = links.length; i &lt; l; ++i) {
+	for(i = 0, li = links.length; i &lt; li; ++i) {
 
 		if(this.local.test(links[i].href)) {
 
-			links[i].addEventListener(&quot;click&quot;, self._switchPage);
-			this.navigationListeners.push([links[i], &quot;click&quot;]);
+			for(j = 0, lj = this.exclusions.length, exclude = false; !exclude &amp;&amp; j &lt; lj; ++j) {
+
+				if(this.exclusions[j].test(links[i].href)) { exclude = true; }
+
+			}
+
+			if(!exclude) {
+
+				links[i].addEventListener(&quot;click&quot;, self._switchPage);
+				this.navigationListeners.push([links[i], &quot;click&quot;]);
+
+			}
 
 		}
 
 	}
 
-	for(i = 0, l = forms.length; i &lt; l; ++i) {
+	for(i = 0, li = forms.length; i &lt; li; ++i) {
 
 		if(this.local.test(forms[i].action)) {
 
-			forms[i].addEventListener(&quot;submit&quot;, self._switchPage);
-			this.navigationListeners.push([forms[i], &quot;submit&quot;]);
+			for(j = 0, lj = this.exclusions.length, exclude = false; !exclude &amp;&amp; j &lt; lj; ++j) {
+
+				if(this.exclusions[j].test(forms[i].action)) { exclude = true; }
+
+			}
+
+			if(!exclude) {
+
+				forms[i].addEventListener(&quot;submit&quot;, self._switchPage);
+				this.navigationListeners.push([forms[i], &quot;submit&quot;]);
+
+			}
 
 		}
 
@@ -691,7 +742,7 @@ Stay.prototype.update = function(response) {
 
 		}
 
-		origin = document.origin ? document.origin : &quot;null&quot;;
+		origin = document.origin ? document.origin : document.defaultView.location.origin ? document.defaultView.location.origin : &quot;null&quot;;
 
 		// Only try to push in a server environment.
 		if(origin !== &quot;null&quot;) {
@@ -790,7 +841,8 @@ Stay.prototype._handleResponse = function(xhr) {
 
 Stay.Error = Object.freeze({
 	TIMEOUT: &quot;The server didn&#x27;t respond in time. Please try again later!&quot;,
-	UNPARSABLE: &quot;The received content could not be parsed.&quot;
+	UNPARSABLE: &quot;The received content could not be parsed.&quot;,
+	NO_CONTAINER: &quot;Couldn&#x27;t find a container for:&quot;
 });
 
     </pre>
