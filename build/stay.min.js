@@ -1,5 +1,5 @@
 /**
- * stay v0.1.12 build Dec 05 2015
+ * stay v0.1.13 build Dec 05 2015
  * https://github.com/vanruesc/stay
  * Copyright 2015 Raoul van Rüschen, Apache-2.0
  */
