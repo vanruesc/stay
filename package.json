@@ -29,27 +29,12 @@
 	},
 
 	"scripts": {
-
-		"jshint:test": "jshint test",
-		"jshint:lib": "jshint src",
-		"jshint": "npm run jshint:test && npm run jshint:lib",
-
-		"rollup": "node build -n Stay",
-		"uglify": "uglifyjs build/stay.js -c -m -o build/stay.min.js",
-
-		"mocha": "mocha-phantomjs --setting webSecurityEnabled=false test/index.html",
-		"yuidoc": "yuidoc src -q -c yuidoc.json",
-
-		"prebuild": "npm run jshint",
-		"build": "npm run rollup && npm run uglify",
-		"postbuild": "node banner.js",
-		"pretest": "npm run build",
-		"test": "npm run mocha"
-
+		"test": "node grunt-cli.js"
 	},
 
 	"engines": {
-		"node": ">= 0.12.0"
+		"node": ">= 0.8.0",
+		"npm" : ">= 1.0.20"
 	},
 
 	"dependencies": {
@@ -57,16 +42,13 @@
 	},
 
 	"devDependencies": {
-		"jshint": "2.x.x",
-		"minimist": "1.x.x",
-		"mocha": "2.x.x",
-		"mocha-phantomjs": "3.6.0",
-		"phantomjs": "1.9.7-15",
-		"prepend-file": "1.x.x",
-		"rollup": "0.x.x",
-		"rollup-plugin-commonjs": "x.x.x",
-		"rollup-plugin-npm": "x.x.x",
-		"uglify-js": "2.x.x",
-		"yuidocjs": "0.x.x"
+		"grunt": "0.x.x",
+		"grunt-contrib-jshint": "0.x.x",
+		"grunt-contrib-uglify": "0.x.x",
+		"grunt-contrib-yuidoc": "0.x.x",
+		"grunt-contrib-watch": "0.x.x",
+		"grunt-mocha": "0.x.x",
+		"grunt-rollup": "x.x.x",
+		"rollup-plugin-npm": "x.x.x"
 	}
 }

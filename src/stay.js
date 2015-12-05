@@ -348,7 +348,7 @@ export default function Stay(options) {
 		if(proceed) {
 
 			if(preventable) { event.preventDefault(); }
-			if(!self.locked) { self._navigate(this); }
+			if(!self.locked) { self._navigate(event.target); }
 
 		}
 
@@ -377,8 +377,7 @@ export default function Stay(options) {
 			});
 			break;
 	
-		case "interactive":
-		case "complete":
+		default:
 			this._updateListeners();
 			break;
 
@@ -545,7 +544,7 @@ Stay.prototype.unbindListeners = function() {
 	var self = this;
 	var signature;
 
-	for(; this.navigationListeners.length > 0;) {
+	while(this.navigationListeners.length > 0) {
 
 		signature = this.navigationListeners.pop();
 		signature[0].removeEventListener(signature[1], self._switchPage);
@@ -662,7 +661,7 @@ Stay.prototype.update = function(response) {
 
 		origin = document.origin ? document.origin : document.defaultView.location.origin ? document.defaultView.location.origin : "null";
 
-		// Only try to push in a server environment.
+		// Cannot modify history if no document origin exists.
 		if(origin !== "null") {
 
 			try {
@@ -677,10 +676,10 @@ Stay.prototype.update = function(response) {
 
 				}
 
-			} catch(e) {
+			} catch(error) {
 
 				// Browser-specific history error.
-				console.warn(e);
+				console.warn(error);
 
 			}
 
@@ -700,8 +699,8 @@ Stay.prototype.update = function(response) {
 
 /**
  * This function acts when the xhr object changes its readyState.
- * The response will be a json object or an error page. Anything else will 
- * be caught as a json parse exception and announced in stderr.
+ * The response will be a JSON object or an error page. Anything else will 
+ * be caught as a JSON parse exception and announced in stderr.
  *
  * @method _handleResponse
  * @private
