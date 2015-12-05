@@ -1,4 +1,4 @@
-describe("Stay", function() {
+describe("STAY", function() {
 
 	describe("Sanity checks", function() {
 
@@ -6,13 +6,13 @@ describe("Stay", function() {
 
 		it("is a constructor function", function() {
 
-			assert(typeof Stay === "function");
+			assert(typeof STAY === "function");
 
 		});
 
 		it("should be instancable", function() {
 
-			stay = new Stay();
+			stay = new STAY();
 
 		});
 
@@ -37,7 +37,7 @@ describe("Stay", function() {
 
 		before(function() {
 
-			stay = new Stay();
+			stay = new STAY();
 
 		});
 
@@ -109,7 +109,7 @@ describe("Stay", function() {
 
 		before(function() {
 
-			stay = new Stay();
+			stay = new STAY();
 
 		});
 

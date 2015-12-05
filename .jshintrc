@@ -11,7 +11,7 @@
   "newcap": true,
   "noarg": true,
   "node": true,
-  "predef": ["History", "Stay", "assert"],
+  "predef": ["History", "STAY", "assert"],
   "sub": true,
   "undef": true,
   "unused": true,
