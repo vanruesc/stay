@@ -203,4 +203,4 @@ Maintain the existing coding style. Add unit tests for any new or changed functi
 
 
 ## License
-[Apache 2.0](http://vanruesc.github.io/stay/LICENSE)
+[Apache 2.0](https://github.com/vanruesc/stay/blob/master/LICENSE)
