@@ -52,7 +52,7 @@ module.exports = function(grunt) {
 			test: {
 				src: ["test/**/*.html"],
 				options: {
-					run: false
+					run: true
 				}
 			}
 		},
