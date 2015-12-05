@@ -1,35 +1,33 @@
 # http://www.appveyor.com/docs/appveyor-yml
 
-version: "{build}"
+version: {build}
 
-clone_depth: 10
+clone_depth: 1
 
-init:
-  - git config --global core.autocrlf true
+branches:
+ # blacklist
+ except:
+  - gh-pages
 
 environment:
-  matrix:
-    # node.js
-    - nodejs_version: 0.12
-    - nodejs_version: 4.2
-    # io.js
-    - nodejs_version: 1
+ matrix:
+  # node.js
+  - nodejs_version: 0.12
+  - nodejs_version: 5.1
 
 install:
-  - ps: Install-Product node $env:nodejs_version
-  - IF %nodejs_version% LSS 1 npm -g install npm
-  - IF %nodejs_version% LSS 1 set PATH=%APPDATA%\npm;%PATH%
-  - npm install
+ - ps: Install-Product node $env:nodejs_version
+ - npm install
 
+fast_finish: true
+skip_tags: true
 build: off
 
 test_script:
-  - node --version && npm --version
-  - npm test
-
-matrix:
-  fast_finish: false
+ - node --version && npm --version
+ - npm test
 
 cache:
-  - C:\Users\appveyor\AppData\Roaming\npm-cache -> package.json     # npm cache
-  - node_modules -> package.json                                    # local npm modules
+ #- C:\Users\appveyor\AppData\Roaming\npm-cache -> package.json     # npm cache
+ - %APPDATA%\npm-cache -> package.json  # npm cache
+ - node_modules -> package.json         # local npm modules
