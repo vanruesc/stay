@@ -1,9 +1,10 @@
 /**
- * stay v0.1.10 build Nov 12 2015
+ * stay v0.1.13 build Dec 05 2015
  * https://github.com/vanruesc/stay
  * Copyright 2015 Raoul van Rüschen, Apache-2.0
  */
-var Stay = (function () { 'use strict';
+
+var STAY = (function () { 'use strict';
 
 	/**
 	 * A base class for adding and removing event listeners and dispatching events.
@@ -486,7 +487,7 @@ var Stay = (function () { 'use strict';
 			if(proceed) {
 
 				if(preventable) { event.preventDefault(); }
-				if(!self.locked) { self._navigate(this); }
+				if(!self.locked) { self._navigate(event.target); }
 
 			}
 
@@ -515,8 +516,7 @@ var Stay = (function () { 'use strict';
 				});
 				break;
 		
-			case "interactive":
-			case "complete":
+			default:
 				this._updateListeners();
 				break;
 
@@ -683,7 +683,7 @@ var Stay = (function () { 'use strict';
 		var self = this;
 		var signature;
 
-		for(; this.navigationListeners.length > 0;) {
+		while(this.navigationListeners.length > 0) {
 
 			signature = this.navigationListeners.pop();
 			signature[0].removeEventListener(signature[1], self._switchPage);
@@ -800,7 +800,7 @@ var Stay = (function () { 'use strict';
 
 			origin = document.origin ? document.origin : document.defaultView.location.origin ? document.defaultView.location.origin : "null";
 
-			// Only try to push in a server environment.
+			// Cannot modify history if no document origin exists.
 			if(origin !== "null") {
 
 				try {
@@ -815,10 +815,10 @@ var Stay = (function () { 'use strict';
 
 					}
 
-				} catch(e) {
+				} catch(error) {
 
 					// Browser-specific history error.
-					console.warn(e);
+					console.warn(error);
 
 				}
 
@@ -838,8 +838,8 @@ var Stay = (function () { 'use strict';
 
 	/**
 	 * This function acts when the xhr object changes its readyState.
-	 * The response will be a json object or an error page. Anything else will 
-	 * be caught as a json parse exception and announced in stderr.
+	 * The response will be a JSON object or an error page. Anything else will 
+	 * be caught as a JSON parse exception and announced in stderr.
 	 *
 	 * @method _handleResponse
 	 * @private
