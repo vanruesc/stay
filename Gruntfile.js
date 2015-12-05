@@ -52,13 +52,7 @@ module.exports = function(grunt) {
 			test: {
 				src: ["test/**/*.html"],
 				options: {
-					run: true,
-					log: true,
-					page: {
-						settings: {
-							webSecurityEnabled: false
-						}
-					}
+					run: true
 				}
 			}
 		},
