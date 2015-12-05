@@ -203,5 +203,4 @@ Maintain the existing coding style. Add unit tests for any new or changed functi
 
 
 ## License
-Copyright (c) 2015 Raoul van Rüschen  
-Licensed under the Apache 2.0 license.
+[Apache 2.0](http://vanruesc.github.io/stay/LICENSE)
